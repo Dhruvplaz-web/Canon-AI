@@ -37,7 +37,7 @@ def test_seed_data_execution_and_counts():
         assert summary["rules_count"] == 12
         assert summary["claims_count"] == 2
         assert summary["users_count"] == 4
-        assert summary["reason_codes_count"] == 12
+        assert summary["reason_codes_count"] == 13
 
         # Verify Workspace
         wks = session.query(Workspace).filter(Workspace.slug == "acme-corp").first()
@@ -87,7 +87,7 @@ def test_seed_data_execution_and_counts():
 
         # Verify Reason Codes
         rcs = session.query(ReasonCode).filter(ReasonCode.workspace_id == wks.id).all()
-        assert len(rcs) == 12
+        assert len(rcs) == 13
         rc_codes = {r.code for r in rcs}
         assert "JUSTIFIED_EDUCATIONAL_CONTEXT" in rc_codes
 

@@ -30,6 +30,7 @@ class Settings(BaseSettings):
     # LLM Provider
     LLM_PROVIDER: str = Field(default="mock")
     LLM_API_KEY: str = Field(default="")
+    GROQ_API_KEY: str = Field(default="")
     LLM_MODEL: str = Field(default="mock-model")
 
     # CORS

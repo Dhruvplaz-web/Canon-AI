@@ -106,6 +106,11 @@ STANDARD_REASON_CODES = [
         "Acquisition Co-Branding",
         "Co-marketing material with acquired partner firm",
     ),
+    (
+        "SCOPE_MISMATCH",
+        "Scope Mismatch",
+        "Term is appropriate in the specific contextual scope (e.g. partner ecosystem)",
+    ),
 ]
 
 

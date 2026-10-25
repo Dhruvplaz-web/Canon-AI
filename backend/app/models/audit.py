@@ -74,7 +74,7 @@ class AIServiceCall(Base):
     retention_note = Column(
         String(255),
         nullable=False,
-        default="Zero data retained for training per provider agreement",
+        default="Provider retention unverified in M1 (see VER-04)",
     )
     created_at = Column(DateTime(timezone=True), default=utcnow, nullable=False, index=True)
 

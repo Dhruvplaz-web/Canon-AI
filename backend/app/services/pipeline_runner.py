@@ -18,6 +18,7 @@ from app.core.database import set_tenant_context
 from app.models.check import CheckRun, Finding
 from app.models.policy import PolicyVersion, Rule
 from app.models.submission import Submission, SubmissionVersion
+from app.pipeline.verifier import verify_candidate_finding
 from app.services.claims_engine import scan_claims
 from app.services.injection_scanner import scan_for_injections
 from app.services.terms_engine import scan_terms_and_typos
@@ -166,10 +167,41 @@ def run_check_pipeline(
         )
         findings_to_persist.append(finding)
 
+    # Double-Receipt Grounding Verification
+    policy_source_texts: list[str] = [
+        "Prohibition of prompt injection, model jailbreaking, and instruction override delimiters."
+    ]
+    for r in policy.rules:
+        if r.description:
+            policy_source_texts.append(r.description)
+        if isinstance(r.source_citation, dict):
+            for key in ("exact_quote", "quote", "source_quote"):
+                val = r.source_citation.get(key)
+                if val:
+                    policy_source_texts.append(val)
+    for c in policy.approved_claims:
+        if c.claim_text:
+            policy_source_texts.append(c.claim_text)
+        if c.substantiation:
+            policy_source_texts.append(c.substantiation)
+            policy_source_texts.append(f"Claim: '{c.claim_text}' Substantiation: {c.substantiation}")
+
+    verified_findings: list[Finding] = []
+    for f in findings_to_persist:
+        ver_res = verify_candidate_finding(f, raw_text, policy_source_texts)
+        if ver_res.is_valid:
+            verified_findings.append(f)
+        else:
+            logger.warning(
+                "Candidate finding %s rejected by double-receipt verifier: %s",
+                f.rule_code,
+                ver_res.rejection_reason,
+            )
+
     # Deduplicate overlapping findings by rule_code and span
     seen_keys = set()
     deduped_findings: list[Finding] = []
-    for f in findings_to_persist:
+    for f in verified_findings:
         key = (f.rule_code, f.start_offset, f.end_offset)
         if key not in seen_keys:
             seen_keys.add(key)
