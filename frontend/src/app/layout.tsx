@@ -50,6 +50,9 @@ export default function RootLayout({
               <a href="/governance" className="hover:text-white transition px-2 py-1 rounded">
                 Rule Health & Backtest
               </a>
+              <a href="/transparency" className="hover:text-white transition px-2 py-1 rounded">
+                AI Transparency
+              </a>
             </nav>
           </div>
           <div className="flex items-center gap-3 text-xs">
