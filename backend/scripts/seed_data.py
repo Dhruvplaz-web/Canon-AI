@@ -109,7 +109,6 @@ STANDARD_REASON_CODES = [
 ]
 
 
-
 def seed(db: Session) -> dict:
     """Executes idempotent seeding of demo data, returning summary dict."""
     logger.info("Beginning Canon seed execution...")
