@@ -1,6 +1,5 @@
 """Canon Backend Configuration Module."""
 
-
 from pydantic import Field
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
@@ -18,17 +17,11 @@ class Settings(BaseSettings):
     LOG_LEVEL: str = Field(default="INFO")
 
     # Database
-    DATABASE_URL: str = Field(
-        default="postgresql://postgres:postgres@localhost:5432/canon"
-    )
-    DIRECT_URL: str = Field(
-        default="postgresql://postgres:postgres@localhost:5432/canon"
-    )
+    DATABASE_URL: str = Field(default="postgresql://postgres:postgres@localhost:5432/canon")
+    DIRECT_URL: str = Field(default="postgresql://postgres:postgres@localhost:5432/canon")
 
     # Security & JWT
-    JWT_SECRET_KEY: str = Field(
-        default="change-me-to-a-secure-random-256-bit-key-in-production"
-    )
+    JWT_SECRET_KEY: str = Field(default="change-me-to-a-secure-random-256-bit-key-in-production")
     JWT_ALGORITHM: str = Field(default="HS256")
     ACCESS_TOKEN_EXPIRE_MINUTES: int = Field(default=120)
     COOKIE_SECURE: bool = Field(default=False)

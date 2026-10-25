@@ -43,6 +43,16 @@ def set_tenant_context(session: Session, workspace_id: str) -> None:
     Sets the PostgreSQL session local variable for Row-Level Security (RLS).
     Enforces tenant data isolation via app.current_workspace_id.
     """
+    bind = getattr(session, "bind", None)
+    if bind is None and hasattr(session, "get_bind"):
+        try:
+            bind = session.get_bind()
+        except (AttributeError, RuntimeError):
+            bind = None
+
+    if bind is not None and getattr(bind, "dialect", None) and bind.dialect.name != "postgresql":
+        return
+
     session.execute(
         text("SET LOCAL app.current_workspace_id = :workspace_id"),
         {"workspace_id": str(workspace_id)},
