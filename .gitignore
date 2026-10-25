@@ -52,6 +52,9 @@ yarn-error.log*
 pgdata/
 
 # OS & Editor
+# Uploaded reference source PDFs
+Docuements/
+
 .npm-patch.js
 .DS_Store
 Thumbs.db
