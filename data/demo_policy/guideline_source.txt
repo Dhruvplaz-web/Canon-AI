@@ -1,0 +1,65 @@
+================================================================================
+ACME FINANCIAL BRAND GOVERNANCE SPECIFICATION & EDITORIAL GUIDELINES (2026)
+Document ID: ACME-GUIDELINES-2026-V1
+Version: 1.0 (Official Baseline)
+Effective Date: January 1, 2026
+================================================================================
+
+SECTION 1: STATUTORY BRAND IDENTITY & LICENSING TERMINOLOGY
+
+Rule Code: TERM-001
+Title: Prohibition of Unqualified Banking Verbs
+Text: Acme is a modern financial technology platform, not a chartered depository institution. Marketing collateral must never instruct consumers to "bank on us" or imply Acme itself holds banking charters. All promotional materials must explicitly state: "Partner with Acme Financial Technologies, an FDIC-insured banking partner."
+
+Rule Code: TERM-002
+Title: Digital Asset Custody Naming Standards
+Text: The term "crypto asset" or "cryptocurrency" conveys speculative volatility and is strictly prohibited in enterprise marketing copy. All collateral must use the formal nomenclature: "Digital asset custody solutions".
+
+Rule Code: TERM-003
+Title: Strict Ban on Performance Guarantees
+Text: Copywriters must never use the phrase "guaranteed returns", "risk-free yield", or "guaranteed APY". In accordance with statutory advertising rules, copy must state: "Historical projected APY; yields subject to market volatility."
+
+Rule Code: TERM-004
+Title: Loan Approval Speed Disclosures
+Text: The phrase "instant loan" or "instant approval" is deceptive and forbidden. Approved language is: "Pre-qualified digital underwriting in as little as 3 minutes."
+
+Rule Code: TERM-005
+Title: Proprietary Brand Name Capitalization
+Text: The brand name must strictly appear in Title Case as "Acme". Rendering the company name in all lowercase ("acme") or all uppercase ("ACME") is a brand violation.
+
+Rule Code: TERM-006
+Title: Fee-Free Claims Qualification
+Text: Marketing text must never state "zero fees" without qualification. Acceptable phrasing: "No monthly maintenance fees; other transactional charges may apply."
+
+Rule Code: TERM-007
+Title: Educational Case Studies & Partner Portal Disclosures
+Text: All educational case studies and technical thought leadership articles must display full state statutory disclosures prominently, except when published exclusively within verified enterprise partner portals.
+
+
+SECTION 2: VERIFIED SUBSTANTIATED CLAIMS LEDGER
+
+Rule Code: CLAIM-001
+Title: Uptime and Infrastructure Reliability Claims
+Text: Any marketing statement quoting system uptime, such as "99.99% uptime", must reference an active substantiated benchmark in the approved claims registry. Expired claims may not be used in external marketing copy.
+
+Rule Code: CLAIM-002
+Title: Customer Base & Account Count Figures
+Text: Marketing text citing active customer scale (e.g., "Over 2 million active accounts") is verified through December 31, 2026. Claims must not exaggerate numbers beyond verified internal ledger audits.
+
+
+SECTION 3: EDITORIAL VOICE, TONE & PERSUASION BOUNDARIES
+
+Rule Code: TONE-001
+Title: Urgent Pressure Tactics & Fear of Missing Out (FOMO)
+Text: Marketing copy must remain calm, authoritative, and consultative. High-pressure sales phrases such as "Act now or miss out forever!" or "Don't get left behind!" are strictly prohibited in public communications.
+
+Rule Code: TONE-002
+Title: Ban on Slang & Financial Colloquialisms
+Text: The use of internet slang, hype terminology ("super dope yields", "moon shot", "HODL"), or excessive exclamation marks is prohibited across all corporate releases and landing pages.
+
+
+SECTION 4: ACCESSIBILITY & VISUAL DESIGN TOKENS
+
+Rule Code: VIS-001
+Title: Web Content Accessibility Guidelines (WCAG) Contrast Standards
+Text: All promotional text rendered across web and mobile surfaces must maintain a minimum contrast ratio of 4.5:1 against the underlying background surface to ensure legibility and compliance.

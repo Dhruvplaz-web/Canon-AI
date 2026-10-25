@@ -1,0 +1,197 @@
+{
+  "policy": {
+    "name": "Acme Brand Governance & Compliance Policy",
+    "version": "1.0",
+    "status": "ACTIVE",
+    "effective_date": "2026-01-01",
+    "source_document": "ACME-GUIDELINES-2026-V1"
+  },
+  "rules": [
+    {
+      "rule_code": "TERM-001",
+      "category": "TERMINOLOGY",
+      "severity": "CRITICAL",
+      "title": "Prohibition of Unqualified Banking Verbs",
+      "forbidden_term": "bank on us",
+      "suggested_replacement": "Partner with Acme Financial Technologies, an FDIC-insured banking partner.",
+      "source_citation": {
+        "document": "ACME-GUIDELINES-2026-V1",
+        "section": "SECTION 1: STATUTORY BRAND IDENTITY",
+        "page": 1,
+        "exact_quote": "Marketing collateral must never instruct consumers to \"bank on us\" or imply Acme itself holds banking charters."
+      }
+    },
+    {
+      "rule_code": "TERM-002",
+      "category": "TERMINOLOGY",
+      "severity": "CRITICAL",
+      "title": "Digital Asset Custody Naming Standards",
+      "forbidden_term": "crypto asset",
+      "suggested_replacement": "Digital asset custody solutions",
+      "source_citation": {
+        "document": "ACME-GUIDELINES-2026-V1",
+        "section": "SECTION 1: STATUTORY BRAND IDENTITY",
+        "page": 1,
+        "exact_quote": "All collateral must use the formal nomenclature: \"Digital asset custody solutions\"."
+      }
+    },
+    {
+      "rule_code": "TERM-003",
+      "category": "TERMINOLOGY",
+      "severity": "CRITICAL",
+      "title": "Strict Ban on Performance Guarantees",
+      "forbidden_term": "guaranteed returns",
+      "suggested_replacement": "Historical projected APY; yields subject to market volatility.",
+      "source_citation": {
+        "document": "ACME-GUIDELINES-2026-V1",
+        "section": "SECTION 1: STATUTORY BRAND IDENTITY",
+        "page": 1,
+        "exact_quote": "Copywriters must never use the phrase \"guaranteed returns\", \"risk-free yield\", or \"guaranteed APY\"."
+      }
+    },
+    {
+      "rule_code": "TERM-004",
+      "category": "TERMINOLOGY",
+      "severity": "WARNING",
+      "title": "Loan Approval Speed Disclosures",
+      "forbidden_term": "instant loan",
+      "suggested_replacement": "Pre-qualified digital underwriting in as little as 3 minutes.",
+      "source_citation": {
+        "document": "ACME-GUIDELINES-2026-V1",
+        "section": "SECTION 1: STATUTORY BRAND IDENTITY",
+        "page": 1,
+        "exact_quote": "The phrase \"instant loan\" or \"instant approval\" is deceptive and forbidden."
+      }
+    },
+    {
+      "rule_code": "TERM-005",
+      "category": "TERMINOLOGY",
+      "severity": "WARNING",
+      "title": "Proprietary Brand Name Capitalization",
+      "forbidden_term": "acme",
+      "suggested_replacement": "Acme",
+      "source_citation": {
+        "document": "ACME-GUIDELINES-2026-V1",
+        "section": "SECTION 1: STATUTORY BRAND IDENTITY",
+        "page": 1,
+        "exact_quote": "The brand name must strictly appear in Title Case as \"Acme\"."
+      }
+    },
+    {
+      "rule_code": "TERM-006",
+      "category": "TERMINOLOGY",
+      "severity": "CRITICAL",
+      "title": "Fee-Free Claims Qualification",
+      "forbidden_term": "zero fees",
+      "suggested_replacement": "No monthly maintenance fees; other transactional charges may apply.",
+      "source_citation": {
+        "document": "ACME-GUIDELINES-2026-V1",
+        "section": "SECTION 1: STATUTORY BRAND IDENTITY",
+        "page": 1,
+        "exact_quote": "Marketing text must never state \"zero fees\" without qualification."
+      }
+    },
+    {
+      "rule_code": "TERM-007",
+      "category": "TERMINOLOGY",
+      "severity": "WARNING",
+      "title": "Educational Case Studies & Partner Portal Disclosures",
+      "forbidden_term": "case study without state disclosure",
+      "suggested_replacement": "Include statutory educational disclaimer.",
+      "source_citation": {
+        "document": "ACME-GUIDELINES-2026-V1",
+        "section": "SECTION 1: STATUTORY BRAND IDENTITY",
+        "page": 1,
+        "exact_quote": "All educational case studies and technical thought leadership articles must display full state statutory disclosures prominently, except when published exclusively within verified enterprise partner portals."
+      }
+    },
+    {
+      "rule_code": "CLAIM-001",
+      "category": "CLAIM",
+      "severity": "CRITICAL",
+      "title": "Uptime and Infrastructure Reliability Claims",
+      "forbidden_term": "99.99% uptime",
+      "suggested_replacement": "Reference active certified SLA.",
+      "source_citation": {
+        "document": "ACME-GUIDELINES-2026-V1",
+        "section": "SECTION 2: VERIFIED SUBSTANTIATED CLAIMS",
+        "page": 2,
+        "exact_quote": "Any marketing statement quoting system uptime, such as \"99.99% uptime\", must reference an active substantiated benchmark in the approved claims registry."
+      }
+    },
+    {
+      "rule_code": "CLAIM-002",
+      "category": "CLAIM",
+      "severity": "WARNING",
+      "title": "Customer Base & Account Count Figures",
+      "forbidden_term": "2 million active accounts",
+      "suggested_replacement": "Verify current audit certificate.",
+      "source_citation": {
+        "document": "ACME-GUIDELINES-2026-V1",
+        "section": "SECTION 2: VERIFIED SUBSTANTIATED CLAIMS",
+        "page": 2,
+        "exact_quote": "Marketing text citing active customer scale (e.g., \"Over 2 million active accounts\") is verified through December 31, 2026."
+      }
+    },
+    {
+      "rule_code": "TONE-001",
+      "category": "TONE",
+      "severity": "WARNING",
+      "title": "Urgent Pressure Tactics & Fear of Missing Out (FOMO)",
+      "forbidden_term": "act now or miss out forever",
+      "suggested_replacement": "Explore our portfolio solutions at your convenience.",
+      "source_citation": {
+        "document": "ACME-GUIDELINES-2026-V1",
+        "section": "SECTION 3: EDITORIAL VOICE AND TONE",
+        "page": 2,
+        "exact_quote": "High-pressure sales phrases such as \"Act now or miss out forever!\" or \"Don't get left behind!\" are strictly prohibited in public communications."
+      }
+    },
+    {
+      "rule_code": "TONE-002",
+      "category": "TONE",
+      "severity": "WARNING",
+      "title": "Ban on Slang & Financial Colloquialisms",
+      "forbidden_term": "super dope yields",
+      "suggested_replacement": "Competitive interest rates on digital treasury solutions.",
+      "source_citation": {
+        "document": "ACME-GUIDELINES-2026-V1",
+        "section": "SECTION 3: EDITORIAL VOICE AND TONE",
+        "page": 2,
+        "exact_quote": "The use of internet slang, hype terminology (\"super dope yields\", \"moon shot\", \"HODL\"), or excessive exclamation marks is prohibited across all corporate releases and landing pages."
+      }
+    },
+    {
+      "rule_code": "VIS-001",
+      "category": "ACCESSIBILITY",
+      "severity": "INFO",
+      "title": "Web Content Accessibility Guidelines (WCAG) Contrast Standards",
+      "forbidden_term": "low contrast styling",
+      "suggested_replacement": "Ensure minimum 4.5:1 luminance ratio.",
+      "source_citation": {
+        "document": "ACME-GUIDELINES-2026-V1",
+        "section": "SECTION 4: ACCESSIBILITY & VISUAL DESIGN",
+        "page": 2,
+        "exact_quote": "All promotional text rendered across web and mobile surfaces must maintain a minimum contrast ratio of 4.5:1 against the underlying background surface to ensure legibility and compliance."
+      }
+    }
+  ],
+  "approved_claims": [
+    {
+      "claim_code": "CLAIM-001",
+      "claim_text": "rated #1 banking app with 99.99% uptime",
+      "substantiation": "Independent Fintech Benchmark Report 2024",
+      "valid_from": "2024-01-01",
+      "valid_until": "2025-01-01",
+      "status": "EXPIRED"
+    },
+    {
+      "claim_code": "CLAIM-002",
+      "claim_text": "over 2 million active accounts",
+      "substantiation": "Audited Q4 2025 Ledger Report",
+      "valid_from": "2026-01-01",
+      "valid_until": "2026-12-31",
+      "status": "ACTIVE"
+    }
+  ]
+}

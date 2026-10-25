@@ -1,0 +1,40 @@
+name: Canon Monorepo CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  backend:
+    name: Backend Lint & Test (Python 3.12)
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: backend
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python 3.12
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: 'pip'
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install ruff pytest httpx pydantic pydantic-settings sqlalchemy alembic argon2-cffi pyjwt rapidfuzz fastapi uvicorn
+
+      - name: Run Ruff Lint
+        run: ruff check app tests
+
+      - name: Run Pytest Unit Tests
+        env:
+          JWT_SECRET_KEY: test-secret-key-32-bytes-minimum-length
+          DATABASE_URL: sqlite:///./test.db
+          LLM_PROVIDER: mock
+        run: pytest tests/unit -v --tb=short
