@@ -30,14 +30,14 @@ INJECTION_PATTERNS = [
     (
         "SYSTEM_NOTICE_OVERRIDE",
         re.compile(
-            r"\[\s*SYSTEM\s*(?:NOTICE|PROMPT|INSTRUCTION|MESSAGE|DIRECTIVE)?\s*:[^\]]*\]",
+            r"(?:\[\s*SYSTEM\s*(?:NOTICE|PROMPT|INSTRUCTION|MESSAGE|DIRECTIVE)?\s*:[^\]]*\]|SYSTEM\s+(?:INSTRUCTION|NOTICE|DIRECTIVE)\s+OVERRIDE:?)",
             re.IGNORECASE,
         ),
     ),
     (
         "DISREGARD_PRIOR_INSTRUCTIONS",
         re.compile(
-            r"(?:disregard|ignore|forget)\s+(?:all\s+)?(?:prior|previous|existing)\s+(?:brand\s+)?(?:instructions|rules|prompts|guidelines)",
+            r"(?:disregard|ignore|forget)\s+(?:all\s+)?(?:prior|previous|existing)\s+(?:brand\s+)?(?:safety\s+)?(?:instructions|rules|prompts|guidelines)",
             re.IGNORECASE,
         ),
     ),
