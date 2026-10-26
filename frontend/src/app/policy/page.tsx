@@ -12,10 +12,14 @@ import {
   Clock,
   Sparkles,
   Shield,
+  ShieldCheck,
   FileText,
   RefreshCw,
   LogIn,
   ArrowRight,
+  ExternalLink,
+  Copy,
+  Check,
 } from "lucide-react";
 import { useAuth } from "@/lib/auth-context";
 
@@ -25,6 +29,17 @@ interface SourceCitation {
   page?: number | string;
   exact_quote?: string;
   [key: string]: unknown;
+}
+
+interface SourceDocument {
+  id: string;
+  title: string;
+  document_type: string;
+  storage_path: string;
+  content_hash: string;
+  page_count: number;
+  extracted_text: string;
+  status: string;
 }
 
 interface RuleDetail {
@@ -59,8 +74,101 @@ interface ActivePolicy {
   approved_by: string | null;
   approved_at: string | null;
   effective_date: string;
+  source_document?: SourceDocument | null;
   rules: RuleDetail[];
   approved_claims: ApprovedClaim[];
+}
+
+function SourceDocumentReader({
+  extractedText,
+  rules,
+  selectedRuleCode,
+  onSelectRule,
+}: {
+  extractedText: string;
+  rules: RuleDetail[];
+  selectedRuleCode: string | null;
+  onSelectRule: (code: string) => void;
+}) {
+  const lines = useMemo(() => extractedText.split("\n"), [extractedText]);
+
+  return (
+    <div className="font-mono text-xs leading-relaxed space-y-2 select-text">
+      {lines.map((line, idx) => {
+        const trimmed = line.trim();
+        if (!trimmed) {
+          return <div key={`empty-${idx}`} className="h-1.5" />;
+        }
+
+        if (trimmed.startsWith("===")) {
+          return (
+            <div
+              key={`div-${idx}`}
+              className="border-b-2 border-black/20 my-1"
+            />
+          );
+        }
+
+        if (trimmed.startsWith("SECTION ") || trimmed.startsWith("ACME FINANCIAL BRAND GOVERNANCE")) {
+          return (
+            <div
+              key={`sec-${idx}`}
+              className="py-1 px-3 my-2 bg-[#F4F0EA] border-2 border-black font-black uppercase text-black text-[11px] rounded shadow-[2px_2px_0px_#000]"
+            >
+              {trimmed}
+            </div>
+          );
+        }
+
+        // Match against rules
+        const matchedRule =
+          rules.find((r) => {
+            const quote = r.source_citation?.exact_quote;
+            return quote && (line.includes(quote) || quote.includes(trimmed));
+          }) || rules.find((r) => line.includes(`Rule Code: ${r.rule_code}`));
+
+        const isSelected = matchedRule && selectedRuleCode === matchedRule.rule_code;
+
+        if (matchedRule) {
+          return (
+            <div
+              key={`rule-line-${idx}`}
+              id={`doc-rule-${matchedRule.rule_code}`}
+              onClick={() => onSelectRule(matchedRule.rule_code)}
+              className={`p-3 rounded-lg border-2 transition-all cursor-pointer ${
+                isSelected
+                  ? "bg-[#FFD700] text-black border-black shadow-[4px_4px_0px_#000] ring-2 ring-black"
+                  : "bg-white hover:bg-[#FDFBF7] text-black border-black/40 hover:border-black shadow-[2px_2px_0px_#000]"
+              }`}
+            >
+              <div className="flex items-center gap-2 mb-1.5 flex-wrap">
+                <span className="neo-badge bg-black text-white text-[10px]">
+                  {matchedRule.rule_code}
+                </span>
+                <span className="text-[10px] font-bold text-[#333333] uppercase">
+                  {matchedRule.title}
+                </span>
+                {isSelected && (
+                  <span className="neo-badge bg-[#00C2CB] text-black text-[10px] ml-auto">
+                    Active Grounding Quote
+                  </span>
+                )}
+              </div>
+              <p className="font-sans font-medium text-xs leading-relaxed text-black">
+                {line}
+              </p>
+            </div>
+          );
+        }
+
+        return (
+          <p key={`p-${idx}`} className="font-mono text-[#444444] text-[11px] leading-relaxed px-1">
+            {line}
+          </p>
+        );
+      })}
+    </div>
+  );
 }
 
 function PolicyExplorerContent() {
@@ -73,10 +181,17 @@ function PolicyExplorerContent() {
   const [error, setError] = useState<string | null>(null);
   const [refreshTrigger, setRefreshTrigger] = useState<number>(0);
   const [currentTimestamp] = useState<number>(() => Date.now());
+  const [copiedHash, setCopiedHash] = useState(false);
 
   // View & Filter states initialized from URL parameters (Rule 3 URL-First State)
   const initialTab = searchParams.get("tab") === "claims" ? "claims" : "rules";
   const [activeTab, setActiveTab] = useState<"rules" | "claims">(initialTab);
+  const [layoutMode, setLayoutMode] = useState<"split" | "grid">(
+    searchParams.get("view") === "grid" ? "grid" : "split"
+  );
+  const [selectedRuleCode, setSelectedRuleCode] = useState<string | null>(
+    searchParams.get("rule") || "TERM-001"
+  );
   const [searchQuery, setSearchQuery] = useState<string>(searchParams.get("q") || "");
   const [selectedCategory, setSelectedCategory] = useState<string>(searchParams.get("category") || "ALL");
   const [selectedSeverity, setSelectedSeverity] = useState<string>(searchParams.get("severity") || "ALL");
@@ -407,43 +522,41 @@ function PolicyExplorerContent() {
               />
             </div>
 
-            {/* Category & Severity Dropdowns (Rules view only) */}
+            {/* Layout Mode Toggle (Rules view only) */}
             {activeTab === "rules" && (
-              <div className="flex items-center gap-3">
-                <div className="flex items-center gap-1.5 text-xs text-black font-bold">
-                  <Filter className="w-4 h-4 text-black" />
-                  <select
-                    value={selectedCategory}
-                    onChange={(e) => {
-                      setSelectedCategory(e.target.value);
-                      syncUrlParams({ category: e.target.value });
-                    }}
-                    aria-label="Filter rules by category"
-                    className="bg-white border-2 border-black rounded px-2.5 py-1.5 text-xs text-black font-bold shadow-[2px_2px_0px_#000] cursor-pointer"
-                  >
-                    <option value="ALL">All Categories</option>
-                    {availableCategories.map((cat) => (
-                      <option key={cat} value={cat}>
-                        {cat}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-
-                <select
-                  value={selectedSeverity}
-                  onChange={(e) => {
-                    setSelectedSeverity(e.target.value);
-                    syncUrlParams({ severity: e.target.value });
+              <div className="flex items-center gap-1 bg-[#F4F0EA] p-1 rounded-lg border-2 border-black shrink-0">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setLayoutMode("split");
+                    syncUrlParams({ view: "split" });
                   }}
-                  aria-label="Filter rules by severity"
-                  className="bg-white border-2 border-black rounded px-2.5 py-1.5 text-xs text-black font-bold shadow-[2px_2px_0px_#000] cursor-pointer"
+                  className={`px-2.5 py-1 text-xs font-black rounded border-2 transition flex items-center gap-1.5 cursor-pointer ${
+                    layoutMode === "split"
+                      ? "bg-[#00C2CB] text-black border-black shadow-[2px_2px_0px_#000]"
+                      : "bg-transparent text-black border-transparent hover:bg-white"
+                  }`}
+                  title="Side-by-Side Guideline Document Reader"
                 >
-                  <option value="ALL">All Severities</option>
-                  <option value="CRITICAL">Critical Only</option>
-                  <option value="MAJOR">Major Only</option>
-                  <option value="MINOR">Minor Only</option>
-                </select>
+                  <BookOpen className="w-3.5 h-3.5" />
+                  <span className="hidden sm:inline">Side-by-Side</span> Reader
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setLayoutMode("grid");
+                    syncUrlParams({ view: "grid" });
+                  }}
+                  className={`px-2.5 py-1 text-xs font-black rounded border-2 transition flex items-center gap-1.5 cursor-pointer ${
+                    layoutMode === "grid"
+                      ? "bg-[#FFD700] text-black border-black shadow-[2px_2px_0px_#000]"
+                      : "bg-transparent text-black border-transparent hover:bg-white"
+                  }`}
+                  title="Full Card Grid"
+                >
+                  <FileText className="w-3.5 h-3.5" />
+                  <span className="hidden sm:inline">Card</span> Grid
+                </button>
               </div>
             )}
           </div>
@@ -475,7 +588,155 @@ function PolicyExplorerContent() {
                     </button>
                   )}
                 </div>
+              ) : layoutMode === "split" ? (
+                /* Side-by-Side Document Reader & Rules Inspector */
+                <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+                  {/* Left Column: Source Document Viewer (7 cols) */}
+                  <div className="lg:col-span-7 flex flex-col gap-3">
+                    <div className="neo-box p-4 bg-white flex flex-col gap-2.5">
+                      <div className="flex items-center justify-between flex-wrap gap-2">
+                        <div className="flex items-center gap-2">
+                          <span className="neo-badge bg-[#00C2CB] text-black text-[11px] font-black">
+                            OFFICIAL BASELINE SOURCE (RECEIPT B)
+                          </span>
+                          <span className="text-xs font-mono font-bold text-[#555555]">
+                            {policy.source_document?.page_count || 2} Pages • v{policy.version_number}
+                          </span>
+                        </div>
+
+                        {policy.source_document?.content_hash && (
+                          <div className="flex items-center gap-1.5">
+                            <span className="inline-flex items-center gap-1 bg-[#E6FAFA] border-2 border-black px-2 py-0.5 rounded text-[10px] font-mono font-bold text-black shadow-[2px_2px_0px_#000]">
+                              <ShieldCheck className="w-3 h-3 text-black" />
+                              <span>SHA-256: {policy.source_document.content_hash.slice(0, 14)}...</span>
+                            </span>
+                            <button
+                              type="button"
+                              onClick={() => {
+                                if (policy.source_document?.content_hash) {
+                                  navigator.clipboard.writeText(policy.source_document.content_hash);
+                                  setCopiedHash(true);
+                                  setTimeout(() => setCopiedHash(false), 2000);
+                                }
+                              }}
+                              className="p-1 rounded border-2 border-black bg-white hover:bg-[#F4F0EA] text-black text-[10px] transition"
+                              title="Copy full SHA-256 hash"
+                            >
+                              {copiedHash ? <Check className="w-3 h-3 text-black" /> : <Copy className="w-3 h-3 text-black" />}
+                            </button>
+                          </div>
+                        )}
+                      </div>
+
+                      <h2 className="text-base font-black text-black">
+                        {policy.source_document?.title || "Acme Brand Guidelines 2026"}
+                      </h2>
+                      <p className="text-xs font-medium text-[#444444]">
+                        Click any highlighted rule in the document or on the right to verify verbatim Double Receipt grounding (Receipt B).
+                      </p>
+                    </div>
+
+                    {/* Scrollable Document Text Canvas */}
+                    <div className="neo-box p-5 bg-white max-h-[640px] overflow-y-auto">
+                      <SourceDocumentReader
+                        extractedText={policy.source_document?.extracted_text || ""}
+                        rules={filteredRules}
+                        selectedRuleCode={selectedRuleCode}
+                        onSelectRule={(code) => {
+                          setSelectedRuleCode(code);
+                          syncUrlParams({ rule: code });
+                        }}
+                      />
+                    </div>
+                  </div>
+
+                  {/* Right Column: Interactive Rules Inspector (5 cols) */}
+                  <div className="lg:col-span-5 flex flex-col gap-3 max-h-[720px] overflow-y-auto pr-1">
+                    <div className="text-xs font-black text-black uppercase tracking-wider flex items-center justify-between">
+                      <span>Compiled Rules ({filteredRules.length})</span>
+                      <span className="text-[11px] font-mono font-bold text-[#555555]">
+                        Selected: {selectedRuleCode || "None"}
+                      </span>
+                    </div>
+
+                    {filteredRules.map((rule) => {
+                      const isSelected = selectedRuleCode === rule.rule_code;
+                      const sev = getSeverityBadge(rule.severity);
+                      return (
+                        <article
+                          key={rule.id}
+                          onClick={() => {
+                            setSelectedRuleCode(rule.rule_code);
+                            syncUrlParams({ rule: rule.rule_code });
+                            const target = document.getElementById(`doc-rule-${rule.rule_code}`);
+                            if (target) {
+                              target.scrollIntoView({ behavior: "smooth", block: "center" });
+                            }
+                          }}
+                          className={`neo-box p-4 flex flex-col justify-between gap-3 cursor-pointer transition ${
+                            isSelected
+                              ? "bg-[#FFFDF5] border-black shadow-[6px_6px_0px_#000] ring-2 ring-black"
+                              : "hover:shadow-[4px_4px_0px_#000]"
+                          }`}
+                        >
+                          <div className="flex flex-col gap-2">
+                            <div className="flex items-center justify-between gap-2 flex-wrap">
+                              <div className="flex items-center gap-1.5">
+                                <span className="neo-badge bg-black text-white text-[11px]">
+                                  {rule.rule_code}
+                                </span>
+                                <span className="neo-badge bg-[#00C2CB] text-black text-[10px]">
+                                  {rule.category}
+                                </span>
+                              </div>
+                              <span className={`neo-badge text-[10px] ${sev.className}`}>
+                                {sev.label}
+                              </span>
+                            </div>
+
+                            <h3 className="text-sm font-black text-black tracking-tight">
+                              {rule.title}
+                            </h3>
+
+                            {rule.pattern_or_term && (
+                              <div className="flex items-center gap-1 text-[11px]">
+                                <span className="font-bold text-[#444444]">Trigger:</span>
+                                <span className="font-mono font-black text-[#D6006E] bg-[#FFF0F5] px-1.5 py-0.5 rounded border border-black/30">
+                                  {rule.pattern_or_term}
+                                </span>
+                              </div>
+                            )}
+
+                            {rule.suggested_replacement && (
+                              <div className="flex items-center gap-1 text-[11px]">
+                                <span className="font-bold text-[#444444]">Fix:</span>
+                                <span className="font-mono font-bold text-black bg-[#E6FAFA] px-1.5 py-0.5 rounded border border-black/30 truncate">
+                                  {rule.suggested_replacement}
+                                </span>
+                              </div>
+                            )}
+                          </div>
+
+                          <div className="flex items-center justify-between border-t border-black/20 pt-2 text-[11px]">
+                            <span className="font-mono text-[#555555] font-semibold text-[10px]">
+                              {rule.source_citation?.section || "SECTION 1"}
+                            </span>
+                            <Link
+                              href={`/submissions?fixture=SUB-02`}
+                              onClick={(e) => e.stopPropagation()}
+                              className="inline-flex items-center gap-1 text-black font-bold hover:text-[#00C2CB] transition"
+                            >
+                              <span>Test in Live Runner</span>
+                              <ArrowRight className="w-3 h-3" />
+                            </Link>
+                          </div>
+                        </article>
+                      );
+                    })}
+                  </div>
+                </div>
               ) : (
+                /* Full Card Grid */
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   {filteredRules.map((rule) => {
                     const sev = getSeverityBadge(rule.severity);

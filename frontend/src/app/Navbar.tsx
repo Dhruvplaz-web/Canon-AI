@@ -39,6 +39,7 @@ export default function Navbar() {
     { href: "/review", label: "Review Queue" },
     { href: "/policy", label: "Brand Policy" },
     { href: "/governance", label: "Rule Health & Backtest" },
+    { href: "/evaluation", label: "AI Evaluation" },
     { href: "/transparency", label: "AI Transparency" },
     { href: "/demo", label: "Demo Tour", highlight: true },
   ];

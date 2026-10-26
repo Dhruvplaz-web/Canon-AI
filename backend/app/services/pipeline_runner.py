@@ -21,6 +21,7 @@ from app.models.submission import Submission, SubmissionVersion
 from app.pipeline.verifier import verify_candidate_finding
 from app.services.claims_engine import scan_claims
 from app.services.injection_scanner import scan_for_injections
+from app.services.semantic_engine import scan_semantic_violations
 from app.services.terms_engine import scan_terms_and_typos
 
 logger = logging.getLogger("canon.pipeline")
@@ -163,6 +164,30 @@ def run_check_pipeline(
             receipt_b_rule_quote=cf.source_quote,
             source_document_title="Approved Claims Ledger",
             source_section="CLAIMS & SUBSTANTIATION LEDGER",
+            status="PENDING_REVIEW",
+        )
+        findings_to_persist.append(finding)
+
+    # Stage 4: Semantic Tone & Policy Intent Scanner (LLM Adapter)
+    semantic_findings = scan_semantic_violations(raw_text, policy.rules)
+    for sf in semantic_findings:
+        matched_rule = rules_map.get(sf.rule_code)
+        finding = Finding(
+            workspace_id=submission.workspace_id,
+            check_run_id=check_run.id,
+            rule_id=matched_rule.id if matched_rule else None,
+            rule_code=sf.rule_code,
+            category=sf.category,
+            severity=sf.severity,
+            title=sf.title,
+            matched_text=sf.flagged_text,
+            start_offset=sf.start_offset,
+            end_offset=sf.end_offset,
+            suggested_fix=sf.suggested_fix,
+            receipt_a_draft_span=sf.flagged_text,
+            receipt_b_rule_quote=sf.source_quote,
+            source_document_title=sf.source_document_title,
+            source_section=sf.source_section,
             status="PENDING_REVIEW",
         )
         findings_to_persist.append(finding)

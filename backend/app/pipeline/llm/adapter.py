@@ -173,12 +173,33 @@ class DeterministicMockAdapter:
 
         start_time = time.perf_counter()
         mock_findings = []
-        if "bank on us" in prompt.lower():
+        lower_prompt = prompt.lower()
+        if "bank on us" in lower_prompt:
             mock_findings.append({
                 "rule_code": "TERM-001",
                 "severity": "CRITICAL",
                 "flagged_span": "bank on us",
+                "matched_text": "bank on us",
                 "reason": "Unqualified banking verb prohibited.",
+                "suggested_fix": "Partner with Acme Financial Technologies, an FDIC-insured banking partner.",
+            })
+        if "don't get left behind" in lower_prompt:
+            mock_findings.append({
+                "rule_code": "TONE-001",
+                "severity": "WARNING",
+                "flagged_span": "Don't get left behind!",
+                "matched_text": "Don't get left behind!",
+                "reason": "High-pressure urgency tactic prohibited by brand guidelines.",
+                "suggested_fix": "Explore our portfolio solutions at your convenience.",
+            })
+        if "moon shot" in lower_prompt:
+            mock_findings.append({
+                "rule_code": "TONE-002",
+                "severity": "WARNING",
+                "flagged_span": "moon shot",
+                "matched_text": "moon shot",
+                "reason": "Hype slang terminology prohibited across corporate releases.",
+                "suggested_fix": "sustainable capital growth",
             })
 
         mock_payload = {

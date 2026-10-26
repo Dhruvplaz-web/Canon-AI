@@ -12,6 +12,7 @@ import {
   RotateCcw,
   ArrowRight,
   ShieldAlert,
+  ShieldCheck,
   Search,
   ChevronLeft,
   ChevronRight,
@@ -19,6 +20,10 @@ import {
   Wand2,
 } from "lucide-react";
 import { useAuth } from "@/lib/auth-context";
+import {
+  ComplianceCertificateModal,
+  ReleaseCertificate,
+} from "@/components/ComplianceCertificateModal";
 
 interface ReasonCode {
   id: string;
@@ -140,6 +145,11 @@ function ReviewQueueContent() {
   const [reasonCodes, setReasonCodes] = useState<ReasonCode[]>([]);
   const [toastMsg, setToastMsg] = useState<{ type: "success" | "error" | "info"; text: string } | null>(null);
 
+  // Compliance Release Certificate State
+  const [certificateData, setCertificateData] = useState<ReleaseCertificate | null>(null);
+  const [isCertModalOpen, setIsCertModalOpen] = useState(false);
+  const [isDownloadingCert, setIsDownloadingCert] = useState(false);
+
   const canApprove = user?.role === "reviewer" || user?.role === "brand_manager";
 
   const showToast = (type: "success" | "error" | "info", text: string) => {
@@ -164,7 +174,12 @@ function ReviewQueueContent() {
   );
 
   // PROP-U21: Global keyboard accessibility & scroll locking for modals
-  const isAnyModalOpen = isBatchModalOpen || isSignOffModalOpen || isSendBackModalOpen || !!activeQueueItem;
+  const isAnyModalOpen =
+    isBatchModalOpen ||
+    isSignOffModalOpen ||
+    isSendBackModalOpen ||
+    !!activeQueueItem ||
+    isCertModalOpen;
 
   useEffect(() => {
     if (!isAnyModalOpen) return;
@@ -178,6 +193,7 @@ function ReviewQueueContent() {
         setIsSignOffModalOpen(false);
         setIsSendBackModalOpen(false);
         setActiveQueueItem(null);
+        setIsCertModalOpen(false);
       }
     };
 
@@ -469,6 +485,30 @@ function ReviewQueueContent() {
       showToast("error", msg);
     } finally {
       setIsSubmittingSendBack(false);
+    }
+  };
+
+  const handleDownloadCertificate = async (subId: string) => {
+    setIsDownloadingCert(true);
+    try {
+      const res = await fetch(`/api/v1/submissions/${subId}/certificate`);
+      if (!res.ok) {
+        const err = await res.json().catch(() => ({}));
+        throw new Error(
+          err?.detail?.error?.message ||
+            err?.detail?.message ||
+            `Failed to fetch certificate (${res.status})`
+        );
+      }
+      const cert: ReleaseCertificate = await res.json();
+      setCertificateData(cert);
+      setIsCertModalOpen(true);
+      showToast("success", "Compliance Release Certificate generated & cryptographically verified!");
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : "Failed to load certificate";
+      showToast("error", msg);
+    } finally {
+      setIsDownloadingCert(false);
     }
   };
 
@@ -1078,6 +1118,17 @@ function ReviewQueueContent() {
                 <div className="flex items-center gap-3">
                   <button
                     type="button"
+                    disabled={isDownloadingCert}
+                    onClick={() => handleDownloadCertificate(activeSubmission.id)}
+                    className="neo-btn neo-btn-white text-xs py-2 px-4 border-2.5 border-black shadow-[3px_3px_0px_#000] hover:bg-[#FFD700]"
+                    title="View & Download Cryptographic Compliance Release Certificate"
+                  >
+                    <ShieldCheck className="w-4 h-4 text-black" />
+                    <span>{isDownloadingCert ? "Verifying..." : "Compliance Certificate"}</span>
+                  </button>
+
+                  <button
+                    type="button"
                     onClick={() => setIsSendBackModalOpen(true)}
                     className="neo-btn neo-btn-yellow text-xs py-2 px-4"
                   >
@@ -1544,6 +1595,15 @@ function ReviewQueueContent() {
           </div>
         </div>
       )}
+
+      {/* ========================================================================= */}
+      {/* MODAL: CRYPTOGRAPHIC COMPLIANCE RELEASE CERTIFICATE */}
+      {/* ========================================================================= */}
+      <ComplianceCertificateModal
+        certificate={certificateData}
+        isOpen={isCertModalOpen}
+        onClose={() => setIsCertModalOpen(false)}
+      />
     </div>
   );
 }

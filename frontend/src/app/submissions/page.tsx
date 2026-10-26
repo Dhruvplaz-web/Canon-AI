@@ -15,7 +15,12 @@ import {
   X,
   Sparkles,
   CheckCircle2,
+  UploadCloud,
 } from "lucide-react";
+import {
+  ComplianceCertificateModal,
+  ReleaseCertificate,
+} from "@/components/ComplianceCertificateModal";
 
 interface Finding {
   id: string;
@@ -179,9 +184,56 @@ function SubmissionsContent() {
   const [submissionId, setSubmissionId] = useState<string | null>(searchParams.get("subId") || null);
   const [selectedFindingId, setSelectedFindingId] = useState<string | null>(null);
   const [appliedNotice, setAppliedNotice] = useState<string | null>(null);
+  const [isDraggingFile, setIsDraggingFile] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  // Compliance Certificate State
+  const [certificateData, setCertificateData] = useState<ReleaseCertificate | null>(null);
+  const [isCertModalOpen, setIsCertModalOpen] = useState(false);
+  const [isDownloadingCert, setIsDownloadingCert] = useState(false);
 
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const backdropRef = useRef<HTMLDivElement>(null);
+
+  const handleDownloadCertificate = async (subId: string) => {
+    setIsDownloadingCert(true);
+    try {
+      const res = await fetch(`/api/v1/submissions/${subId}/certificate`);
+      if (!res.ok) {
+        const err = await res.json().catch(() => ({}));
+        throw new Error(
+          err?.detail?.error?.message ||
+            err?.detail?.message ||
+            `Failed to fetch certificate (${res.status})`
+        );
+      }
+      const cert: ReleaseCertificate = await res.json();
+      setCertificateData(cert);
+      setIsCertModalOpen(true);
+      setAppliedNotice("Compliance Release Certificate verified & ready for export!");
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : "Failed to load certificate";
+      setErrorMessage(msg);
+    } finally {
+      setIsDownloadingCert(false);
+    }
+  };
+
+  const processFile = (file: File) => {
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      const text = e.target?.result as string;
+      if (text) {
+        const cleanName = file.name.replace(/\.[^/.]+$/, "").replace(/[-_]/g, " ");
+        setTitle(cleanName.charAt(0).toUpperCase() + cleanName.slice(1));
+        setContent(text);
+        setAppliedNotice(`Loaded "${file.name}" (${text.length} chars). Running brand check...`);
+        runCheckWithContent(text);
+      }
+    };
+    reader.readAsText(file);
+  };
 
   // Sync state to URL search parameters (Rule 3 URL-First State)
   const syncUrlParams = useCallback(
@@ -605,21 +657,70 @@ function SubmissionsContent() {
             {/* Textarea with Zero-Dependency Synchronized Backdrop (PROP-U04) */}
             <div className="flex flex-col gap-1.5">
               <div className="flex items-center justify-between text-xs text-black">
-                <label htmlFor="copy-content" className="font-black uppercase tracking-wider flex items-center gap-2">
-                  <span>Draft Copy Content</span>
-                  {checkResult && checkResult.findings.length > 0 && (
-                    <span className="neo-badge bg-[#00C2CB] text-black text-[10px]">
-                      Live Highlights Active
-                    </span>
-                  )}
-                </label>
+                <div className="flex items-center gap-3">
+                  <label htmlFor="copy-content" className="font-black uppercase tracking-wider flex items-center gap-2">
+                    <span>Draft Copy Content</span>
+                    {checkResult && checkResult.findings.length > 0 && (
+                      <span className="neo-badge bg-[#00C2CB] text-black text-[10px]">
+                        Live Highlights Active
+                      </span>
+                    )}
+                  </label>
+                  <input
+                    ref={fileInputRef}
+                    type="file"
+                    accept=".txt,.md,.markdown"
+                    className="hidden"
+                    onChange={(e) => {
+                      const file = e.target.files?.[0];
+                      if (file) processFile(file);
+                    }}
+                  />
+                  <button
+                    type="button"
+                    onClick={() => fileInputRef.current?.click()}
+                    className="inline-flex items-center gap-1 text-[11px] font-bold text-black hover:text-[#00C2CB] border-b border-black cursor-pointer transition"
+                    title="Upload .txt or .md file"
+                  >
+                    <UploadCloud className="w-3.5 h-3.5" />
+                    <span>Upload .txt / .md</span>
+                  </button>
+                </div>
+
                 <span className="font-mono font-bold text-[11px] text-[#555555]">
                   {content.length} chars • {content.trim().split(/\s+/).filter(Boolean).length} words
                 </span>
               </div>
 
-              {/* Overlay Backdrop Container */}
-              <div className="relative w-full rounded-xl bg-white border-2.5 border-black shadow-[4px_4px_0px_#000] focus-within:shadow-[6px_6px_0px_#000] focus-within:border-black overflow-hidden transition-all">
+              {/* Overlay Backdrop Container with Drag-and-Drop */}
+              <div
+                onDragOver={(e) => {
+                  e.preventDefault();
+                  setIsDraggingFile(true);
+                }}
+                onDragLeave={(e) => {
+                  e.preventDefault();
+                  setIsDraggingFile(false);
+                }}
+                onDrop={(e) => {
+                  e.preventDefault();
+                  setIsDraggingFile(false);
+                  const file = e.dataTransfer.files?.[0];
+                  if (file) processFile(file);
+                }}
+                className={`relative w-full rounded-xl bg-white border-2.5 border-black shadow-[4px_4px_0px_#000] focus-within:shadow-[6px_6px_0px_#000] focus-within:border-black overflow-hidden transition-all ${
+                  isDraggingFile ? "ring-4 ring-[#FFD700] border-dashed" : ""
+                }`}
+              >
+                {/* Drag-and-Drop Floating Visual Overlay */}
+                {isDraggingFile && (
+                  <div className="absolute inset-0 z-30 bg-[#FFD700]/95 flex flex-col items-center justify-center gap-2 font-mono font-black text-black p-4 text-center border-4 border-dashed border-black animate-in fade-in">
+                    <UploadCloud className="w-10 h-10 animate-bounce" />
+                    <span className="text-base uppercase tracking-wider">Drop Draft Copy File (.txt / .md)</span>
+                    <span className="text-xs font-semibold">Instantly load & evaluate against active brand policy</span>
+                  </div>
+                )}
+
                 {/* Synchronized Highlight Backdrop */}
                 <div
                   ref={backdropRef}
@@ -654,7 +755,7 @@ function SubmissionsContent() {
                   onKeyUp={handleCursorActivity}
                   className="relative z-10 w-full min-h-[260px] bg-transparent p-4 text-sm text-black font-mono font-medium leading-relaxed resize-y focus:outline-none whitespace-pre-wrap break-words caret-black selection:bg-[#FFD700]"
                   style={{ wordBreak: "break-word" }}
-                  placeholder="Paste or write marketing draft copy here..."
+                  placeholder="Paste or write marketing draft copy here, or drop a .txt/.md file..."
                 />
               </div>
             </div>
@@ -767,6 +868,18 @@ function SubmissionsContent() {
                     </p>
                   </div>
                 </div>
+
+                {checkResult.total_findings === 0 && submissionId && (
+                  <button
+                    type="button"
+                    onClick={() => handleDownloadCertificate(submissionId)}
+                    disabled={isDownloadingCert}
+                    className="neo-btn neo-btn-white text-xs py-1.5 px-3 border-2 border-black shrink-0 shadow-[2px_2px_0px_#000] hover:bg-[#FFD700]"
+                  >
+                    <ShieldCheck className="w-3.5 h-3.5 text-black" />
+                    <span>{isDownloadingCert ? "Verifying..." : "View Certificate"}</span>
+                  </button>
+                )}
 
                 {checkResult.total_findings > 0 && submissionId && (
                   <a
@@ -888,6 +1001,13 @@ function SubmissionsContent() {
           )}
         </section>
       </div>
+
+      {/* Compliance Release Certificate Modal */}
+      <ComplianceCertificateModal
+        certificate={certificateData}
+        isOpen={isCertModalOpen}
+        onClose={() => setIsCertModalOpen(false)}
+      />
     </div>
   );
 }

@@ -217,7 +217,7 @@ def test_approver_cannot_approve_with_open_critical_findings(client, creator_tok
         workspace_id=TEST_WORKSPACE_ID,
         title="Guide 1",
         storage_path="/docs/1",
-        content_hash="h1",
+        content_hash="a1b2c3d4e5f67890123456789abcdef0123456789abcdef0123456789abcdef0",
         extracted_text="text",
         uploaded_by=TEST_CREATOR_ID,
     )
@@ -340,3 +340,48 @@ def test_approver_send_back_loop(client, creator_token, reviewer_token):
     assert len(hist) == 1
     assert hist[0]["decision"] == "SENT_BACK"
     assert hist[0]["approver_name"] == "Rachel Reviewer"
+
+
+def test_download_compliance_release_certificate(client, creator_token, reviewer_token):
+    """
+    Verifies that approved submissions can export an immutable, cryptographically signed
+    compliance release certificate containing content hashes, governing policy hash, and digital signature.
+    """
+    creator_headers = {"Authorization": f"Bearer {creator_token}"}
+    reviewer_headers = {"Authorization": f"Bearer {reviewer_token}"}
+
+    # 1. Create clean submission
+    create_res = client.post(
+        "/api/v1/submissions",
+        json={
+            "title": "Certified Q1 Campaign",
+            "channel": "press_release",
+            "content": "Acme delivers enterprise compliance infrastructure.",
+        },
+        headers=creator_headers,
+    )
+    assert create_res.status_code == 201
+    sub_id = create_res.json()["id"]
+
+    # 2. Approve submission
+    app_res = client.post(
+        f"/api/v1/submissions/{sub_id}/approve",
+        json={"notes": "All checks verified and approved for corporate publication."},
+        headers=reviewer_headers,
+    )
+    assert app_res.status_code == 200
+
+    # 3. Export Certificate
+    cert_res = client.get(f"/api/v1/submissions/{sub_id}/certificate", headers=creator_headers)
+    assert cert_res.status_code == 200
+    cert = cert_res.json()
+
+    assert cert["status"] == "OFFICIALLY_CERTIFIED"
+    assert "CERT-ACME" in cert["certificate_id"]
+    assert cert["submission"]["id"] == sub_id
+    assert len(cert["submission"]["content_sha256"]) == 64
+    assert len(cert["governing_policy"]["document_sha256"]) == 64
+    assert cert["approval_attestation"]["approver_name"] == "Rachel Reviewer"
+    assert "EU AI Act Article 14" in cert["approval_attestation"]["statutory_compliance_note"]
+    assert len(cert["cryptographic_verification"]["digital_signature"]) == 64
+

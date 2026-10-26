@@ -25,6 +25,7 @@ from app.schemas.submission import (
     SubmissionResponse,
     SubmissionVersionResponse,
 )
+from app.services.certificate_service import generate_release_certificate
 from app.services.normalizer import normalize_text
 from app.services.pipeline_runner import run_check_pipeline
 
@@ -594,4 +595,32 @@ def list_approvals(
         .all()
     )
     return [_format_approval_response(a) for a in approvals]
+
+
+@router.get(
+    "/{submission_id}/certificate",
+    summary="Download cryptographically verifiable compliance release certificate",
+)
+def get_submission_certificate(
+    submission_id: uuid.UUID,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
+    """
+    Returns signed compliance release certificate containing:
+    1. Content SHA-256 hash
+    2. Policy Source Document SHA-256 hash (Receipt B anchor)
+    3. Human reviewer/system approval attribution
+    4. Digital signature hash
+    """
+    set_tenant_context(db, str(current_user.workspace_id))
+    try:
+        cert = generate_release_certificate(db, submission_id)
+        return cert
+    except ValueError as e:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail={"error": {"code": "CERTIFICATE_ERROR", "message": str(e)}},
+        )
+
 

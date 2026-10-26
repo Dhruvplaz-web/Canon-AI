@@ -10,19 +10,23 @@ from sqlalchemy.orm import Session
 from app.api.v1.auth import get_current_user, require_role
 from app.core.database import get_db, set_tenant_context
 from app.models.audit import AuditLog
+from app.models.check import CheckRun, Decision, Finding
 from app.models.governance import RuleChangeProposal, RuleHealthSnapshot
-from app.models.policy import ApprovedClaim, PolicyVersion, Rule
+from app.models.policy import ApprovedClaim, PolicyVersion, Rule, SourceDocument
 from app.models.workspace import User
 from app.schemas.governance import (
     ActivePolicyResponse,
     AdoptProposalResponse,
     ApprovedClaimResponse,
     BacktestRunResponse,
+    BenchmarkRunResponse,
     ProposalResponse,
     RuleDetailResponse,
     RuleHealthResponse,
+    SourceDocumentResponse,
 )
 from app.services.backtest_engine import execute_proposal_backtest
+from app.services.benchmark_service import run_benchmark_suite
 
 logger = logging.getLogger("canon.governance")
 router = APIRouter(prefix="/governance", tags=["Brand Governance Intelligence"])
@@ -74,6 +78,21 @@ def get_active_policy(
         key=lambda c: c.claim_code,
     )
 
+    source_doc_resp = None
+    if policy.source_document_id:
+        doc = db.query(SourceDocument).filter(SourceDocument.id == policy.source_document_id).first()
+        if doc:
+            source_doc_resp = SourceDocumentResponse(
+                id=str(doc.id),
+                title=doc.title,
+                document_type=doc.document_type,
+                storage_path=doc.storage_path,
+                content_hash=doc.content_hash,
+                page_count=doc.page_count,
+                extracted_text=doc.extracted_text,
+                status=doc.status,
+            )
+
     return ActivePolicyResponse(
         id=str(policy.id),
         version_number=policy.version_number,
@@ -83,6 +102,7 @@ def get_active_policy(
         approved_by=str(policy.approved_by) if policy.approved_by else None,
         approved_at=policy.approved_at,
         effective_date=policy.effective_date,
+        source_document=source_doc_resp,
         rules=[
             RuleDetailResponse(
                 id=str(r.id),
@@ -122,29 +142,133 @@ def get_rule_health(
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user),
 ):
-    """Returns rule health snapshots displaying override rates and friction diagnostics."""
+    """
+    Returns dynamic rule health analytics combining historical seed baselines
+    with live reviewer override telemetry recorded in this workspace.
+    """
     set_tenant_context(db, str(current_user.workspace_id))
-    snapshots = (
+
+    # 1. Fetch baseline seeded snapshots
+    seeded_snapshots = (
         db.query(RuleHealthSnapshot)
         .filter(RuleHealthSnapshot.workspace_id == current_user.workspace_id)
-        .order_by(RuleHealthSnapshot.override_rate.desc())
         .all()
     )
 
-    return [
-        RuleHealthResponse(
-            id=str(s.id),
-            rule_code=s.rule_code,
-            snapshot_date=s.snapshot_date,
-            total_evaluations=s.total_evaluations,
-            total_flags=s.total_flags,
-            total_overrides=s.total_overrides,
-            override_rate=round(s.override_rate, 4),
-            diagnostic_status=s.diagnostic_status,
-            primary_override_reason=s.primary_override_reason,
+    # 2. Fetch live findings in this workspace
+    live_findings = (
+        db.query(Finding)
+        .filter(Finding.workspace_id == current_user.workspace_id)
+        .all()
+    )
+
+    # 3. Aggregate live telemetry per rule
+    live_flags: dict[str, int] = {}
+    live_overrides: dict[str, int] = {}
+    live_reasons: dict[str, list[str]] = {}
+
+    for f in live_findings:
+        rc = f.rule_code
+        live_flags[rc] = live_flags.get(rc, 0) + 1
+
+        # Check if finding was overridden
+        is_overridden = f.status == "OVERRIDDEN" or any(
+            d.decision_type == "OVERRIDE" for d in (f.decisions or [])
         )
-        for s in snapshots
-    ]
+        if is_overridden:
+            live_overrides[rc] = live_overrides.get(rc, 0) + 1
+            for d in (f.decisions or []):
+                if d.decision_type == "OVERRIDE" and d.reason_code:
+                    live_reasons.setdefault(rc, []).append(d.reason_code)
+
+    # 4. Build consolidated results
+    results: list[RuleHealthResponse] = []
+    processed_rules: set[str] = set()
+    now = datetime.now(UTC)
+
+    # First add/update rules from seeded snapshots
+    for s in seeded_snapshots:
+        rc = s.rule_code
+        processed_rules.add(rc)
+
+        extra_flags = live_flags.get(rc, 0)
+        extra_overrides = live_overrides.get(rc, 0)
+
+        total_evals = max(s.total_evaluations + extra_flags, 1)
+        total_flags = s.total_flags + extra_flags
+        total_overrides = s.total_overrides + extra_overrides
+
+        rate = round(total_overrides / max(total_flags, 1), 4) if total_flags > 0 else 0.0
+
+        # Most frequent reason
+        reasons_list = live_reasons.get(rc, [])
+        primary_reason = (
+            max(set(reasons_list), key=reasons_list.count)
+            if reasons_list
+            else s.primary_override_reason
+        )
+
+        diag = s.diagnostic_status
+        if extra_overrides > 0:
+            if rate >= 0.30:
+                diag = "HIGH_FRICTION_CANDIDATE_FOR_REVISION"
+            elif rate >= 0.15:
+                diag = "MODERATE_FRICTION_MONITORING"
+            else:
+                diag = "HEALTHY"
+
+        results.append(
+            RuleHealthResponse(
+                id=str(s.id),
+                rule_code=rc,
+                snapshot_date=s.snapshot_date,
+                total_evaluations=total_evals,
+                total_flags=total_flags,
+                total_overrides=total_overrides,
+                override_rate=rate,
+                diagnostic_status=diag,
+                primary_override_reason=primary_reason,
+            )
+        )
+
+    # Next add any newly flagged/overridden rules not in seeded snapshots
+    for rc, flags_count in live_flags.items():
+        if rc in processed_rules:
+            continue
+        overrides_count = live_overrides.get(rc, 0)
+        rate = round(overrides_count / max(flags_count, 1), 4) if flags_count > 0 else 0.0
+
+        reasons_list = live_reasons.get(rc, [])
+        primary_reason = (
+            max(set(reasons_list), key=reasons_list.count)
+            if reasons_list
+            else "APPROVED_EXCEPTION"
+        )
+
+        if rate >= 0.30:
+            diag = "HIGH_FRICTION_CANDIDATE_FOR_REVISION"
+        elif rate >= 0.15:
+            diag = "MODERATE_FRICTION_MONITORING"
+        else:
+            diag = "HEALTHY"
+
+        results.append(
+            RuleHealthResponse(
+                id=str(uuid.uuid5(uuid.NAMESPACE_DNS, f"canon-health-{rc}")),
+                rule_code=rc,
+                snapshot_date=now,
+                total_evaluations=flags_count,
+                total_flags=flags_count,
+                total_overrides=overrides_count,
+                override_rate=rate,
+                diagnostic_status=diag,
+                primary_override_reason=primary_reason,
+            )
+        )
+
+    # Sort descending by override_rate, then total_flags
+    results.sort(key=lambda r: (r.override_rate, r.total_flags), reverse=True)
+    return results
 
 
 @router.get(
@@ -461,3 +585,21 @@ def adopt_proposal(
         approved_at=new_policy.approved_at,
         message=f"Proposal {prop.proposal_code} successfully approved by Brand Manager and activated as Policy v1.1.",
     )
+
+
+@router.get(
+    "/benchmark",
+    response_model=BenchmarkRunResponse,
+    summary="Run standardized benchmark evaluation suite across security, brand rules, and compliant copy",
+)
+def get_governance_benchmark(
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
+    """
+    Executes the 30-case reproducible benchmark suite in real time.
+    Calculates empirical Confusion Matrix, Precision, Recall, F1 score, and latency.
+    """
+    set_tenant_context(db, str(current_user.workspace_id))
+    report = run_benchmark_suite(db, current_user.workspace_id)
+    return report

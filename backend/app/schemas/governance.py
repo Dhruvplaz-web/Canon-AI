@@ -103,6 +103,21 @@ class ApprovedClaimResponse(BaseModel):
     model_config = {"from_attributes": True}
 
 
+class SourceDocumentResponse(BaseModel):
+    """Source brand guideline document with cryptographic integrity hash."""
+
+    id: str
+    title: str
+    document_type: str = "GUIDELINE"
+    storage_path: str
+    content_hash: str
+    page_count: int
+    extracted_text: str
+    status: str
+
+    model_config = {"from_attributes": True}
+
+
 class ActivePolicyResponse(BaseModel):
     """Active policy version with compiled rules and temporal claims ledger."""
 
@@ -114,7 +129,53 @@ class ActivePolicyResponse(BaseModel):
     approved_by: str | None = None
     approved_at: datetime | None = None
     effective_date: datetime
+    source_document: SourceDocumentResponse | None = None
     rules: list[RuleDetailResponse] = []
     approved_claims: list[ApprovedClaimResponse] = []
 
     model_config = {"from_attributes": True}
+
+
+class BenchmarkMetrics(BaseModel):
+    """Aggregate statistical metrics for the benchmark run."""
+
+    true_positives: int
+    true_negatives: int
+    false_positives: int
+    false_negatives: int
+    precision: float
+    recall: float
+    f1_score: float
+    accuracy: float
+    adversarial_blocked_count: int
+    adversarial_total: int
+    adversarial_defense_rate: float
+    avg_latency_ms: float
+    p95_latency_ms: float
+
+
+class BenchmarkCaseResult(BaseModel):
+    """Execution trace for an individual benchmark test case."""
+
+    id: str
+    cohort: str
+    title: str
+    content: str
+    expected_outcome: str
+    expected_rule_code: str | None = None
+    actual_outcome: str
+    detected_rule_codes: list[str]
+    findings_count: int
+    is_correct: bool
+    latency_ms: float
+    findings: list[dict[str, Any]] = []
+
+
+class BenchmarkRunResponse(BaseModel):
+    """Full benchmark evaluation report payload."""
+
+    timestamp: float
+    policy_version: str
+    total_cases: int
+    metrics: BenchmarkMetrics
+    cases: list[BenchmarkCaseResult]

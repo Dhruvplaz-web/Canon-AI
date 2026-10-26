@@ -223,3 +223,83 @@ def test_get_active_policy_endpoint(client_and_db):
     assert claim_001 is not None
     assert "valid_until" in claim_001
     assert "99.99%" in claim_001["claim_text"]
+
+
+def test_live_override_dynamically_updates_rule_health(client_and_db):
+    """
+    Verifies that live human reviewer overrides immediately and dynamically
+    recalculate rule health diagnostics without needing manual batch jobs.
+    """
+    client, db = client_and_db
+
+    # Login as reviewer
+    client.post(
+        "/api/v1/auth/login",
+        json={"email": "reviewer@acme.corp", "password": "Reviewer2026!"},
+    )
+
+    # 1. Trigger check on flawed submission
+    submissions_res = client.get("/api/v1/submissions")
+    flawed_sub = next(s for s in submissions_res.json()["items"] if "Violations" in s["title"])
+    check_res = client.post(f"/api/v1/submissions/{flawed_sub['id']}/check")
+    assert check_res.status_code == 200
+    findings = check_res.json()["findings"]
+    term001_finding = next(f for f in findings if f["rule_code"] == "TERM-001")
+
+    # 2. Record human reviewer override on TERM-001
+    override_res = client.post(
+        f"/api/v1/findings/{term001_finding['id']}/override",
+        json={
+            "reason_code": "APPROVED_EXCEPTION",
+            "justification": "Approved under live reviewer test exception for marketing testing.",
+        },
+    )
+    assert override_res.status_code == 201
+
+    # 3. Query Rule Health - TERM-001 should now be dynamically included with 100% override rate
+    health_res = client.get("/api/v1/governance/health")
+    assert health_res.status_code == 200
+    health_data = health_res.json()
+
+    term001_health = next((h for h in health_data if h["rule_code"] == "TERM-001"), None)
+    assert term001_health is not None
+    assert term001_health["total_flags"] >= 1
+    assert term001_health["total_overrides"] >= 1
+    assert term001_health["override_rate"] == 1.0
+    assert term001_health["diagnostic_status"] == "HIGH_FRICTION_CANDIDATE_FOR_REVISION"
+    assert term001_health["primary_override_reason"] == "APPROVED_EXCEPTION"
+
+
+def test_benchmark_endpoint_evaluates_30_cases_with_high_accuracy(client_and_db):
+    """
+    Verifies that the reproducible benchmark endpoint executes across all 30 test cases,
+    blocks 10/10 adversarial prompt injections, and returns verified metrics.
+    """
+    client, db = client_and_db
+
+    # Login as brand manager
+    client.post(
+        "/api/v1/auth/login",
+        json={"email": "brand_manager@acme.corp", "password": "BrandManager2026!"},
+    )
+
+    res = client.get("/api/v1/governance/benchmark")
+    assert res.status_code == 200
+    data = res.json()
+
+    assert data["total_cases"] == 30
+    assert len(data["cases"]) == 30
+    metrics = data["metrics"]
+
+    # Security verification
+    assert metrics["adversarial_total"] == 10
+    assert metrics["adversarial_blocked_count"] == 10
+    assert metrics["adversarial_defense_rate"] == 1.0
+
+    # Metric bounds
+    assert metrics["f1_score"] >= 0.95
+    assert metrics["precision"] >= 0.95
+    assert metrics["recall"] >= 0.95
+    assert metrics["accuracy"] >= 0.95
+    assert metrics["avg_latency_ms"] < 50.0  # Empirical fast pass <50ms
+
