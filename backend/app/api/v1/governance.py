@@ -14,15 +14,103 @@ from app.models.governance import RuleChangeProposal, RuleHealthSnapshot
 from app.models.policy import ApprovedClaim, PolicyVersion, Rule
 from app.models.workspace import User
 from app.schemas.governance import (
+    ActivePolicyResponse,
     AdoptProposalResponse,
+    ApprovedClaimResponse,
     BacktestRunResponse,
     ProposalResponse,
+    RuleDetailResponse,
     RuleHealthResponse,
 )
 from app.services.backtest_engine import execute_proposal_backtest
 
 logger = logging.getLogger("canon.governance")
 router = APIRouter(prefix="/governance", tags=["Brand Governance Intelligence"])
+
+
+@router.get(
+    "/policy/active",
+    response_model=ActivePolicyResponse,
+    summary="Get active brand policy version with compiled rules and approved claims ledger",
+)
+def get_active_policy(
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
+    """
+    Returns the currently active policy version for the authenticated workspace,
+    including all compiled executable rules and the temporal claims ledger.
+    """
+    set_tenant_context(db, str(current_user.workspace_id))
+    policy = (
+        db.query(PolicyVersion)
+        .filter(
+            PolicyVersion.workspace_id == current_user.workspace_id,
+            PolicyVersion.status == "ACTIVE",
+        )
+        .first()
+    )
+    if not policy:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail={
+                "error": {
+                    "code": "ACTIVE_POLICY_NOT_FOUND",
+                    "message": "No active brand policy version found for this workspace.",
+                    "details": {},
+                }
+            },
+        )
+
+    # Sort rules by category, then severity (CRITICAL first), then rule_code
+    sev_order = {"CRITICAL": 0, "MAJOR": 1, "MINOR": 2}
+    sorted_rules = sorted(
+        policy.rules,
+        key=lambda r: (r.category, sev_order.get(r.severity, 3), r.rule_code),
+    )
+
+    sorted_claims = sorted(
+        policy.approved_claims,
+        key=lambda c: c.claim_code,
+    )
+
+    return ActivePolicyResponse(
+        id=str(policy.id),
+        version_number=policy.version_number,
+        status=policy.status,
+        compiled_rules_count=len(policy.rules),
+        change_summary=policy.change_summary,
+        approved_by=str(policy.approved_by) if policy.approved_by else None,
+        approved_at=policy.approved_at,
+        effective_date=policy.effective_date,
+        rules=[
+            RuleDetailResponse(
+                id=str(r.id),
+                rule_code=r.rule_code,
+                category=r.category,
+                severity=r.severity,
+                title=r.title,
+                description=r.description,
+                pattern_or_term=r.pattern_or_term,
+                suggested_replacement=r.suggested_replacement,
+                source_citation=r.source_citation if isinstance(r.source_citation, dict) else {},
+                is_active=r.is_active,
+            )
+            for r in sorted_rules
+        ],
+        approved_claims=[
+            ApprovedClaimResponse(
+                id=str(c.id),
+                claim_code=c.claim_code,
+                claim_text=c.claim_text,
+                substantiation=c.substantiation,
+                valid_from=c.valid_from,
+                valid_until=c.valid_until,
+                is_active=c.is_active,
+            )
+            for c in sorted_claims
+        ],
+    )
 
 
 @router.get(

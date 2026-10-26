@@ -13,6 +13,7 @@ migration_path = (
     / "0001_initial_schema_and_rls.py"
 )
 spec = importlib.util.spec_from_file_location("migration_0001", str(migration_path))
+assert spec is not None and spec.loader is not None
 migration_0001 = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(migration_0001)
 
@@ -48,7 +49,7 @@ def test_set_tenant_context_helper():
 
     assert len(session.executed_statements) == 1
     sql, params = session.executed_statements[0]
-    assert "SET LOCAL app.current_workspace_id" in sql
+    assert "set_config('app.current_workspace_id'" in sql
     assert params["workspace_id"] == wks_id
 
 

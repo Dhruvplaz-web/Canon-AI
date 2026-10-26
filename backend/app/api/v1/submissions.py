@@ -7,14 +7,20 @@ from sqlalchemy.orm import Session
 
 from app.api.v1.auth import get_current_user, require_role
 from app.core.database import get_db, set_tenant_context
+from app.models.approval import Approval
+from app.models.audit import AuditLog
+from app.models.base import utcnow
 from app.models.check import CheckRun
 from app.models.submission import Submission, SubmissionVersion
 from app.models.workspace import User
 from app.schemas.submission import (
+    ApprovalResponse,
+    ApproveSubmissionRequest,
     CheckRunResponse,
     CreateSubmissionRequest,
     CreateVersionRequest,
     FindingResponse,
+    SendBackSubmissionRequest,
     SubmissionListResponse,
     SubmissionResponse,
     SubmissionVersionResponse,
@@ -60,6 +66,24 @@ def _format_check_run_response(cr: CheckRun) -> CheckRunResponse:
 
 
 
+def _format_approval_response(a: Approval) -> ApprovalResponse:
+    """Helper converting Approval ORM instance to Pydantic response."""
+    return ApprovalResponse(
+        id=str(a.id),
+        workspace_id=str(a.workspace_id),
+        submission_id=str(a.submission_id),
+        submission_version_id=str(a.submission_version_id),
+        approved_by=str(a.approved_by),
+        approver_name=a.approver.full_name if getattr(a, "approver", None) else None,
+        approver_email=a.approver.email if getattr(a, "approver", None) else None,
+        decision=a.decision,
+        approval_type=a.approval_type,
+        notes=a.notes,
+        signed_off_at=a.signed_off_at,
+        created_at=a.created_at,
+    )
+
+
 def _format_submission_response(sub: Submission) -> SubmissionResponse:
     """Helper converting Submission ORM instance to Pydantic response."""
     versions_sorted = sorted(sub.versions, key=lambda v: v.version_number)
@@ -80,6 +104,12 @@ def _format_submission_response(sub: Submission) -> SubmissionResponse:
         version_responses[-1] if version_responses else None,
     )
 
+    latest_approval = None
+    if getattr(sub, "approvals", None):
+        sorted_approvals = sorted(sub.approvals, key=lambda a: a.created_at, reverse=True)
+        if sorted_approvals:
+            latest_approval = _format_approval_response(sorted_approvals[0])
+
     return SubmissionResponse(
         id=str(sub.id),
         workspace_id=str(sub.workspace_id),
@@ -91,6 +121,7 @@ def _format_submission_response(sub: Submission) -> SubmissionResponse:
         created_at=sub.created_at,
         current_version=current_ver,
         versions=version_responses,
+        latest_approval=latest_approval,
     )
 
 
@@ -329,4 +360,238 @@ def list_checks(
         .all()
     )
     return [_format_check_run_response(cr) for cr in runs]
+
+
+@router.post(
+    "/{submission_id}/approve",
+    response_model=SubmissionResponse,
+    summary="Grant formal approver sign-off on submission",
+)
+def approve_submission(
+    submission_id: uuid.UUID,
+    payload: ApproveSubmissionRequest = ApproveSubmissionRequest(),
+    db: Session = Depends(get_db),
+    current_user: User = Depends(require_role("reviewer", "brand_manager")),
+):
+    """
+    Grants formal human sign-off on a submission (PROP-U09).
+    Restricted strictly to authenticated human Reviewer or Brand Manager.
+    Core Rule 3.2: AI never approves content.
+    Blocks sign-off if any open CRITICAL finding remains unresolved.
+    """
+    set_tenant_context(db, str(current_user.workspace_id))
+    submission = (
+        db.query(Submission)
+        .filter(
+            Submission.workspace_id == current_user.workspace_id,
+            Submission.id == submission_id,
+        )
+        .first()
+    )
+    if not submission:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail={"error": {"code": "SUBMISSION_NOT_FOUND", "message": f"Submission {submission_id} not found"}},
+        )
+
+    version = (
+        db.query(SubmissionVersion)
+        .filter(
+            SubmissionVersion.workspace_id == current_user.workspace_id,
+            SubmissionVersion.submission_id == submission.id,
+            SubmissionVersion.version_number == submission.current_version_number,
+        )
+        .first()
+    )
+    if not version:
+        version = max(submission.versions, key=lambda v: v.version_number)
+
+    # Invariant: Disallow approval if open CRITICAL findings exist without override
+    latest_check = (
+        db.query(CheckRun)
+        .filter(
+            CheckRun.workspace_id == current_user.workspace_id,
+            CheckRun.submission_id == submission.id,
+        )
+        .order_by(CheckRun.started_at.desc())
+        .first()
+    )
+
+    has_overrides = False
+    if latest_check:
+        for finding in latest_check.findings:
+            if finding.severity.upper() == "CRITICAL" and finding.status.upper() != "OVERRIDDEN":
+                raise HTTPException(
+                    status_code=status.HTTP_400_BAD_REQUEST,
+                    detail={
+                        "error": {
+                            "code": "CRITICAL_FINDINGS_UNRESOLVED",
+                            "message": f"Cannot sign off submission with unresolved CRITICAL finding '{finding.rule_code}' ({finding.title}). Finding must be overridden with justification or corrected in a revision.",
+                            "details": {
+                                "finding_id": str(finding.id),
+                                "rule_code": finding.rule_code,
+                                "severity": finding.severity,
+                            },
+                        }
+                    },
+                )
+            if finding.status.upper() == "OVERRIDDEN":
+                has_overrides = True
+
+    old_status = submission.status
+    new_status = "APPROVED_WITH_OVERRIDE" if has_overrides else "APPROVED"
+
+    approval = Approval(
+        workspace_id=current_user.workspace_id,
+        submission_id=submission.id,
+        submission_version_id=version.id,
+        approved_by=current_user.id,
+        decision="APPROVED",
+        approval_type=payload.approval_type or "FINAL_SIGNOFF",
+        notes=payload.notes,
+    )
+    db.add(approval)
+
+    submission.status = new_status
+    submission.updated_at = utcnow()
+
+    audit = AuditLog(
+        workspace_id=current_user.workspace_id,
+        actor_id=current_user.id,
+        action="SUBMISSION_APPROVED",
+        entity_type="SUBMISSION",
+        entity_id=submission.id,
+        previous_state={"status": old_status},
+        new_state={
+            "status": new_status,
+            "decision": "APPROVED",
+            "approval_id": str(approval.id),
+            "approval_type": approval.approval_type,
+            "notes": payload.notes,
+        },
+    )
+    db.add(audit)
+
+    db.commit()
+    db.refresh(submission)
+    return _format_submission_response(submission)
+
+
+@router.post(
+    "/{submission_id}/send-back",
+    response_model=SubmissionResponse,
+    summary="Send submission back to creator for revision",
+)
+def send_back_submission(
+    submission_id: uuid.UUID,
+    payload: SendBackSubmissionRequest,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(require_role("reviewer", "brand_manager")),
+):
+    """
+    Sends submission back for revision with mandatory feedback instructions (PROP-U09).
+    Restricted to authenticated human Reviewer or Brand Manager.
+    Transitions status to SENT_BACK and writes an immutable audit record.
+    """
+    set_tenant_context(db, str(current_user.workspace_id))
+    submission = (
+        db.query(Submission)
+        .filter(
+            Submission.workspace_id == current_user.workspace_id,
+            Submission.id == submission_id,
+        )
+        .first()
+    )
+    if not submission:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail={"error": {"code": "SUBMISSION_NOT_FOUND", "message": f"Submission {submission_id} not found"}},
+        )
+
+    version = (
+        db.query(SubmissionVersion)
+        .filter(
+            SubmissionVersion.workspace_id == current_user.workspace_id,
+            SubmissionVersion.submission_id == submission.id,
+            SubmissionVersion.version_number == submission.current_version_number,
+        )
+        .first()
+    )
+    if not version:
+        version = max(submission.versions, key=lambda v: v.version_number)
+
+    old_status = submission.status
+    new_status = "SENT_BACK"
+
+    approval = Approval(
+        workspace_id=current_user.workspace_id,
+        submission_id=submission.id,
+        submission_version_id=version.id,
+        approved_by=current_user.id,
+        decision="SENT_BACK",
+        approval_type="REVISION_REQUESTED",
+        notes=payload.notes,
+    )
+    db.add(approval)
+
+    submission.status = new_status
+    submission.updated_at = utcnow()
+
+    audit = AuditLog(
+        workspace_id=current_user.workspace_id,
+        actor_id=current_user.id,
+        action="SUBMISSION_SENT_BACK",
+        entity_type="SUBMISSION",
+        entity_id=submission.id,
+        previous_state={"status": old_status},
+        new_state={
+            "status": new_status,
+            "decision": "SENT_BACK",
+            "approval_id": str(approval.id),
+            "notes": payload.notes,
+        },
+    )
+    db.add(audit)
+
+    db.commit()
+    db.refresh(submission)
+    return _format_submission_response(submission)
+
+
+@router.get(
+    "/{submission_id}/approvals",
+    response_model=list[ApprovalResponse],
+    summary="List formal sign-offs and send-back records for a submission",
+)
+def list_approvals(
+    submission_id: uuid.UUID,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
+    """Lists all historical approvals and send-back decision certificates for a submission."""
+    set_tenant_context(db, str(current_user.workspace_id))
+    submission = (
+        db.query(Submission)
+        .filter(
+            Submission.workspace_id == current_user.workspace_id,
+            Submission.id == submission_id,
+        )
+        .first()
+    )
+    if not submission:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail={"error": {"code": "SUBMISSION_NOT_FOUND", "message": f"Submission {submission_id} not found"}},
+        )
+
+    approvals = (
+        db.query(Approval)
+        .filter(
+            Approval.workspace_id == current_user.workspace_id,
+            Approval.submission_id == submission_id,
+        )
+        .order_by(Approval.created_at.desc())
+        .all()
+    )
+    return [_format_approval_response(a) for a in approvals]
 

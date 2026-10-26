@@ -54,6 +54,6 @@ def set_tenant_context(session: Session, workspace_id: str) -> None:
         return
 
     session.execute(
-        text("SET LOCAL app.current_workspace_id = :workspace_id"),
+        text("SELECT set_config('app.current_workspace_id', :workspace_id, true)"),
         {"workspace_id": str(workspace_id)},
     )

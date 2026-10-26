@@ -69,6 +69,52 @@ class AdoptProposalResponse(BaseModel):
     status: str
     approved_by: str
     approved_at: datetime
-    message: str
+    model_config = {"from_attributes": True}
+
+
+class RuleDetailResponse(BaseModel):
+    """Detailed rule definition including source citation and suggestion."""
+
+    id: str
+    rule_code: str
+    category: str
+    severity: str
+    title: str
+    description: str | None = None
+    pattern_or_term: str | None = None
+    suggested_replacement: str | None = None
+    source_citation: dict[str, Any] = {}
+    is_active: bool
+
+    model_config = {"from_attributes": True}
+
+
+class ApprovedClaimResponse(BaseModel):
+    """Temporal approved claim record with substantiation and validity dates."""
+
+    id: str
+    claim_code: str
+    claim_text: str
+    substantiation: str
+    valid_from: datetime
+    valid_until: datetime
+    is_active: bool
+
+    model_config = {"from_attributes": True}
+
+
+class ActivePolicyResponse(BaseModel):
+    """Active policy version with compiled rules and temporal claims ledger."""
+
+    id: str
+    version_number: str
+    status: str
+    compiled_rules_count: int
+    change_summary: str | None = None
+    approved_by: str | None = None
+    approved_at: datetime | None = None
+    effective_date: datetime
+    rules: list[RuleDetailResponse] = []
+    approved_claims: list[ApprovedClaimResponse] = []
 
     model_config = {"from_attributes": True}

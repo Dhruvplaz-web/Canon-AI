@@ -34,6 +34,38 @@ class SubmissionVersionResponse(BaseModel):
     created_at: datetime
 
 
+class ApproveSubmissionRequest(BaseModel):
+    """Payload to grant formal human approval / sign-off on a submission."""
+
+    notes: str | None = Field(None, max_length=1000)
+    approval_type: str = Field(default="FINAL_SIGNOFF", max_length=50)
+
+
+class SendBackSubmissionRequest(BaseModel):
+    """Payload to send back a submission for revision with required feedback notes."""
+
+    notes: str = Field(..., min_length=5, max_length=2000, description="Mandatory revision instructions")
+
+
+class ApprovalResponse(BaseModel):
+    """Formal human sign-off certificate (ENT-17)."""
+
+    model_config = ConfigDict(from_attributes=True)
+
+    id: str
+    workspace_id: str
+    submission_id: str
+    submission_version_id: str
+    approved_by: str
+    approver_name: str | None = None
+    approver_email: str | None = None
+    decision: str
+    approval_type: str
+    notes: str | None = None
+    signed_off_at: datetime
+    created_at: datetime
+
+
 class SubmissionResponse(BaseModel):
     """Marketing draft container representation."""
 
@@ -49,6 +81,7 @@ class SubmissionResponse(BaseModel):
     created_at: datetime
     current_version: SubmissionVersionResponse | None = None
     versions: list[SubmissionVersionResponse] = []
+    latest_approval: ApprovalResponse | None = None
 
 
 class SubmissionListResponse(BaseModel):

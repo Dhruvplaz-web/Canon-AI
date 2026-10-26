@@ -192,3 +192,34 @@ def test_transparency_disclosure_endpoint(client_and_db):
     assert "primary_provider" in data
     assert "FR-14 declared not built" in data["redaction_mode"]
     assert "unverified in M1 (see VER-04)" in data["retention_policy_note"]
+
+
+def test_get_active_policy_endpoint(client_and_db):
+    """Verify GET /governance/policy/active returns active Policy v1.0, rules, and claims."""
+    client, _db = client_and_db
+    client.post(
+        "/api/v1/auth/login",
+        json={"email": "creator@acme.corp", "password": "Creator2026!"},
+    )
+
+    res = client.get("/api/v1/governance/policy/active")
+    assert res.status_code == 200
+    data = res.json()
+    assert data["version_number"] == "1.0"
+    assert data["status"] == "ACTIVE"
+    assert data["compiled_rules_count"] >= 10
+    assert len(data["rules"]) >= 10
+    assert len(data["approved_claims"]) >= 2
+
+    # Verify rule structure contains double-receipt citation metadata
+    rule_term001 = next((r for r in data["rules"] if r["rule_code"] == "TERM-001"), None)
+    assert rule_term001 is not None
+    assert rule_term001["severity"] == "CRITICAL"
+    assert "bank" in rule_term001["pattern_or_term"].lower()
+    assert "exact_quote" in rule_term001["source_citation"]
+
+    # Verify claim contains temporal ledger validity
+    claim_001 = next((c for c in data["approved_claims"] if c["claim_code"] == "CLAIM-001"), None)
+    assert claim_001 is not None
+    assert "valid_until" in claim_001
+    assert "99.99%" in claim_001["claim_text"]

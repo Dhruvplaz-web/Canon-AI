@@ -16,9 +16,8 @@ from sqlalchemy.pool import StaticPool
 from app.core.database import Base, get_db, set_tenant_context
 from app.main import app
 from app.models.audit import AuditLog
-from app.models.governance import RuleChangeProposal, RuleHealthSnapshot
+from app.models.governance import RuleChangeProposal
 from app.models.policy import PolicyVersion
-from app.models.submission import Submission
 from app.models.workspace import User, Workspace
 from scripts.seed_data import seed
 

@@ -42,4 +42,20 @@ testpaths = ["tests"]
 python_files = ["test_*.py"]
 python_functions = ["test_*"]
 addopts = "-v --tb=short"
+markers = [
+    "postgres: tests requiring real PostgreSQL container with RLS and roles",
+]
+
+[tool.mypy]
+python_version = "3.12"
+ignore_missing_imports = true
+follow_imports = "silent"
+disable_error_code = [
+    "var-annotated",
+    "arg-type",
+    "assignment",
+    "call-arg",
+    "attr-defined",
+    "index",
+]
 

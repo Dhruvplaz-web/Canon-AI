@@ -1,9 +1,9 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback, Suspense } from "react";
+import { useSearchParams, useRouter } from "next/navigation";
 import {
   Activity,
-  ShieldCheck,
   CheckCircle2,
   Play,
   UserCheck,
@@ -55,7 +55,10 @@ interface BacktestRun {
   completed_at?: string;
 }
 
-export default function GovernancePage() {
+function GovernanceContent() {
+  const searchParams = useSearchParams();
+  const router = useRouter();
+
   const [healthData, setHealthData] = useState<RuleHealth[]>([]);
   const [proposals, setProposals] = useState<Proposal[]>([]);
   const [activeProposal, setActiveProposal] = useState<Proposal | null>(null);
@@ -71,42 +74,54 @@ export default function GovernancePage() {
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
-  const loadGovernanceData = async () => {
-    try {
-      // 1. Fetch rule health
-      const hRes = await fetch("/api/v1/governance/health");
-      if (hRes.ok) {
-        const hData = await hRes.json();
-        setHealthData(hData);
-      }
+  // Sync state with URL search parameters (Rule 3 URL-First State)
+  const syncUrlParams = useCallback(
+    (proposalCode: string) => {
+      const current = new URLSearchParams(searchParams.toString());
+      current.set("proposal", proposalCode);
+      router.replace(`?${current.toString()}`, { scroll: false });
+    },
+    [router, searchParams]
+  );
 
-      // 2. Fetch proposals
-      const pRes = await fetch("/api/v1/governance/proposals");
-      if (pRes.ok) {
-        const pData: Proposal[] = await pRes.json();
-        setProposals(pData);
-        if (pData.length > 0) {
-          setActiveProposal(pData[0]);
-          if (pData[0].status === "ADOPTED") {
+  useEffect(() => {
+    let active = true;
+
+    Promise.all([
+      fetch("/api/v1/governance/health").then((r) => (r.ok ? r.json() : [])),
+      fetch("/api/v1/governance/proposals").then((r) => (r.ok ? r.json() : [])),
+    ])
+      .then(([hData, pData]: [RuleHealth[], Proposal[]]) => {
+        if (!active) return;
+        setHealthData(hData || []);
+        const list: Proposal[] = Array.isArray(pData) ? pData : [];
+        setProposals(list);
+
+        const propCode = searchParams.get("proposal");
+        const found = propCode ? list.find((p) => p.proposal_code === propCode) : null;
+        const initial = found || (list.length > 0 ? list[0] : null);
+
+        if (initial) {
+          setActiveProposal(initial);
+          if (initial.status === "ADOPTED") {
             setAdoptedResult({
               version_number: "1.1",
               approved_by: "Alice Brand (Brand Manager)",
-              approved_at: pData[0].adopted_at || new Date().toISOString(),
-              message: "Proposal PROP-01 successfully approved by Brand Manager and activated as Policy v1.1.",
+              approved_at: initial.adopted_at || new Date().toISOString(),
+              message: `Proposal ${initial.proposal_code} successfully approved by Brand Manager and activated as Policy v1.1.`,
             });
           }
         }
-      }
-    } catch {
-      // Keep fallbacks
-    } finally {
-      setIsLoading(false);
-    }
-  };
+        setIsLoading(false);
+      })
+      .catch(() => {
+        if (active) setIsLoading(false);
+      });
 
-  useEffect(() => {
-    loadGovernanceData();
-  }, []);
+    return () => {
+      active = false;
+    };
+  }, [searchParams]);
 
   const handleRunBacktest = async () => {
     if (!activeProposal) return;
@@ -140,24 +155,21 @@ export default function GovernancePage() {
     setErrorMessage(null);
 
     try {
-      // Login as brand_manager first to ensure authorized session
-      await fetch("/api/v1/auth/login", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          email: "brand_manager@acme.corp",
-          password: "BrandManager2026!",
-        }),
-      });
-
       const res = await fetch(`/api/v1/governance/proposals/${activeProposal.id}/adopt`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
+        credentials: "include",
       });
 
       if (!res.ok) {
-        const err = await res.json();
-        throw new Error(err?.error?.message || "Proposal adoption failed.");
+        if (res.status === 401) {
+          throw new Error("Authentication required. Please sign in as a Brand Manager to approve policy versions.");
+        }
+        if (res.status === 403) {
+          throw new Error("Action requires Brand Manager role. Your current account is not authorized to approve policy versions.");
+        }
+        const err = await res.json().catch(() => null);
+        throw new Error(err?.detail?.error?.message || err?.detail || err?.error?.message || "Proposal adoption failed.");
       }
 
       const data = await res.json();
@@ -179,30 +191,34 @@ export default function GovernancePage() {
   };
 
   return (
-    <div className="flex-1 w-full max-w-7xl mx-auto px-6 py-10 flex flex-col gap-8">
+    <div className="flex-1 w-full max-w-7xl mx-auto px-6 py-10 flex flex-col gap-8 text-black">
       {/* Header */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-[#27272A] pb-6">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b-[2.5px] border-black pb-6">
         <div>
-          <div className="flex items-center gap-2 text-xs font-mono text-[#A1A1AA] uppercase tracking-wider mb-1">
-            <span>SCR-07 & SCR-08</span>
-            <span>•</span>
-            <span>Governance Intelligence</span>
+          <div className="flex items-center gap-2 mb-2">
+            <span className="neo-badge bg-[#00C2CB] text-black text-xs font-black">
+              SCR-07 &amp; SCR-08
+            </span>
+            <span className="text-black font-black text-xs">•</span>
+            <span className="text-xs font-black uppercase font-mono tracking-wider text-black">
+              Governance Intelligence
+            </span>
           </div>
-          <h1 className="text-2xl md:text-3xl font-semibold tracking-tight text-white">
-            Rule Health Telemetry, Exception Proposals & Policy v1.1
+          <h1 className="text-3xl md:text-4xl font-black tracking-tight text-black">
+            Rule Health Telemetry, Exception Proposals &amp; Policy v1.1
           </h1>
-          <p className="text-sm text-[#A1A1AA] mt-1">
+          <p className="text-sm font-medium text-black/80 mt-1 max-w-3xl">
             Detect friction patterns from reviewer override signals, backtest candidate rule modifications, and require explicit human Brand Manager authorization.
           </p>
         </div>
 
         <div className="flex items-center gap-2">
-          <span className="text-xs text-[#71717A]">Active Policy:</span>
+          <span className="text-xs font-bold text-black/70 uppercase font-mono">Active Policy:</span>
           <span
-            className={`px-2 py-0.5 rounded font-mono text-xs font-medium border ${
+            className={`neo-badge text-xs font-black ${
               adoptedResult
-                ? "bg-emerald-500/10 border-emerald-500/30 text-emerald-400"
-                : "bg-blue-500/10 border-blue-500/30 text-blue-400"
+                ? "bg-[#00C2CB] text-black"
+                : "bg-[#FFD700] text-black"
             }`}
           >
             {adoptedResult ? "Policy v1.1 (ACTIVE)" : "Policy v1.0 (BASELINE)"}
@@ -210,33 +226,49 @@ export default function GovernancePage() {
         </div>
       </div>
 
+      {/* Loading Skeletons */}
+      {isLoading && (
+        <div className="flex flex-col gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div className="neo-box h-32 w-full bg-white animate-pulse" />
+            <div className="neo-box h-32 w-full bg-white animate-pulse" />
+            <div className="neo-box h-32 w-full bg-white animate-pulse" />
+          </div>
+          <div className="neo-box h-64 w-full bg-white animate-pulse" />
+        </div>
+      )}
+
       {/* Section 1: Rule Health Telemetry Grid */}
       <section className="flex flex-col gap-4">
-        <div className="flex items-center justify-between">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
           <div className="flex items-center gap-2">
-            <Activity className="w-4 h-4 text-blue-400" />
-            <h2 className="text-base font-semibold text-white">Rule Friction & Health Diagnostic Telemetry</h2>
+            <div className="w-7 h-7 rounded bg-[#FFD700] border-[2px] border-black flex items-center justify-center shadow-[1px_1px_0px_#000000]">
+              <Activity className="w-4 h-4 text-black stroke-[2.5]" />
+            </div>
+            <h2 className="text-lg font-black text-black">Rule Friction &amp; Health Diagnostic Telemetry</h2>
           </div>
-          <span className="text-xs text-[#71717A]">Diagnostic threshold: &gt;20% override triggers SCOPE_MISMATCH</span>
+          <span className="text-xs font-mono font-bold text-black/70">
+            Diagnostic threshold: &gt;20% override triggers SCOPE_MISMATCH
+          </span>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           {healthData.map((h) => (
             <div
               key={h.id || h.rule_code}
-              className={`p-5 rounded-xl border flex flex-col gap-3 ${
+              className={`p-5 neo-box flex flex-col gap-3 ${
                 h.diagnostic_status === "SCOPE_MISMATCH"
-                  ? "bg-amber-500/5 border-amber-500/30"
-                  : "bg-[#18181B] border-[#27272A]"
+                  ? "bg-[#FFF9E6]"
+                  : "bg-white"
               }`}
             >
               <div className="flex items-center justify-between">
-                <span className="font-mono text-xs font-bold text-white">{h.rule_code}</span>
+                <span className="font-mono text-sm font-black text-black">{h.rule_code}</span>
                 <span
-                  className={`text-[10px] font-mono px-2 py-0.5 rounded font-semibold border ${
+                  className={`neo-badge text-[10px] font-black ${
                     h.diagnostic_status === "SCOPE_MISMATCH"
-                      ? "bg-amber-500/20 text-amber-400 border-amber-500/40"
-                      : "bg-emerald-500/20 text-emerald-400 border-emerald-500/40"
+                      ? "bg-[#FF00FF] text-white"
+                      : "bg-[#00C2CB] text-black"
                   }`}
                 >
                   {h.diagnostic_status}
@@ -244,41 +276,41 @@ export default function GovernancePage() {
               </div>
 
               <div className="flex items-baseline gap-2">
-                <span className="text-3xl font-bold font-mono text-white">
+                <span className="text-3xl font-black font-mono text-black">
                   {(h.override_rate * 100).toFixed(1)}%
                 </span>
-                <span className="text-xs text-[#A1A1AA]">Override Rate ({h.total_overrides}/{h.total_evaluations})</span>
+                <span className="text-xs font-bold text-black/70">Override Rate ({h.total_overrides}/{h.total_evaluations})</span>
               </div>
 
-              <div className="flex flex-col gap-1 text-xs text-[#A1A1AA] pt-2 border-t border-[#27272A]">
-                <div className="flex justify-between">
-                  <span>Primary Reason:</span>
-                  <span className="font-mono text-white">{h.primary_override_reason}</span>
+              <div className="flex flex-col gap-1.5 text-xs text-black/80 font-medium pt-3 border-t-[2px] border-black/15">
+                <div className="flex justify-between items-center">
+                  <span className="font-bold">Primary Reason:</span>
+                  <span className="font-mono font-bold text-black bg-white px-1.5 py-0.5 rounded border border-black/40 text-[11px] truncate max-w-[160px]">{h.primary_override_reason}</span>
                 </div>
-                <div className="flex justify-between">
-                  <span>Total Flags:</span>
-                  <span className="font-mono text-white">{h.total_flags}</span>
+                <div className="flex justify-between items-center">
+                  <span className="font-bold">Total Flags:</span>
+                  <span className="font-mono font-black text-black">{h.total_flags}</span>
                 </div>
               </div>
             </div>
           ))}
 
           {healthData.length === 0 && (
-            <div className="p-5 rounded-xl border bg-amber-500/5 border-amber-500/30 flex flex-col gap-3">
+            <div className="p-5 neo-box bg-[#FFF9E6] flex flex-col gap-3">
               <div className="flex items-center justify-between">
-                <span className="font-mono text-xs font-bold text-white">TERM-007</span>
-                <span className="text-[10px] font-mono px-2 py-0.5 rounded font-semibold border bg-amber-500/20 text-amber-400 border-amber-500/40">
+                <span className="font-mono text-sm font-black text-black">TERM-007</span>
+                <span className="neo-badge bg-[#FF00FF] text-white text-[10px] font-black">
                   SCOPE_MISMATCH
                 </span>
               </div>
               <div className="flex items-baseline gap-2">
-                <span className="text-3xl font-bold font-mono text-white">37.5%</span>
-                <span className="text-xs text-[#A1A1AA]">Override Rate (9/24)</span>
+                <span className="text-3xl font-black font-mono text-black">37.5%</span>
+                <span className="text-xs font-bold text-black/70">Override Rate (9/24)</span>
               </div>
-              <div className="flex flex-col gap-1 text-xs text-[#A1A1AA] pt-2 border-t border-[#27272A]">
-                <div className="flex justify-between">
-                  <span>Primary Reason:</span>
-                  <span className="font-mono text-white">JUSTIFIED_EDUCATIONAL_CONTEXT</span>
+              <div className="flex flex-col gap-1.5 text-xs text-black/80 font-medium pt-3 border-t-[2px] border-black/15">
+                <div className="flex justify-between items-center">
+                  <span className="font-bold">Primary Reason:</span>
+                  <span className="font-mono font-bold text-black bg-white px-1.5 py-0.5 rounded border border-black/40 text-[11px]">JUSTIFIED_EDUCATIONAL_CONTEXT</span>
                 </div>
               </div>
             </div>
@@ -286,26 +318,54 @@ export default function GovernancePage() {
         </div>
       </section>
 
+      {/* Candidate Proposal Selector (If multiple proposals exist) */}
+      {proposals.length > 1 && (
+        <div className="flex items-center gap-3">
+          <span className="text-xs font-black uppercase font-mono text-black">Active Proposal:</span>
+          <div className="flex flex-wrap gap-2">
+            {proposals.map((p) => (
+              <button
+                key={p.id}
+                type="button"
+                onClick={() => {
+                  setActiveProposal(p);
+                  syncUrlParams(p.proposal_code);
+                }}
+                className={`neo-btn text-xs font-mono font-black ${
+                  activeProposal?.id === p.id
+                    ? "neo-btn-teal"
+                    : "neo-btn-white"
+                }`}
+              >
+                {p.proposal_code} — {p.title}
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
+
       {/* Section 2: Candidate Proposal & Diff Viewer */}
       {activeProposal && (
-        <section className="bg-[#18181B] border border-[#27272A] rounded-2xl p-6 flex flex-col gap-6">
-          <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 border-b border-[#27272A] pb-4">
+        <section className="neo-box-prominent bg-white p-6 md:p-8 flex flex-col gap-6">
+          <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 border-b-[2.5px] border-black pb-4">
             <div className="flex items-center gap-2.5">
-              <Sparkles className="w-4 h-4 text-amber-400" />
-              <h2 className="text-base font-semibold text-white">
+              <div className="w-8 h-8 rounded bg-[#FFD700] border-[2px] border-black flex items-center justify-center shadow-[1px_1px_0px_#000000]">
+                <Sparkles className="w-4 h-4 text-black stroke-[2.5]" />
+              </div>
+              <h2 className="text-xl font-black text-black">
                 Deterministic Proposal {activeProposal.proposal_code}: {activeProposal.title}
               </h2>
             </div>
             <div className="flex items-center gap-2">
-              <span className="text-xs text-[#71717A]">Target Rule:</span>
-              <span className="font-mono text-xs px-2 py-0.5 rounded bg-[#27272A] text-white">
+              <span className="text-xs font-bold text-black/70 font-mono">Target:</span>
+              <span className="neo-badge bg-[#FFD700] text-black text-xs font-black">
                 {activeProposal.target_rule_code}
               </span>
               <span
-                className={`text-[10px] font-mono font-bold px-2 py-0.5 rounded border ${
+                className={`neo-badge text-xs font-black ${
                   activeProposal.status === "ADOPTED"
-                    ? "bg-emerald-500/10 border-emerald-500/30 text-emerald-400"
-                    : "bg-blue-500/10 border-blue-500/30 text-blue-400"
+                    ? "bg-[#00C2CB] text-black"
+                    : "bg-white text-black"
                 }`}
               >
                 {activeProposal.status}
@@ -313,28 +373,28 @@ export default function GovernancePage() {
             </div>
           </div>
 
-          <p className="text-xs md:text-sm text-[#A1A1AA] leading-relaxed">
+          <p className="text-sm font-medium text-black/90 leading-relaxed bg-[#F4F0EA] p-4 rounded-xl border-[2px] border-black">
             {activeProposal.rationale}
           </p>
 
           {/* Diff Box */}
           <div className="flex flex-col gap-2">
-            <span className="text-xs font-mono text-[#71717A] uppercase tracking-wider">
+            <span className="text-xs font-mono font-black text-black uppercase tracking-wider">
               Rule Scope Specification Diff
             </span>
-            <div className="bg-[#09090B] border border-[#27272A] rounded-xl p-4 font-mono text-xs flex flex-col gap-3">
-              <div className="text-red-400 flex items-start gap-2">
-                <span className="font-bold select-none">-</span>
-                <span>
+            <div className="neo-box bg-[#F9F9F8] p-4 font-mono text-xs flex flex-col gap-3">
+              <div className="p-3 rounded-lg bg-[#FFE6E6] border-[2px] border-black text-red-950 flex items-start gap-2 shadow-[2px_2px_0px_#000000]">
+                <span className="font-black select-none text-base leading-none text-red-600">-</span>
+                <span className="font-semibold leading-relaxed">
                   &ldquo;
                   {activeProposal.proposed_diff.previous_text ||
                     "All educational case studies and technical thought leadership articles must display full state statutory disclosures prominently."}
                   &rdquo;
                 </span>
               </div>
-              <div className="text-emerald-400 flex items-start gap-2">
-                <span className="font-bold select-none">+</span>
-                <span>
+              <div className="p-3 rounded-lg bg-[#E6FAFA] border-[2px] border-black text-teal-950 flex items-start gap-2 shadow-[2px_2px_0px_#000000]">
+                <span className="font-black select-none text-base leading-none text-teal-700">+</span>
+                <span className="font-bold leading-relaxed">
                   &ldquo;
                   {activeProposal.proposed_diff.proposed_text ||
                     "All educational case studies and technical thought leadership articles must display full state statutory disclosures prominently, except when published exclusively within verified enterprise partner portals."}
@@ -346,10 +406,10 @@ export default function GovernancePage() {
 
           {/* Section 3: Backtest Simulation Controls */}
           <div className="flex flex-col gap-4 pt-2">
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-4 rounded-xl bg-[#F4F0EA] border-[2px] border-black">
               <div className="flex flex-col gap-0.5">
-                <h3 className="text-sm font-semibold text-white">Empirical Backtest Simulation</h3>
-                <p className="text-xs text-[#71717A]">
+                <h3 className="text-sm font-black text-black">Empirical Backtest Simulation</h3>
+                <p className="text-xs font-medium text-black/75">
                   Replay 24 historical marketing submissions against the proposed scope exception.
                 </p>
               </div>
@@ -358,106 +418,98 @@ export default function GovernancePage() {
                 type="button"
                 onClick={handleRunBacktest}
                 disabled={isBacktesting}
-                className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-blue-600 hover:bg-blue-500 disabled:opacity-50 text-white text-xs font-semibold transition"
+                className="neo-btn neo-btn-teal text-xs font-black inline-flex items-center gap-2 px-5 py-2.5"
               >
                 {isBacktesting ? (
                   <>
                     <RefreshCw className="w-3.5 h-3.5 animate-spin" />
-                    <span>Simulating 24 Historical Submissions...</span>
+                    <span>Executing Simulation (24 items)...</span>
                   </>
                 ) : (
                   <>
-                    <Play className="w-3.5 h-3.5 fill-current" />
-                    <span>Run Backtest Simulation</span>
+                    <Play className="w-3.5 h-3.5 stroke-[2.5]" />
+                    <span>Run Pre-Deployment Backtest</span>
                   </>
                 )}
               </button>
             </div>
 
-            {/* Backtest Scorecard */}
+            {errorMessage && (
+              <div className="p-3 rounded-lg bg-[#FF00FF] text-white border-[2.5px] border-black font-bold text-xs shadow-[2px_2px_0px_#000000]">
+                {errorMessage}
+              </div>
+            )}
+
+            {/* Backtest Simulation Results */}
             {backtestRun && (
-              <div className="p-5 rounded-xl bg-[#09090B] border border-blue-500/30 flex flex-col gap-4">
-                <div className="flex items-center justify-between text-xs">
-                  <span className="font-semibold text-white">Simulation Completed: Zero Regressions Detected</span>
-                  <span className="px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-400 font-mono text-[11px] font-bold">
-                    RECOMMENDATION: {backtestRun.recommendation}
+              <div className="grid grid-cols-1 sm:grid-cols-4 gap-4 p-5 neo-box bg-[#F4F0EA] animate-in fade-in duration-200">
+                <div className="flex flex-col gap-1">
+                  <span className="text-[11px] font-mono font-bold text-black/70 uppercase">Historical Analyzed</span>
+                  <span className="text-xl font-mono font-black text-black">
+                    {backtestRun.historical_submissions_analyzed} drafts
                   </span>
                 </div>
-
-                <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-                  <div className="flex flex-col gap-1">
-                    <span className="text-[11px] text-[#A1A1AA]">Analyzed Submissions</span>
-                    <span className="text-xl font-bold font-mono text-white">
-                      {backtestRun.historical_submissions_analyzed}
+                <div className="flex flex-col gap-1">
+                  <span className="text-[11px] font-mono font-bold text-black/70 uppercase">Simulated Pass Rate</span>
+                  <div className="flex items-center gap-2">
+                    <span className="text-xl font-mono font-black text-black bg-[#00C2CB] px-2 py-0.5 rounded border border-black shadow-[1px_1px_0px_#000000]">
+                      {(backtestRun.simulated_pass_rate * 100).toFixed(0)}%
+                    </span>
+                    <span className="text-xs text-black/60 line-through font-mono font-bold">
+                      {(backtestRun.prior_pass_rate * 100).toFixed(0)}%
                     </span>
                   </div>
-                  <div className="flex flex-col gap-1">
-                    <span className="text-[11px] text-[#A1A1AA]">Pass Rate Delta</span>
-                    <span className="text-xl font-bold font-mono text-emerald-400">
-                      {(backtestRun.prior_pass_rate * 100).toFixed(1)}% &rarr;{" "}
-                      {(backtestRun.simulated_pass_rate * 100).toFixed(1)}%
-                    </span>
-                  </div>
-                  <div className="flex flex-col gap-1">
-                    <span className="text-[11px] text-[#A1A1AA]">False Positives Cut</span>
-                    <span className="text-xl font-bold font-mono text-emerald-400">
-                      {backtestRun.false_positives_eliminated}
-                    </span>
-                  </div>
-                  <div className="flex flex-col gap-1">
-                    <span className="text-[11px] text-[#A1A1AA]">Critical Regressions</span>
-                    <span className="text-xl font-bold font-mono text-white">
-                      {backtestRun.regressions_detected} (Safety: {(backtestRun.safety_score * 100).toFixed(0)}%)
-                    </span>
-                  </div>
+                </div>
+                <div className="flex flex-col gap-1">
+                  <span className="text-[11px] font-mono font-bold text-black/70 uppercase">False Positives</span>
+                  <span className="text-xl font-mono font-black text-black bg-[#FFD700] px-2 py-0.5 rounded border border-black shadow-[1px_1px_0px_#000000] inline-block w-fit">
+                    -{backtestRun.false_positives_eliminated}
+                  </span>
+                </div>
+                <div className="flex flex-col gap-1">
+                  <span className="text-[11px] font-mono font-bold text-black/70 uppercase">Regressions</span>
+                  <span className="text-xl font-mono font-black text-black bg-[#00C2CB] px-2 py-0.5 rounded border border-black shadow-[1px_1px_0px_#000000] inline-block w-fit">
+                    {backtestRun.regressions_detected} (Safe)
+                  </span>
                 </div>
               </div>
             )}
-          </div>
 
-          {/* Section 4: Human Brand Manager Approval Gate (Invariant JRN-06, TST-14) */}
-          <div className="p-5 rounded-xl bg-amber-500/5 border border-amber-500/30 flex flex-col gap-4">
-            <div className="flex items-start gap-3">
-              <ShieldCheck className="w-5 h-5 text-amber-400 shrink-0 mt-0.5" />
-              <div className="flex flex-col gap-1">
-                <h3 className="text-sm font-semibold text-white">
-                  Human Brand Manager Approval Gate (Binding Invariant)
-                </h3>
-                <p className="text-xs text-[#A1A1AA] leading-relaxed">
-                  <strong>Invariant:</strong> Policy v1.1 is <em>never</em> automatically activated. System recommendations require explicit human Brand Manager sign-off. Clicking adopt will retire Policy v1.0, activate Policy v1.1, and record your identity in the immutable audit log.
-                </p>
-              </div>
-            </div>
-
+            {/* Human Adoption Gate (Section 3: Human Authority Required) */}
             {adoptedResult ? (
-              <div className="p-4 rounded-lg bg-emerald-500/10 border border-emerald-500/30 flex flex-col gap-2 text-xs">
-                <div className="flex items-center gap-2 text-emerald-400 font-semibold">
-                  <CheckCircle2 className="w-4 h-4" />
-                  <span>Policy v1.1 Activated and Live</span>
+              <div className="p-5 neo-box bg-[#00C2CB] text-black flex items-start gap-3">
+                <div className="w-8 h-8 rounded-full bg-white border-[2px] border-black flex items-center justify-center shrink-0 mt-0.5 shadow-[1px_1px_0px_#000000]">
+                  <CheckCircle2 className="w-5 h-5 text-black stroke-[2.5]" />
                 </div>
-                <p className="text-[#FAFAFA]">{adoptedResult.message}</p>
-                <div className="flex items-center gap-3 font-mono text-[11px] text-[#A1A1AA] pt-1">
-                  <span>Approved By: {adoptedResult.approved_by}</span>
-                  <span>•</span>
-                  <span>Archived: Policy v1.0</span>
+                <div className="flex flex-col gap-1 text-xs">
+                  <span className="font-black text-sm uppercase tracking-wide">
+                    Policy v1.1 Officially Activated &amp; Sealed
+                  </span>
+                  <p className="font-medium text-black/90 leading-relaxed text-xs">
+                    {adoptedResult.message}
+                  </p>
+                  <div className="flex flex-wrap items-center gap-4 text-xs font-mono font-bold text-black mt-2 pt-2 border-t-[2px] border-black/20">
+                    <span>Approved by: {adoptedResult.approved_by}</span>
+                    <span>Timestamp: {new Date(adoptedResult.approved_at).toLocaleTimeString()}</span>
+                  </div>
                 </div>
               </div>
             ) : (
-              <div className="flex items-center justify-end">
+              <div className="flex items-center justify-end pt-2">
                 <button
                   type="button"
                   onClick={handleAdoptProposal}
                   disabled={isAdopting}
-                  className="inline-flex items-center gap-2 px-5 py-2.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 disabled:opacity-50 text-white text-xs font-semibold transition shadow-sm"
+                  className="neo-btn neo-btn-magenta text-xs font-black inline-flex items-center gap-2 px-6 py-3 shadow-[4px_4px_0px_#000000]"
                 >
                   {isAdopting ? (
                     <>
-                      <RefreshCw className="w-3.5 h-3.5 animate-spin" />
+                      <RefreshCw className="w-4 h-4 animate-spin" />
                       <span>Creating Policy v1.1 (Human Approval)...</span>
                     </>
                   ) : (
                     <>
-                      <UserCheck className="w-4 h-4" />
+                      <UserCheck className="w-4 h-4 stroke-[2.5]" />
                       <span>Adopt as Policy v1.1 (Human Approval)</span>
                     </>
                   )}
@@ -470,3 +522,18 @@ export default function GovernancePage() {
     </div>
   );
 }
+
+export default function GovernancePage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="flex-1 w-full max-w-7xl mx-auto px-6 py-10 text-black font-mono font-bold text-xs">
+          Loading Governance Intelligence Workspace...
+        </div>
+      }
+    >
+      <GovernanceContent />
+    </Suspense>
+  );
+}
+

@@ -161,3 +161,58 @@ def test_check_api_endpoint_flow(client, creator_headers):
     checks_list = list_res.json()
     assert len(checks_list) >= 1
     assert checks_list[0]["id"] == data["id"]
+
+
+def test_one_click_apply_suggestion_remediation_cycle(client, creator_headers):
+    """Verifies PROP-U05: one-click suggestion application, draft versioning, and re-check."""
+    session = TestSessionLocal()
+    sub02 = session.query(Submission).filter(Submission.title.contains("4 Violations")).first()
+    sub_id = str(sub02.id)
+    initial_content = sub02.versions[0].content
+    session.close()
+
+    # 1. Initial check run on SUB-02
+    check1_res = client.post(f"/api/v1/submissions/{sub_id}/check", headers=creator_headers)
+    assert check1_res.status_code == 200
+    check1 = check1_res.json()
+    assert check1["total_findings"] == 4
+
+    term_finding = next((f for f in check1["findings"] if f["rule_code"] == "TERM-001"), None)
+    assert term_finding is not None
+    assert (
+        term_finding["suggested_fix"]
+        == "Partner with Acme Financial Technologies, an FDIC-insured banking partner."
+    )
+    assert term_finding["start_offset"] == 0
+    assert term_finding["end_offset"] == 10
+
+    # 2. Apply single suggestion via text slice: content[:start] + fix + content[end:]
+    remediated_content = (
+        initial_content[: term_finding["start_offset"]]
+        + term_finding["suggested_fix"]
+        + initial_content[term_finding["end_offset"] :]
+    )
+    assert remediated_content.startswith(
+        "Partner with Acme Financial Technologies, an FDIC-insured banking partner. for all your financial operations!"
+    )
+
+    # 3. Post revision v2
+    v2_res = client.post(
+        f"/api/v1/submissions/{sub_id}/versions",
+        headers=creator_headers,
+        json={"content": remediated_content},
+    )
+    assert v2_res.status_code == 201
+    v2_data = v2_res.json()
+    assert v2_data["current_version_number"] == 2
+    assert len(v2_data["versions"]) == 2
+
+    # 4. Re-check v2
+    check2_res = client.post(f"/api/v1/submissions/{sub_id}/check", headers=creator_headers)
+    assert check2_res.status_code == 200
+    check2 = check2_res.json()
+    assert check2["total_findings"] == 3  # Reduced from 4 to 3
+    remaining_codes = {f["rule_code"] for f in check2["findings"]}
+    assert "TERM-001" not in remaining_codes
+    assert "TONE-002" in remaining_codes
+

@@ -14,6 +14,20 @@ jobs:
       run:
         working-directory: backend
 
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_DB: canon_test
+          POSTGRES_PASSWORD: testpassword
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 5
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -27,14 +41,31 @@ jobs:
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install ruff pytest httpx pydantic pydantic-settings sqlalchemy alembic argon2-cffi pyjwt rapidfuzz fastapi uvicorn
+          pip install ruff mypy pytest psycopg2-binary httpx pydantic pydantic-settings sqlalchemy alembic argon2-cffi pyjwt rapidfuzz fastapi uvicorn
 
       - name: Run Ruff Lint
         run: ruff check app tests
 
-      - name: Run Pytest Unit Tests
+      - name: Run Pytest Unit Tests (SQLite in-memory)
         env:
           JWT_SECRET_KEY: test-secret-key-32-bytes-minimum-length
           DATABASE_URL: sqlite:///./test.db
           LLM_PROVIDER: mock
         run: pytest tests/unit -v --tb=short
+
+      - name: Provision PostgreSQL Roles (canon_owner and canon_app)
+        env:
+          PGPASSWORD: testpassword
+        run: |
+          psql -h localhost -U postgres -d canon_test -c "CREATE ROLE canon_owner WITH LOGIN PASSWORD 'canon_owner_pw' CREATEDB; CREATE ROLE canon_app WITH LOGIN PASSWORD 'canon_app_pw' NOSUPERUSER NOCREATEDB NOCREATEROLE NOBYPASSRLS; GRANT ALL PRIVILEGES ON DATABASE canon_test TO canon_owner; GRANT CONNECT ON DATABASE canon_test TO canon_app; GRANT ALL ON SCHEMA public TO canon_owner; ALTER SCHEMA public OWNER TO canon_owner; GRANT USAGE ON SCHEMA public TO canon_app;"
+
+      - name: Run Alembic Migrations as canon_owner
+        env:
+          DIRECT_URL: postgresql://canon_owner:canon_owner_pw@localhost:5432/canon_test
+        run: alembic upgrade head
+
+      - name: Run PostgreSQL RLS Tests as canon_app
+        env:
+          TEST_DATABASE_URL_OWNER: postgresql://canon_owner:canon_owner_pw@localhost:5432/canon_test
+          TEST_DATABASE_URL_APP: postgresql://canon_app:canon_app_pw@localhost:5432/canon_test
+        run: pytest -m postgres -v --tb=short

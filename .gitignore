@@ -49,7 +49,10 @@ yarn-error.log*
 # Database & Volumes
 *.sqlite
 *.sqlite3
+*.db
 pgdata/
+scratch/
+download.png
 
 # OS & Editor
 # Uploaded reference source PDFs
