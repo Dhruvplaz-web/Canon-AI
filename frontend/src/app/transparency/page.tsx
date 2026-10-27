@@ -70,7 +70,7 @@ export default function TransparencyPage() {
   return (
     <div className="flex-1 w-full max-w-7xl mx-auto px-6 py-10 flex flex-col gap-8 text-black">
       {/* Header */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b-[2.5px] border-black pb-6">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-[#E5E7EB] pb-6">
         <div>
           <div className="flex items-center gap-2 mb-2">
             <span className="neo-badge bg-[#00C2CB] text-black text-xs font-black">
@@ -189,21 +189,21 @@ export default function TransparencyPage() {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs">
-          <div className="p-4 neo-box bg-[#F4F0EA] flex flex-col gap-2">
+          <div className="p-4 neo-box bg-[#F8F9FA] flex flex-col gap-2">
             <span className="font-black text-black text-sm">Double-Receipt Grounding</span>
             <p className="text-black/80 font-medium leading-relaxed">
               Every candidate finding must satisfy Receipt A (verbatim draft span) and Receipt B (verbatim policy quote) before persistence. Unanchored findings are dropped.
             </p>
           </div>
 
-          <div className="p-4 neo-box bg-[#F4F0EA] flex flex-col gap-2">
+          <div className="p-4 neo-box bg-[#F8F9FA] flex flex-col gap-2">
             <span className="font-black text-black text-sm">Immutable Audit Trail</span>
             <p className="text-black/80 font-medium leading-relaxed">
               All human overrides, reason codes, and policy adoption decisions are logged in an append-only table with PostgreSQL DDL revoking UPDATE and DELETE privileges.
             </p>
           </div>
 
-          <div className="p-4 neo-box bg-[#F4F0EA] flex flex-col gap-2">
+          <div className="p-4 neo-box bg-[#F8F9FA] flex flex-col gap-2">
             <span className="font-black text-black text-sm">Single-Origin Cookie Auth</span>
             <p className="text-black/80 font-medium leading-relaxed">
               Session tokens are transmitted strictly via httpOnly secure SameSite cookies proxied via Next.js edge rewrites, completely immune to localStorage XSS token theft.

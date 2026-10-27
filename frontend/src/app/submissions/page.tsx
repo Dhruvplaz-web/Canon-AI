@@ -126,15 +126,15 @@ function computeHighlightSpans(
       const colorClass =
         f.severity === "CRITICAL"
           ? isSelected
-            ? "bg-[#FF00FF] border-2 border-black shadow-[2px_2px_0px_#000]"
-            : "bg-[#FF00FF]/35 border-b-2 border-black"
+            ? "bg-red-200 border-2 border-red-600 rounded"
+            : "bg-red-100/80 border-b-2 border-red-500 rounded"
           : f.severity === "WARNING"
           ? isSelected
-            ? "bg-[#FFD700] border-2 border-black shadow-[2px_2px_0px_#000]"
-            : "bg-[#FFD700]/55 border-b-2 border-black"
+            ? "bg-amber-200 border-2 border-amber-600 rounded"
+            : "bg-amber-100/80 border-b-2 border-amber-500 rounded"
           : isSelected
-          ? "bg-[#00C2CB] border-2 border-black shadow-[2px_2px_0px_#000]"
-          : "bg-[#00C2CB]/45 border-b-2 border-black";
+          ? "bg-blue-200 border-2 border-blue-600 rounded"
+          : "bg-blue-100/80 border-b-2 border-blue-500 rounded";
 
       spans.push(
         <mark
@@ -442,7 +442,7 @@ function SubmissionsContent() {
   return (
     <div className="flex-1 w-full max-w-7xl mx-auto px-6 py-10 flex flex-col gap-8">
       {/* Page Header */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b-2.5 border-black pb-6">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-[#E5E7EB] pb-6">
         <div>
           <div className="flex items-center gap-2 mb-2">
             <span className="neo-badge bg-[#00C2CB] text-black">SCR-03 & SCR-04</span>
@@ -486,15 +486,15 @@ function SubmissionsContent() {
                     key={f.code}
                     type="button"
                     onClick={() => loadFixture(f)}
-                    className={`text-left p-3.5 rounded-xl border-2.5 border-black transition text-xs flex flex-col gap-1.5 cursor-pointer focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-black ${
+                    className={`text-left p-3.5 rounded-xl border border-[#E5E7EB] transition text-xs flex flex-col gap-1.5 cursor-pointer focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-black ${
                       isSelected
-                        ? `${accentBg} shadow-[4px_4px_0px_#000] translate-x-[-1px] translate-y-[-1px]`
-                        : "bg-white hover:bg-[#FDFBF7] shadow-[2px_2px_0px_#000] hover:shadow-[4px_4px_0px_#000]"
+                        ? `${accentBg} shadow-sm translate-y-[-1px]`
+                        : "bg-white hover:bg-[#FDFBF7] shadow-xs hover:shadow-sm"
                     }`}
                   >
                     <div className="flex items-center justify-between font-mono font-black">
                       <span className="text-black">{f.code}</span>
-                      <span className={`text-[10px] px-2 py-0.5 rounded border-2 border-black font-black uppercase ${outcomeBadgeBg}`}>
+                      <span className={`text-[10px] px-2 py-0.5 rounded border border-[#E5E7EB] font-black uppercase ${outcomeBadgeBg}`}>
                         {f.outcome}
                       </span>
                     </div>
@@ -543,7 +543,7 @@ function SubmissionsContent() {
 
             {/* Violation Navigation Bar & Quick Remediations (PROP-U04 / PROP-U05) */}
             {checkResult && checkResult.findings.length > 0 && (
-              <div className="flex flex-col gap-2.5 pt-3 border-t-2 border-black">
+              <div className="flex flex-col gap-2.5 pt-3 border-t border-[#E5E7EB]">
                 <div className="flex items-center justify-between text-xs">
                   <div className="flex items-center gap-1.5 text-black">
                     <Sparkles className="w-4 h-4 text-black" />
@@ -572,12 +572,12 @@ function SubmissionsContent() {
                         key={f.id}
                         type="button"
                         onClick={() => handleLocateFinding(f)}
-                        className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-mono transition border-2 border-black cursor-pointer ${
+                        className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-mono transition border border-[#E5E7EB] cursor-pointer ${
                           isSelected
-                            ? "bg-black text-white shadow-[3px_3px_0px_#000] translate-x-[-1px] translate-y-[-1px]"
+                            ? "bg-black text-white shadow-xs translate-y-[-1px]"
                             : f.severity === "CRITICAL"
-                            ? "bg-[#FF00FF] text-white shadow-[2px_2px_0px_#000] hover:shadow-[3px_3px_0px_#000]"
-                            : "bg-[#FFD700] text-black shadow-[2px_2px_0px_#000] hover:shadow-[3px_3px_0px_#000]"
+                            ? "bg-[#FF00FF] text-white shadow-xs hover:shadow-xs"
+                            : "bg-[#FFD700] text-black shadow-xs hover:shadow-xs"
                         }`}
                       >
                         <span className="font-black">{f.rule_code}</span>
@@ -591,10 +591,10 @@ function SubmissionsContent() {
 
             {/* In-Editor Floating Suggestion Popover (PROP-U05) */}
             {selectedFinding && (
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-3.5 rounded-xl bg-white border-2.5 border-black shadow-[6px_6px_0px_#000] text-xs animate-in fade-in duration-150">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-3.5 rounded-xl bg-white border border-[#E5E7EB] shadow-md text-xs animate-in fade-in duration-150">
                 <div className="flex items-center gap-2.5 min-w-0 flex-wrap">
                   <span
-                    className={`px-2 py-0.5 rounded font-mono font-black text-[10px] border-2 border-black shrink-0 ${
+                    className={`px-2 py-0.5 rounded font-mono font-black text-[10px] border border-[#E5E7EB] shrink-0 ${
                       selectedFinding.severity === "CRITICAL"
                         ? "bg-[#FF00FF] text-white"
                         : "bg-[#FFD700] text-black"
@@ -628,7 +628,7 @@ function SubmissionsContent() {
                   <button
                     type="button"
                     onClick={() => setSelectedFindingId(null)}
-                    className="p-1 rounded-md border-2 border-transparent hover:border-black hover:bg-[#F4F0EA] text-black transition"
+                    className="p-1 rounded-md border-2 border-transparent hover:border-black hover:bg-[#F8F9FA] text-black transition"
                     title="Dismiss popover"
                   >
                     <X className="w-4 h-4" />
@@ -639,7 +639,7 @@ function SubmissionsContent() {
 
             {/* Notification of Remediated Changes */}
             {appliedNotice && (
-              <div className="p-3.5 rounded-xl bg-[#00C2CB] border-2.5 border-black text-black font-bold text-xs flex items-center justify-between gap-3 shadow-[3px_3px_0px_#000] animate-in fade-in duration-150">
+              <div className="p-3.5 rounded-xl bg-[#00C2CB] border border-[#E5E7EB] text-black font-bold text-xs flex items-center justify-between gap-3 shadow-xs animate-in fade-in duration-150">
                 <div className="flex items-center gap-2">
                   <CheckCircle2 className="w-4 h-4 shrink-0 text-black" />
                   <span>{appliedNotice}</span>
@@ -708,7 +708,7 @@ function SubmissionsContent() {
                   const file = e.dataTransfer.files?.[0];
                   if (file) processFile(file);
                 }}
-                className={`relative w-full rounded-xl bg-white border-2.5 border-black shadow-[4px_4px_0px_#000] focus-within:shadow-[6px_6px_0px_#000] focus-within:border-black overflow-hidden transition-all ${
+                className={`relative w-full rounded-xl bg-white border border-[#E5E7EB] shadow-sm focus-within:shadow-md focus-within:border-black overflow-hidden transition-all ${
                   isDraggingFile ? "ring-4 ring-[#FFD700] border-dashed" : ""
                 }`}
               >
@@ -800,7 +800,7 @@ function SubmissionsContent() {
           </div>
 
           {errorMessage && (
-            <div className="p-4 rounded-xl bg-[#FF00FF] border-2.5 border-black text-white text-xs flex items-start gap-3 shadow-[4px_4px_0px_#000]">
+            <div className="p-4 rounded-xl bg-[#FF00FF] border border-[#E5E7EB] text-white text-xs flex items-start gap-3 shadow-sm">
               <AlertCircle className="w-5 h-5 shrink-0 mt-0.5 text-white" />
               <div className="flex flex-col gap-1">
                 <strong className="font-black text-sm uppercase">Pipeline Error</strong>
@@ -811,7 +811,7 @@ function SubmissionsContent() {
 
           {!checkResult && !isChecking && !errorMessage && (
             <div className="neo-box p-8 text-center flex flex-col items-center justify-center gap-3 min-h-[320px]">
-              <div className="w-12 h-12 rounded-xl bg-[#F4F0EA] border-2 border-black flex items-center justify-center text-black shadow-[2px_2px_0px_#000]">
+              <div className="w-12 h-12 rounded-xl bg-[#F8F9FA] border border-[#E5E7EB] flex items-center justify-center text-black shadow-xs">
                 <FileText className="w-6 h-6" />
               </div>
               <h3 className="text-base font-black text-black">No check run executed yet</h3>
@@ -843,7 +843,7 @@ function SubmissionsContent() {
             <div className="flex flex-col gap-4">
               {/* Outcome Banner */}
               <div
-                className={`p-4 rounded-xl border-2.5 border-black flex items-center justify-between shadow-[4px_4px_0px_#000] ${
+                className={`p-4 rounded-xl border border-[#E5E7EB] flex items-center justify-between shadow-sm ${
                   checkResult.total_findings === 0
                     ? "bg-[#00C2CB] text-black"
                     : "bg-[#FFD700] text-black"
@@ -874,7 +874,7 @@ function SubmissionsContent() {
                     type="button"
                     onClick={() => handleDownloadCertificate(submissionId)}
                     disabled={isDownloadingCert}
-                    className="neo-btn neo-btn-white text-xs py-1.5 px-3 border-2 border-black shrink-0 shadow-[2px_2px_0px_#000] hover:bg-[#FFD700]"
+                    className="neo-btn neo-btn-white text-xs py-1.5 px-3 border border-[#E5E7EB] shrink-0 shadow-xs hover:bg-[#FFD700]"
                   >
                     <ShieldCheck className="w-3.5 h-3.5 text-black" />
                     <span>{isDownloadingCert ? "Verifying..." : "View Certificate"}</span>
@@ -902,8 +902,8 @@ function SubmissionsContent() {
                       onClick={() => handleLocateFinding(f)}
                       className={`neo-box p-4 flex flex-col gap-3 cursor-pointer transition ${
                         isSelected
-                          ? "shadow-[6px_6px_0px_#000] translate-x-[-1px] translate-y-[-1px] ring-2 ring-black"
-                          : "hover:shadow-[6px_6px_0px_#000]"
+                          ? "shadow-md translate-y-[-1px] ring-2 ring-black"
+                          : "hover:shadow-md"
                       }`}
                     >
                       <div className="flex items-center justify-between">
@@ -932,7 +932,7 @@ function SubmissionsContent() {
                               e.stopPropagation();
                               handleLocateFinding(f);
                             }}
-                            className="p-1 rounded border-2 border-transparent hover:border-black hover:bg-[#F4F0EA] text-black transition"
+                            className="p-1 rounded border-2 border-transparent hover:border-black hover:bg-[#F8F9FA] text-black transition"
                             title="Locate span in draft editor"
                           >
                             <Crosshair className="w-4 h-4" />
@@ -945,20 +945,20 @@ function SubmissionsContent() {
                       {/* Double Receipt Box */}
                       <div className="grid grid-cols-1 gap-2 pt-1">
                         {/* Receipt A */}
-                        <div className="p-3 rounded-lg bg-[#FFF0F5] border-2 border-black flex flex-col gap-1">
+                        <div className="p-3 rounded-lg receipt-card-a flex flex-col gap-1">
                           <div className="flex items-center justify-between text-[10px] font-mono font-black text-black">
                             <span>RECEIPT A: DRAFT SPAN</span>
                             <span>
                               [{f.start_offset}:{f.end_offset}]
                             </span>
                           </div>
-                          <p className="text-xs font-mono text-[#D6006E] font-black">
+                          <p className="text-xs font-mono text-amber-900 font-black">
                             &ldquo;{f.receipt_a_draft_span}&rdquo;
                           </p>
                         </div>
 
                         {/* Receipt B */}
-                        <div className="p-3 rounded-lg bg-[#E6FAFA] border-2 border-black flex flex-col gap-1">
+                        <div className="p-3 rounded-lg receipt-card-b flex flex-col gap-1">
                           <div className="flex items-center justify-between text-[10px] font-mono font-black text-black">
                             <span>RECEIPT B: POLICY EXCERPT</span>
                             <span className="line-clamp-1">{f.source_document_title}</span>
@@ -972,12 +972,12 @@ function SubmissionsContent() {
                       {/* Suggested Fix Action (PROP-U05) */}
                       {f.suggested_fix && (
                         <div
-                          className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 pt-2 border-t-2 border-black"
+                          className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 pt-2 border-t border-[#E5E7EB]"
                           onClick={(e) => e.stopPropagation()}
                         >
                           <div className="flex items-center gap-1.5 text-xs">
                             <span className="text-black font-bold">Suggested fix:</span>
-                            <span className="font-mono text-black font-black bg-[#FFD700] px-2 py-0.5 rounded border-2 border-black">
+                            <span className="font-mono text-black font-black bg-[#FFD700] px-2 py-0.5 rounded border border-[#E5E7EB]">
                               &ldquo;{f.suggested_fix}&rdquo;
                             </span>
                           </div>

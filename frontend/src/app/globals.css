@@ -1,30 +1,93 @@
 @import "tailwindcss";
 
+@theme {
+  --color-canvas: var(--color-bg-canvas);
+  --color-subtle: var(--color-bg-subtle);
+  --color-surface: var(--color-surface);
+  --color-surface-hover: var(--color-surface-hover);
+  --color-surface-muted: var(--color-surface-muted);
+
+  --color-border-subtle: var(--color-border-subtle);
+  --color-border-strong: var(--color-border-strong);
+
+  --color-text-primary: var(--color-text-primary);
+  --color-text-secondary: var(--color-text-secondary);
+  --color-text-muted: var(--color-text-muted);
+
+  --color-primary: var(--color-primary);
+  --color-primary-hover: var(--color-primary-hover);
+  --color-primary-subtle: var(--color-primary-subtle);
+
+  --color-critical: var(--status-critical);
+  --color-critical-bg: var(--status-critical-bg);
+  --color-critical-border: var(--status-critical-border);
+
+  --color-warn: var(--status-warn);
+  --color-warn-bg: var(--status-warn-bg);
+  --color-warn-border: var(--status-warn-border);
+
+  --color-minor: var(--status-minor);
+  --color-minor-bg: var(--status-minor-bg);
+  --color-minor-border: var(--status-minor-border);
+
+  --color-pass: var(--status-pass);
+  --color-pass-bg: var(--status-pass-bg);
+  --color-pass-border: var(--status-pass-border);
+
+  --font-sans: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+
+  --radius-card: 12px;
+  --radius-button: 8px;
+  --radius-pill: 9999px;
+}
+
 :root {
-  /* Neo-Brutalist Design System Tokens */
-  --canvas-bg: #F4F0EA;
-  --surface: #FFFFFF;
-  --stroke-black: #000000;
+  /* Markup.ai Style Reference & Canon Enterprise Design System Tokens */
+  --color-bg-canvas: #f8f9fa;
+  --color-bg-subtle: #ffffff;
+  --color-surface: #ffffff;
+  --color-surface-hover: #f9fafb;
+  --color-surface-muted: #f3f4f6;
 
-  /* Solid Accent Blocks */
-  --accent-teal: #00C2CB;
-  --accent-magenta: #FF00FF;
-  --accent-yellow: #FFD700;
+  --color-border-subtle: #e5e7eb;
+  --color-border-strong: #d1d5db;
+  --color-border-focus: #2563eb;
 
-  /* Semantic Tokens */
-  --text-primary: #000000;
-  --text-muted: #333333;
-  --text-inverse: #FFFFFF;
+  --color-text-primary: #111827;
+  --color-text-secondary: #4b5563;
+  --color-text-muted: #6b7280;
 
-  --background: #F4F0EA;
-  --foreground: #000000;
+  --color-primary: #2563eb;
+  --color-primary-hover: #1d4ed8;
+  --color-primary-subtle: #eff6ff;
+
+  /* Semantic Severity Tokens */
+  --status-critical: #dc2626;
+  --status-critical-bg: #fef2f2;
+  --status-critical-border: #fecaca;
+
+  --status-warn: #d97706;
+  --status-warn-bg: #fffbeb;
+  --status-warn-border: #fde68a;
+
+  --status-minor: #2563eb;
+  --status-minor-bg: #eff6ff;
+  --status-minor-border: #bfdbfe;
+
+  --status-pass: #16a34a;
+  --status-pass-bg: #f0fdf4;
+  --status-pass-border: #bbf7d0;
+
+  --background: var(--color-bg-canvas);
+  --foreground: var(--color-text-primary);
 }
 
 html,
 body {
-  background-color: #F4F0EA !important;
-  color: #000000 !important;
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  background-color: #f8f9fa !important;
+  color: #111827 !important;
+  font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
   letter-spacing: -0.015em;
   -webkit-font-smoothing: antialiased;
   min-height: 100vh;
@@ -33,162 +96,210 @@ body {
 }
 
 main {
-  background-color: #F4F0EA !important;
-  color: #000000 !important;
+  background-color: #f8f9fa !important;
+  color: #111827 !important;
 }
 
-/* Neo-Brutalist Hard Drop Shadow Utilities */
-.neo-box {
-  background-color: #FFFFFF;
-  border: 2.5px solid #000000;
+/* Accessible focus visible ring replacement */
+:focus-visible {
+  outline: 2px solid #2563eb;
+  outline-offset: 2px;
+}
+
+/* Enterprise Card Containers */
+.enterprise-card {
+  background-color: #ffffff;
+  border: 1px solid #e5e7eb;
   border-radius: 12px;
-  box-shadow: 4px 4px 0px #000000;
-  color: #000000;
-  transition: all 0.15s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.04);
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.enterprise-card:hover {
+  border-color: #d1d5db;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.06), 0 2px 4px -2px rgba(0, 0, 0, 0.03);
+}
+
+/* Compatibility classes mapping to Markup.ai Design Tokens */
+.neo-box {
+  background-color: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.04);
+  color: #111827;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .neo-box:hover {
-  box-shadow: 6px 6px 0px #000000;
-  transform: translate(-1px, -1px);
+  border-color: #d1d5db;
+  box-shadow: 0 6px 12px -2px rgba(0, 0, 0, 0.06);
 }
 
 .neo-box-static {
-  background-color: #FFFFFF;
-  border: 2.5px solid #000000;
+  background-color: #ffffff;
+  border: 1px solid #e5e7eb;
   border-radius: 12px;
-  box-shadow: 4px 4px 0px #000000;
-  color: #000000;
+  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.03);
+  color: #111827;
 }
 
 .neo-box-prominent {
-  background-color: #FFFFFF;
-  border: 3px solid #000000;
+  background-color: #ffffff;
+  border: 1.5px solid #d1d5db;
   border-radius: 14px;
-  box-shadow: 6px 6px 0px #000000;
-  color: #000000;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+  color: #111827;
 }
 
-/* Tactile Neo-Brutalist Buttons */
+/* Enterprise Tactile Buttons */
 .neo-btn {
   display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: 0.5rem;
-  border: 2.5px solid #000000;
-  border-radius: 10px;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
   padding: 0.5rem 1rem;
-  font-weight: 800;
+  font-weight: 600;
   font-size: 0.8125rem;
   letter-spacing: -0.01em;
-  box-shadow: 3px 3px 0px #000000;
-  transition: all 0.12s ease;
+  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  transition: all 0.15s ease;
   cursor: pointer;
   user-select: none;
 }
 
 .neo-btn:hover {
-  transform: translate(-1px, -1px);
-  box-shadow: 5px 5px 0px #000000;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.08);
 }
 
 .neo-btn:active {
-  transform: translate(2px, 2px);
-  box-shadow: 1px 1px 0px #000000;
+  transform: translateY(0);
+  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
 }
 
 .neo-btn:focus-visible {
-  outline: 3px solid #000000;
-  outline-offset: 3px;
+  outline: 2px solid #2563eb;
+  outline-offset: 2px;
 }
 
 .neo-btn:disabled {
   opacity: 0.5;
   cursor: not-allowed;
   transform: none;
-  box-shadow: 2px 2px 0px #000000;
+  box-shadow: none;
 }
 
-/* Variant Button Fills */
+/* Variant Button Fills (Markup.ai Primary Blue & Secondary White) */
 .neo-btn-teal {
-  background-color: #00C2CB;
-  color: #000000;
+  background-color: #2563eb;
+  color: #ffffff;
+  border-color: #2563eb;
 }
 .neo-btn-teal:hover {
-  background-color: #00D8E2;
+  background-color: #1d4ed8;
+  border-color: #1d4ed8;
+  color: #ffffff;
 }
 
 .neo-btn-yellow {
-  background-color: #FFD700;
-  color: #000000;
+  background-color: #fef3c7;
+  color: #92400e;
+  border-color: #fde68a;
 }
 .neo-btn-yellow:hover {
-  background-color: #FFE600;
+  background-color: #fde68a;
 }
 
 .neo-btn-magenta {
-  background-color: #FF00FF;
-  color: #FFFFFF;
+  background-color: #7c3aed;
+  color: #ffffff;
+  border-color: #7c3aed;
 }
 .neo-btn-magenta:hover {
-  background-color: #FF33FF;
+  background-color: #6d28d9;
 }
 
 .neo-btn-white {
-  background-color: #FFFFFF;
-  color: #000000;
+  background-color: #ffffff;
+  color: #111827;
+  border-color: #e5e7eb;
 }
 .neo-btn-white:hover {
-  background-color: #F4F0EA;
+  background-color: #f9fafb;
+  border-color: #d1d5db;
 }
 
 .neo-btn-black {
-  background-color: #000000;
-  color: #FFFFFF;
+  background-color: #111827;
+  color: #ffffff;
+  border-color: #111827;
 }
 .neo-btn-black:hover {
-  background-color: #222222;
+  background-color: #1f2937;
 }
 
-/* Neo-Brutalist Badges */
+/* Badges with Smooth Clean Geometry */
 .neo-badge {
   display: inline-flex;
   align-items: center;
   gap: 0.35rem;
-  border: 2px solid #000000;
-  border-radius: 6px;
-  padding: 0.15rem 0.5rem;
-  font-weight: 800;
+  border: 1px solid #e5e7eb;
+  border-radius: 9999px;
+  padding: 0.2rem 0.65rem;
+  font-weight: 600;
   font-size: 0.6875rem;
   font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
   text-transform: uppercase;
-  letter-spacing: 0.05em;
-  box-shadow: 2px 2px 0px #000000;
+  letter-spacing: 0.04em;
+  background-color: #ffffff;
+  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.03);
 }
 
-/* Neo-Brutalist Form Inputs */
+/* Form Inputs */
 .neo-input {
   width: 100%;
-  border: 2.5px solid #000000;
-  border-radius: 10px;
-  background-color: #FFFFFF;
-  color: #000000;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  background-color: #ffffff;
+  color: #111827;
   padding: 0.5rem 0.75rem;
   font-size: 0.875rem;
-  font-weight: 600;
-  box-shadow: 3px 3px 0px #000000;
-  transition: all 0.12s ease;
+  font-weight: 500;
+  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.03);
+  transition: all 0.15s ease;
 }
 
 .neo-input:focus {
   outline: none;
-  box-shadow: 5px 5px 0px #000000;
-  transform: translate(-1px, -1px);
+  border-color: #2563eb;
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
 }
 
-/* High Contrast Accessible Focus Visible */
-:focus-visible {
-  outline: 3px solid #000000;
-  outline-offset: 2px;
+/* Callout and Invariant Receipt Panels (Double-Receipt Pattern) */
+.callout-panel {
+  background-color: #f8f9fa;
+  border: 1px solid #e5e7eb;
+  border-left: 4px solid #2563eb;
+  border-radius: 0 10px 10px 0;
+  padding: 1rem;
+}
+
+.receipt-card-a {
+  background-color: #fffbeb;
+  border: 1px solid #fde68a;
+  border-left: 4px solid #d97706;
+  border-radius: 8px;
+  padding: 0.75rem;
+}
+
+.receipt-card-b {
+  background-color: #eff6ff;
+  border: 1px solid #bfdbfe;
+  border-left: 4px solid #2563eb;
+  border-radius: 8px;
+  padding: 0.75rem;
 }
 
 /* Pulsing skeleton loaders */
@@ -198,9 +309,7 @@ main {
 }
 
 .skeleton {
-  background-color: #E2DDD5;
-  border: 2px solid #000000;
+  background-color: #e5e7eb;
   animation: pulse-skeleton 1.5s cubic-bezier(0.4, 0, 0.6, 1) infinite;
-  border-radius: 8px;
+  border-radius: 6px;
 }
-

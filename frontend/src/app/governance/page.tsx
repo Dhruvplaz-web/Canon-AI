@@ -193,7 +193,7 @@ function GovernanceContent() {
   return (
     <div className="flex-1 w-full max-w-7xl mx-auto px-6 py-10 flex flex-col gap-8 text-black">
       {/* Header */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b-[2.5px] border-black pb-6">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-[#E5E7EB] pb-6">
         <div>
           <div className="flex items-center gap-2 mb-2">
             <span className="neo-badge bg-[#00C2CB] text-black text-xs font-black">
@@ -347,7 +347,7 @@ function GovernanceContent() {
       {/* Section 2: Candidate Proposal & Diff Viewer */}
       {activeProposal && (
         <section className="neo-box-prominent bg-white p-6 md:p-8 flex flex-col gap-6">
-          <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 border-b-[2.5px] border-black pb-4">
+          <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 border-b border-[#E5E7EB] pb-4">
             <div className="flex items-center gap-2.5">
               <div className="w-8 h-8 rounded bg-[#FFD700] border-[2px] border-black flex items-center justify-center shadow-[1px_1px_0px_#000000]">
                 <Sparkles className="w-4 h-4 text-black stroke-[2.5]" />
@@ -373,7 +373,7 @@ function GovernanceContent() {
             </div>
           </div>
 
-          <p className="text-sm font-medium text-black/90 leading-relaxed bg-[#F4F0EA] p-4 rounded-xl border-[2px] border-black">
+          <p className="text-sm font-medium text-black/90 leading-relaxed bg-[#F8F9FA] p-4 rounded-xl border-[2px] border-black">
             {activeProposal.rationale}
           </p>
 
@@ -406,7 +406,7 @@ function GovernanceContent() {
 
           {/* Section 3: Backtest Simulation Controls */}
           <div className="flex flex-col gap-4 pt-2">
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-4 rounded-xl bg-[#F4F0EA] border-[2px] border-black">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-4 rounded-xl bg-[#F8F9FA] border-[2px] border-black">
               <div className="flex flex-col gap-0.5">
                 <h3 className="text-sm font-black text-black">Empirical Backtest Simulation</h3>
                 <p className="text-xs font-medium text-black/75">
@@ -435,14 +435,14 @@ function GovernanceContent() {
             </div>
 
             {errorMessage && (
-              <div className="p-3 rounded-lg bg-[#FF00FF] text-white border-[2.5px] border-black font-bold text-xs shadow-[2px_2px_0px_#000000]">
+              <div className="p-3 rounded-lg bg-[#FF00FF] text-white border border-[#E5E7EB] font-bold text-xs shadow-[2px_2px_0px_#000000]">
                 {errorMessage}
               </div>
             )}
 
             {/* Backtest Simulation Results */}
             {backtestRun && (
-              <div className="grid grid-cols-1 sm:grid-cols-4 gap-4 p-5 neo-box bg-[#F4F0EA] animate-in fade-in duration-200">
+              <div className="grid grid-cols-1 sm:grid-cols-4 gap-4 p-5 neo-box bg-[#F8F9FA] animate-in fade-in duration-200">
                 <div className="flex flex-col gap-1">
                   <span className="text-[11px] font-mono font-bold text-black/70 uppercase">Historical Analyzed</span>
                   <span className="text-xl font-mono font-black text-black">

@@ -152,7 +152,7 @@ function EvaluationContent() {
   return (
     <div className="flex-1 w-full max-w-7xl mx-auto px-6 py-10 flex flex-col gap-8">
       {/* Header */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b-2.5 border-black pb-6">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-[#E5E7EB] pb-6">
         <div>
           <div className="flex items-center gap-2 mb-2">
             <span className="neo-badge bg-[#00C2CB] text-black">SCR-08</span>
@@ -184,7 +184,7 @@ function EvaluationContent() {
 
       {/* Error state */}
       {error && (
-        <div className="p-5 rounded-xl bg-[#FF00FF] border-2.5 border-black text-white text-xs flex items-center justify-between gap-4 shadow-[4px_4px_0px_#000]">
+        <div className="p-5 rounded-xl bg-[#FF00FF] border border-[#E5E7EB] text-white text-xs flex items-center justify-between gap-4 shadow-sm">
           <div className="flex items-center gap-3">
             <AlertTriangle className="w-5 h-5 shrink-0" />
             <div>
@@ -221,7 +221,7 @@ function EvaluationContent() {
           {/* Bento Scoreboard */}
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
             {/* F1 Score */}
-            <div className="neo-box p-5 bg-[#00C2CB] text-black flex flex-col justify-between gap-3 shadow-[4px_4px_0px_#000]">
+            <div className="neo-box p-5 bg-[#00C2CB] text-black flex flex-col justify-between gap-3 shadow-sm">
               <div className="flex items-center justify-between">
                 <span className="text-xs font-black uppercase tracking-wider font-mono">F1 Compliance Score</span>
                 <Activity className="w-4 h-4 text-black" />
@@ -231,14 +231,14 @@ function EvaluationContent() {
                   {(report.metrics.f1_score * 100).toFixed(1)}%
                 </span>
               </div>
-              <div className="flex items-center justify-between text-[11px] font-bold border-t-2 border-black pt-2">
+              <div className="flex items-center justify-between text-[11px] font-bold border-t border-[#E5E7EB] pt-2">
                 <span>Precision: {(report.metrics.precision * 100).toFixed(0)}%</span>
                 <span>Recall: {(report.metrics.recall * 100).toFixed(0)}%</span>
               </div>
             </div>
 
             {/* OWASP Injection Defense */}
-            <div className="neo-box p-5 bg-[#FF00FF] text-white flex flex-col justify-between gap-3 shadow-[4px_4px_0px_#000]">
+            <div className="neo-box p-5 bg-[#FF00FF] text-white flex flex-col justify-between gap-3 shadow-sm">
               <div className="flex items-center justify-between">
                 <span className="text-xs font-black uppercase tracking-wider font-mono">OWASP Injection Defense</span>
                 <Flame className="w-4 h-4 text-white" />
@@ -249,13 +249,13 @@ function EvaluationContent() {
                 </span>
                 <span className="text-xs font-bold block mt-0.5">100% Adversarial Jailbreaks Blocked</span>
               </div>
-              <div className="text-[11px] font-bold border-t-2 border-black pt-2 text-white/90">
+              <div className="text-[11px] font-bold border-t border-[#E5E7EB] pt-2 text-white/90">
                 Pre-flight Sanitizer Delimiters Active
               </div>
             </div>
 
             {/* Accuracy */}
-            <div className="neo-box p-5 bg-[#FFD700] text-black flex flex-col justify-between gap-3 shadow-[4px_4px_0px_#000]">
+            <div className="neo-box p-5 bg-[#FFD700] text-black flex flex-col justify-between gap-3 shadow-sm">
               <div className="flex items-center justify-between">
                 <span className="text-xs font-black uppercase tracking-wider font-mono">Classification Accuracy</span>
                 <CheckCircle2 className="w-4 h-4 text-black" />
@@ -265,13 +265,13 @@ function EvaluationContent() {
                   {(report.metrics.accuracy * 100).toFixed(1)}%
                 </span>
               </div>
-              <div className="text-[11px] font-bold border-t-2 border-black pt-2">
+              <div className="text-[11px] font-bold border-t border-[#E5E7EB] pt-2">
                 {report.metrics.true_positives + report.metrics.true_negatives} of {report.total_cases} Test Fixtures Matched
               </div>
             </div>
 
             {/* Latency */}
-            <div className="neo-box p-5 bg-white text-black flex flex-col justify-between gap-3 shadow-[4px_4px_0px_#000]">
+            <div className="neo-box p-5 bg-white text-black flex flex-col justify-between gap-3 shadow-sm">
               <div className="flex items-center justify-between">
                 <span className="text-xs font-black uppercase tracking-wider font-mono">Pipeline Latency</span>
                 <Zap className="w-4 h-4 text-black" />
@@ -282,7 +282,7 @@ function EvaluationContent() {
                 </span>
                 <span className="text-xs font-bold text-[#555555] block mt-0.5">Average Check Duration</span>
               </div>
-              <div className="text-[11px] font-mono font-bold border-t-2 border-black pt-2 text-[#444444]">
+              <div className="text-[11px] font-mono font-bold border-t border-[#E5E7EB] pt-2 text-[#444444]">
                 P95 Latency: {report.metrics.p95_latency_ms.toFixed(1)}ms
               </div>
             </div>
@@ -299,14 +299,14 @@ function EvaluationContent() {
                   Falsifiable test distribution comparing expected vs actual compliance outcomes.
                 </p>
               </div>
-              <span className="neo-badge bg-[#F4F0EA] text-black font-mono text-[10px]">
+              <span className="neo-badge bg-[#F8F9FA] text-black font-mono text-[10px]">
                 N = {report.total_cases} Standardized Cases
               </span>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-2">
               {/* True Positives (TP) */}
-              <div className="p-4 rounded-xl border-2.5 border-black bg-[#E6FAFA] text-black flex flex-col justify-between gap-2 shadow-[3px_3px_0px_#000]">
+              <div className="p-4 rounded-xl border border-[#E5E7EB] bg-[#E6FAFA] text-black flex flex-col justify-between gap-2 shadow-xs">
                 <div className="flex items-center justify-between">
                   <span className="text-[11px] font-mono font-black uppercase">True Positives (TP)</span>
                   <span className="neo-badge bg-black text-white text-[10px]">CORRECT CATCH</span>
@@ -318,7 +318,7 @@ function EvaluationContent() {
               </div>
 
               {/* False Positives (FP) */}
-              <div className="p-4 rounded-xl border-2.5 border-black bg-[#FFF0F5] text-black flex flex-col justify-between gap-2 shadow-[3px_3px_0px_#000]">
+              <div className="p-4 rounded-xl border border-[#E5E7EB] bg-[#FFF0F5] text-black flex flex-col justify-between gap-2 shadow-xs">
                 <div className="flex items-center justify-between">
                   <span className="text-[11px] font-mono font-black uppercase">False Positives (FP)</span>
                   <span className="neo-badge bg-[#FF00FF] text-white text-[10px]">FRICTION DRAG</span>
@@ -330,7 +330,7 @@ function EvaluationContent() {
               </div>
 
               {/* False Negatives (FN) */}
-              <div className="p-4 rounded-xl border-2.5 border-black bg-[#FFF0F5] text-black flex flex-col justify-between gap-2 shadow-[3px_3px_0px_#000]">
+              <div className="p-4 rounded-xl border border-[#E5E7EB] bg-[#FFF0F5] text-black flex flex-col justify-between gap-2 shadow-xs">
                 <div className="flex items-center justify-between">
                   <span className="text-[11px] font-mono font-black uppercase">False Negatives (FN)</span>
                   <span className="neo-badge bg-[#FF00FF] text-white text-[10px]">SAFETY RISK</span>
@@ -342,7 +342,7 @@ function EvaluationContent() {
               </div>
 
               {/* True Negatives (TN) */}
-              <div className="p-4 rounded-xl border-2.5 border-black bg-[#E6FAFA] text-black flex flex-col justify-between gap-2 shadow-[3px_3px_0px_#000]">
+              <div className="p-4 rounded-xl border border-[#E5E7EB] bg-[#E6FAFA] text-black flex flex-col justify-between gap-2 shadow-xs">
                 <div className="flex items-center justify-between">
                   <span className="text-[11px] font-mono font-black uppercase">True Negatives (TN)</span>
                   <span className="neo-badge bg-black text-white text-[10px]">CLEAN PASS</span>
@@ -405,7 +405,7 @@ function EvaluationContent() {
             </div>
 
             {/* Table of Test Cases */}
-            <div className="border-2 border-black rounded-xl overflow-hidden shadow-[3px_3px_0px_#000]">
+            <div className="border border-[#E5E7EB] rounded-xl overflow-hidden shadow-xs">
               <div className="divide-y-2 divide-black">
                 {filteredCases.map((c) => {
                   const isExpanded = expandedCaseId === c.id;
@@ -430,7 +430,7 @@ function EvaluationContent() {
                         <div className="flex items-center gap-2.5 min-w-0">
                           <button
                             type="button"
-                            className="p-0.5 rounded border border-black hover:bg-[#F4F0EA]"
+                            className="p-0.5 rounded border border-black hover:bg-[#F8F9FA]"
                           >
                             {isExpanded ? (
                               <ChevronDown className="w-3.5 h-3.5 text-black" />
@@ -499,20 +499,20 @@ function EvaluationContent() {
 
                       {/* Expanded Details Drawer */}
                       {isExpanded && (
-                        <div className="p-4 bg-[#F4F0EA] border-t-2 border-black flex flex-col gap-3 text-xs animate-in fade-in">
+                        <div className="p-4 bg-[#F8F9FA] border-t border-[#E5E7EB] flex flex-col gap-3 text-xs animate-in fade-in">
                           {/* Prompt Text */}
                           <div className="flex flex-col gap-1">
                             <span className="font-mono font-black text-[10px] uppercase text-black">
                               Test Scenario Input Copy:
                             </span>
-                            <div className="p-3 rounded-lg bg-white border-2 border-black font-mono text-xs text-black leading-relaxed shadow-[2px_2px_0px_#000]">
+                            <div className="p-3 rounded-lg bg-white border border-[#E5E7EB] font-mono text-xs text-black leading-relaxed shadow-xs">
                               &ldquo;{c.content}&rdquo;
                             </div>
                           </div>
 
                           {/* Evaluation Trace Comparison */}
                           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                            <div className="p-3 rounded-lg bg-white border-2 border-black flex flex-col gap-1 text-[11px]">
+                            <div className="p-3 rounded-lg bg-white border border-[#E5E7EB] flex flex-col gap-1 text-[11px]">
                               <span className="font-mono font-bold text-[#555555]">Expected Benchmark Ground Truth:</span>
                               <div className="flex items-center gap-2">
                                 <span className="font-black text-black">{c.expected_outcome}</span>
@@ -524,7 +524,7 @@ function EvaluationContent() {
                               </div>
                             </div>
 
-                            <div className="p-3 rounded-lg bg-white border-2 border-black flex flex-col gap-1 text-[11px]">
+                            <div className="p-3 rounded-lg bg-white border border-[#E5E7EB] flex flex-col gap-1 text-[11px]">
                               <span className="font-mono font-bold text-[#555555]">Actual Pipeline Result:</span>
                               <div className="flex items-center gap-2">
                                 <span className="font-black text-black">{c.actual_outcome}</span>
@@ -544,7 +544,7 @@ function EvaluationContent() {
                               {c.findings.map((f, fIdx) => (
                                 <div
                                   key={fIdx}
-                                  className="p-3 rounded-lg bg-white border-2 border-black flex flex-col gap-1.5"
+                                  className="p-3 rounded-lg bg-white border border-[#E5E7EB] flex flex-col gap-1.5"
                                 >
                                   <div className="flex items-center justify-between">
                                     <div className="flex items-center gap-1.5">

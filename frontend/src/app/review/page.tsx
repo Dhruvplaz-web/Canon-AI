@@ -519,7 +519,7 @@ function ReviewQueueContent() {
         <div
           role="status"
           aria-live="polite"
-          className={`p-4 rounded-xl border-2.5 border-black flex items-center justify-between text-xs font-bold shadow-[4px_4px_0px_#000] animate-in fade-in duration-200 ${
+          className={`p-4 rounded-xl border border-[#E5E7EB] flex items-center justify-between text-xs font-bold shadow-sm animate-in fade-in duration-200 ${
             toastMsg.type === "success"
               ? "bg-[#00C2CB] text-black"
               : toastMsg.type === "error"
@@ -544,7 +544,7 @@ function ReviewQueueContent() {
       )}
 
       {/* Header & View Switcher */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b-2.5 border-black pb-6">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-[#E5E7EB] pb-6">
         <div>
           <div className="flex items-center gap-2 mb-2">
             <span className="neo-badge bg-[#00C2CB] text-black">SCR-05 & SCR-06</span>
@@ -562,7 +562,7 @@ function ReviewQueueContent() {
         </div>
 
         {/* View Switcher Tabs */}
-        <div className="flex items-center gap-2 bg-white border-2.5 border-black p-1.5 rounded-xl shadow-[3px_3px_0px_#000]">
+        <div className="flex items-center gap-2 bg-white border border-[#E5E7EB] p-1.5 rounded-xl shadow-xs">
           <button
             type="button"
             onClick={() => {
@@ -571,8 +571,8 @@ function ReviewQueueContent() {
             }}
             className={`flex items-center gap-2 px-3.5 py-2 rounded-lg text-xs font-black transition cursor-pointer ${
               viewMode === "queue"
-                ? "bg-[#00C2CB] border-2 border-black text-black shadow-[2px_2px_0px_#000]"
-                : "text-black hover:bg-[#F4F0EA]"
+                ? "bg-[#00C2CB] border border-[#E5E7EB] text-black shadow-xs"
+                : "text-black hover:bg-[#F8F9FA]"
             }`}
           >
             <Layers className="w-4 h-4" />
@@ -592,8 +592,8 @@ function ReviewQueueContent() {
             }}
             className={`flex items-center gap-2 px-3.5 py-2 rounded-lg text-xs font-black transition cursor-pointer ${
               viewMode === "signoff"
-                ? "bg-[#FFD700] border-2 border-black text-black shadow-[2px_2px_0px_#000]"
-                : "text-black hover:bg-[#F4F0EA]"
+                ? "bg-[#FFD700] border border-[#E5E7EB] text-black shadow-xs"
+                : "text-black hover:bg-[#F8F9FA]"
             }`}
           >
             <UserCheck className="w-4 h-4" />
@@ -636,7 +636,7 @@ function ReviewQueueContent() {
                     setPage(1);
                     syncUrlParams({ severity: e.target.value, page: 1 });
                   }}
-                  className="bg-white border-2 border-black rounded-lg px-2.5 py-1.5 text-xs text-black font-bold shadow-[2px_2px_0px_#000] focus:shadow-[4px_4px_0px_#000] cursor-pointer"
+                  className="bg-white border border-[#E5E7EB] rounded-lg px-2.5 py-1.5 text-xs text-black font-bold shadow-xs focus:shadow-sm cursor-pointer"
                 >
                   <option value="ALL">All Severities</option>
                   <option value="CRITICAL">Critical Only</option>
@@ -655,7 +655,7 @@ function ReviewQueueContent() {
                     setPage(1);
                     syncUrlParams({ channel: e.target.value, page: 1 });
                   }}
-                  className="bg-white border-2 border-black rounded-lg px-2.5 py-1.5 text-xs text-black font-bold shadow-[2px_2px_0px_#000] focus:shadow-[4px_4px_0px_#000] cursor-pointer"
+                  className="bg-white border border-[#E5E7EB] rounded-lg px-2.5 py-1.5 text-xs text-black font-bold shadow-xs focus:shadow-sm cursor-pointer"
                 >
                   <option value="ALL">All Channels</option>
                   <option value="web_landing_page">Web Landing Page</option>
@@ -676,7 +676,7 @@ function ReviewQueueContent() {
                     setPage(1);
                     syncUrlParams({ status: e.target.value, page: 1 });
                   }}
-                  className="bg-white border-2 border-black rounded-lg px-2.5 py-1.5 text-xs text-black font-bold shadow-[2px_2px_0px_#000] focus:shadow-[4px_4px_0px_#000] cursor-pointer"
+                  className="bg-white border border-[#E5E7EB] rounded-lg px-2.5 py-1.5 text-xs text-black font-bold shadow-xs focus:shadow-sm cursor-pointer"
                 >
                   <option value="ALL">All Statuses</option>
                   <option value="PENDING_REVIEW">Pending Review</option>
@@ -702,7 +702,7 @@ function ReviewQueueContent() {
 
           {/* Floating Batch Override Bar */}
           {selectedQueueIds.length > 0 && (
-            <div className="p-3.5 rounded-xl bg-[#00C2CB] border-2.5 border-black flex items-center justify-between gap-4 text-xs font-bold shadow-[4px_4px_0px_#000] animate-in fade-in duration-150">
+            <div className="p-3.5 rounded-xl bg-[#00C2CB] border border-[#E5E7EB] flex items-center justify-between gap-4 text-xs font-bold shadow-sm animate-in fade-in duration-150">
               <div className="flex items-center gap-2 text-black">
                 <span className="font-black">
                   {selectedQueueIds.length} violation(s) selected
@@ -735,7 +735,7 @@ function ReviewQueueContent() {
 
           {/* Error State */}
           {queueError && (
-            <div className="p-4 rounded-xl bg-[#FF00FF] border-2.5 border-black text-white text-xs flex items-center justify-between gap-3 shadow-[4px_4px_0px_#000]">
+            <div className="p-4 rounded-xl bg-[#FF00FF] border border-[#E5E7EB] text-white text-xs flex items-center justify-between gap-3 shadow-sm">
               <div className="flex items-center gap-2 font-bold">
                 <AlertTriangle className="w-5 h-5 shrink-0 text-white" />
                 <span>{queueError}</span>
@@ -755,7 +755,7 @@ function ReviewQueueContent() {
             <div className="overflow-x-auto">
               <table className="w-full text-left border-collapse text-xs">
                 <thead>
-                  <tr className="border-b-2.5 border-black bg-black text-white font-mono font-black text-[11px] tracking-wider">
+                  <tr className="border-b border-[#E5E7EB] bg-black text-white font-mono font-black text-[11px] tracking-wider">
                     <th className="py-3.5 px-4 w-10 text-center">
                       <input
                         type="checkbox"
@@ -813,7 +813,7 @@ function ReviewQueueContent() {
                     <tr className="bg-white">
                       <td colSpan={7} className="py-12 px-4 text-center">
                         <div className="flex flex-col items-center justify-center gap-3">
-                          <div className="w-12 h-12 rounded-xl bg-[#F4F0EA] border-2 border-black flex items-center justify-center text-black shadow-[2px_2px_0px_#000]">
+                          <div className="w-12 h-12 rounded-xl bg-[#F8F9FA] border border-[#E5E7EB] flex items-center justify-center text-black shadow-xs">
                             <CheckCircle2 className="w-6 h-6 text-black" />
                           </div>
                           <span className="text-base font-black text-black">
@@ -851,7 +851,7 @@ function ReviewQueueContent() {
                               type="checkbox"
                               checked={isSelected}
                               onChange={() => handleToggleSelectItem(item.id)}
-                              className="w-4 h-4 rounded border-2 border-black bg-white accent-[#00C2CB] cursor-pointer"
+                              className="w-4 h-4 rounded border border-[#E5E7EB] bg-white accent-[#00C2CB] cursor-pointer"
                             />
                           </td>
 
@@ -888,7 +888,7 @@ function ReviewQueueContent() {
                               <span className="font-bold text-black truncate">
                                 {item.title}
                               </span>
-                              <div className="flex items-center gap-1.5 font-mono text-[11px] text-[#D6006E] font-black">
+                              <div className="flex items-center gap-1.5 font-mono text-[11px] text-amber-900 font-black">
                                 <span>&ldquo;{item.matched_text}&rdquo;</span>
                                 <span className="text-[10px] text-[#555555] font-bold">
                                   [{item.start_offset}:{item.end_offset}]
@@ -979,7 +979,7 @@ function ReviewQueueContent() {
                       setPageSize(Number(e.target.value));
                       setPage(1);
                     }}
-                    className="bg-white border-2 border-black rounded px-2 py-1 text-xs text-black font-bold shadow-[2px_2px_0px_#000] cursor-pointer"
+                    className="bg-white border border-[#E5E7EB] rounded px-2 py-1 text-xs text-black font-bold shadow-xs cursor-pointer"
                   >
                     <option value={10}>10</option>
                     <option value={20}>20</option>
@@ -1043,10 +1043,10 @@ function ReviewQueueContent() {
                       setActiveSubmissionId(sub.id);
                       syncUrlParams({ submissionId: sub.id });
                     }}
-                    className={`text-left p-3.5 rounded-xl border-2.5 border-black transition text-xs flex flex-col gap-1.5 min-w-[210px] cursor-pointer ${
+                    className={`text-left p-3.5 rounded-xl border border-[#E5E7EB] transition text-xs flex flex-col gap-1.5 min-w-[210px] cursor-pointer ${
                       isActive
-                        ? "bg-[#00C2CB] shadow-[4px_4px_0px_#000] translate-x-[-1px] translate-y-[-1px]"
-                        : "bg-white hover:bg-[#FDFBF7] shadow-[2px_2px_0px_#000] hover:shadow-[4px_4px_0px_#000]"
+                        ? "bg-[#00C2CB] shadow-sm translate-y-[-1px]"
+                        : "bg-white hover:bg-[#FDFBF7] shadow-xs hover:shadow-sm"
                     }`}
                   >
                     <div className="flex items-center justify-between gap-2">
@@ -1078,7 +1078,7 @@ function ReviewQueueContent() {
             <div className="flex flex-col gap-6">
               {/* Critical Blocker Notice */}
               {hasOpenCritical && (
-                <div className="p-4 rounded-xl bg-[#FF00FF] border-2.5 border-black text-white text-xs flex items-center justify-between gap-4 shadow-[4px_4px_0px_#000]">
+                <div className="p-4 rounded-xl bg-[#FF00FF] border border-[#E5E7EB] text-white text-xs flex items-center justify-between gap-4 shadow-sm">
                   <div className="flex items-center gap-3">
                     <ShieldAlert className="w-6 h-6 text-white shrink-0" />
                     <div>
@@ -1120,7 +1120,7 @@ function ReviewQueueContent() {
                     type="button"
                     disabled={isDownloadingCert}
                     onClick={() => handleDownloadCertificate(activeSubmission.id)}
-                    className="neo-btn neo-btn-white text-xs py-2 px-4 border-2.5 border-black shadow-[3px_3px_0px_#000] hover:bg-[#FFD700]"
+                    className="neo-btn neo-btn-white text-xs py-2 px-4 border border-[#E5E7EB] shadow-xs hover:bg-[#FFD700]"
                     title="View & Download Cryptographic Compliance Release Certificate"
                   >
                     <ShieldCheck className="w-4 h-4 text-black" />
@@ -1187,13 +1187,13 @@ function ReviewQueueContent() {
                     <h4 className="text-sm font-black text-black">{f.title}</h4>
 
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs">
-                      <div className="p-3 rounded-lg bg-[#FFF0F5] border-2 border-black flex flex-col gap-1">
+                      <div className="p-3 rounded-lg receipt-card-a flex flex-col gap-1">
                         <span className="text-[10px] font-mono font-black text-black block">
                           RECEIPT A (DRAFT)
                         </span>
-                        <span className="text-[#D6006E] font-mono font-black">&ldquo;{f.receipt_a_draft_span}&rdquo;</span>
+                        <span className="text-amber-900 font-mono font-black">&ldquo;{f.receipt_a_draft_span}&rdquo;</span>
                       </div>
-                      <div className="p-3 rounded-lg bg-[#E6FAFA] border-2 border-black flex flex-col gap-1">
+                      <div className="p-3 rounded-lg receipt-card-b flex flex-col gap-1">
                         <span className="text-[10px] font-mono font-black text-black block">
                           RECEIPT B (POLICY)
                         </span>
@@ -1246,7 +1246,7 @@ function ReviewQueueContent() {
           className="fixed inset-0 z-50 bg-black/75 backdrop-blur-xs flex items-center justify-center p-4"
         >
           <div className="neo-box-prominent max-w-xl w-full p-6 flex flex-col gap-5 text-black animate-in zoom-in-95 duration-150">
-            <div className="flex items-start justify-between border-b-2.5 border-black pb-4">
+            <div className="flex items-start justify-between border-b border-[#E5E7EB] pb-4">
               <div className="flex flex-col gap-1">
                 <div className="flex items-center gap-2">
                   <span
@@ -1271,7 +1271,7 @@ function ReviewQueueContent() {
                 type="button"
                 onClick={() => setActiveQueueItem(null)}
                 aria-label="Close modal"
-                className="p-1 rounded-md border-2 border-transparent hover:border-black hover:bg-[#F4F0EA] text-black transition"
+                className="p-1 rounded-md border-2 border-transparent hover:border-black hover:bg-[#F8F9FA] text-black transition"
               >
                 <X className="w-5 h-5" />
               </button>
@@ -1279,16 +1279,16 @@ function ReviewQueueContent() {
 
             {/* Double Receipts */}
             <div className="flex flex-col gap-3">
-              <div className="p-3.5 rounded-xl bg-[#FFF0F5] border-2 border-black flex flex-col gap-1 shadow-[2px_2px_0px_#000]">
+              <div className="p-3.5 rounded-xl receipt-card-a flex flex-col gap-1 shadow-xs">
                 <span className="text-[10px] font-mono font-black text-black">
                   RECEIPT A: DRAFT SPAN [{activeQueueItem.start_offset}:{activeQueueItem.end_offset}]
                 </span>
-                <p className="text-xs font-mono text-[#D6006E] font-black">
+                <p className="text-xs font-mono text-amber-900 font-black">
                   &ldquo;{activeQueueItem.receipt_a_draft_span}&rdquo;
                 </p>
               </div>
 
-              <div className="p-3.5 rounded-xl bg-[#E6FAFA] border-2 border-black flex flex-col gap-1 shadow-[2px_2px_0px_#000]">
+              <div className="p-3.5 rounded-xl receipt-card-b flex flex-col gap-1 shadow-xs">
                 <span className="text-[10px] font-mono font-black text-black">
                   RECEIPT B: CITATION ({activeQueueItem.source_document_title})
                 </span>
@@ -1300,7 +1300,7 @@ function ReviewQueueContent() {
               {activeQueueItem.suggested_fix && (
                 <div className="text-xs text-black flex items-center gap-1.5 font-bold">
                   <span className="text-black">Suggested remediation:</span>
-                  <span className="font-mono text-black bg-[#FFD700] px-2 py-0.5 rounded border-2 border-black">
+                  <span className="font-mono text-black bg-[#FFD700] px-2 py-0.5 rounded border border-[#E5E7EB]">
                     &ldquo;{activeQueueItem.suggested_fix}&rdquo;
                   </span>
                 </div>
@@ -1309,7 +1309,7 @@ function ReviewQueueContent() {
 
             {/* Override Controls */}
             {activeQueueItem.status !== "OVERRIDDEN" ? (
-              <div className="flex flex-col gap-3 pt-3 border-t-2 border-black">
+              <div className="flex flex-col gap-3 pt-3 border-t border-[#E5E7EB]">
                 <div className="flex flex-col gap-1">
                   <label htmlFor="reason-code" className="text-xs font-black uppercase text-black">
                     Taxonomy Reason Code
@@ -1370,7 +1370,7 @@ function ReviewQueueContent() {
                 </div>
               </div>
             ) : (
-              <div className="p-3.5 rounded-xl bg-[#00C2CB] border-2 border-black text-black text-xs text-center font-mono font-black shadow-[2px_2px_0px_#000]">
+              <div className="p-3.5 rounded-xl bg-[#00C2CB] border border-[#E5E7EB] text-black text-xs text-center font-mono font-black shadow-xs">
                 Violation already overridden and logged in audit ledger.
               </div>
             )}
@@ -1389,7 +1389,7 @@ function ReviewQueueContent() {
           className="fixed inset-0 z-50 bg-black/75 backdrop-blur-xs flex items-center justify-center p-4"
         >
           <div className="neo-box-prominent max-w-lg w-full p-6 flex flex-col gap-5 text-black animate-in zoom-in-95 duration-150">
-            <div className="flex items-start justify-between border-b-2.5 border-black pb-3">
+            <div className="flex items-start justify-between border-b border-[#E5E7EB] pb-3">
               <div>
                 <h3 id="batch-override-title" className="text-lg font-black text-black">
                   Batch Override {selectedQueueIds.length} Violation(s)
@@ -1402,7 +1402,7 @@ function ReviewQueueContent() {
                 type="button"
                 onClick={() => setIsBatchModalOpen(false)}
                 aria-label="Close modal"
-                className="p-1 rounded-md border-2 border-transparent hover:border-black hover:bg-[#F4F0EA] text-black transition"
+                className="p-1 rounded-md border-2 border-transparent hover:border-black hover:bg-[#F8F9FA] text-black transition"
               >
                 <X className="w-5 h-5" />
               </button>
@@ -1451,7 +1451,7 @@ function ReviewQueueContent() {
               </div>
             </div>
 
-            <div className="flex items-center justify-end gap-2 pt-2 border-t-2 border-black">
+            <div className="flex items-center justify-end gap-2 pt-2 border-t border-[#E5E7EB]">
               <button
                 type="button"
                 onClick={() => setIsBatchModalOpen(false)}
@@ -1513,7 +1513,7 @@ function ReviewQueueContent() {
               />
             </div>
 
-            <div className="flex items-center justify-end gap-2 pt-2 border-t-2 border-black">
+            <div className="flex items-center justify-end gap-2 pt-2 border-t border-[#E5E7EB]">
               <button
                 type="button"
                 onClick={() => setIsSignOffModalOpen(false)}
@@ -1575,7 +1575,7 @@ function ReviewQueueContent() {
               />
             </div>
 
-            <div className="flex items-center justify-end gap-2 pt-2 border-t-2 border-black">
+            <div className="flex items-center justify-end gap-2 pt-2 border-t border-[#E5E7EB]">
               <button
                 type="button"
                 onClick={() => setIsSendBackModalOpen(false)}

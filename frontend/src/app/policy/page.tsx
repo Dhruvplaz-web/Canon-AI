@@ -113,7 +113,7 @@ function SourceDocumentReader({
           return (
             <div
               key={`sec-${idx}`}
-              className="py-1 px-3 my-2 bg-[#F4F0EA] border-2 border-black font-black uppercase text-black text-[11px] rounded shadow-[2px_2px_0px_#000]"
+              className="py-1 px-3 my-2 bg-[#F8F9FA] border border-[#E5E7EB] font-black uppercase text-black text-[11px] rounded shadow-xs"
             >
               {trimmed}
             </div>
@@ -137,8 +137,8 @@ function SourceDocumentReader({
               onClick={() => onSelectRule(matchedRule.rule_code)}
               className={`p-3 rounded-lg border-2 transition-all cursor-pointer ${
                 isSelected
-                  ? "bg-[#FFD700] text-black border-black shadow-[4px_4px_0px_#000] ring-2 ring-black"
-                  : "bg-white hover:bg-[#FDFBF7] text-black border-black/40 hover:border-black shadow-[2px_2px_0px_#000]"
+                  ? "bg-[#FFD700] text-black border-black shadow-sm ring-2 ring-black"
+                  : "bg-white hover:bg-[#FDFBF7] text-black border-black/40 hover:border-black shadow-xs"
               }`}
             >
               <div className="flex items-center gap-2 mb-1.5 flex-wrap">
@@ -329,22 +329,22 @@ function PolicyExplorerContent() {
       case "CRITICAL":
         return {
           label: "Critical (Blocker)",
-          className: "bg-[#FF00FF] text-white border-2 border-black font-black",
+          className: "bg-[#FF00FF] text-white border border-[#E5E7EB] font-black",
         };
       case "MAJOR":
         return {
           label: "Major Warning",
-          className: "bg-[#FFD700] text-black border-2 border-black font-black",
+          className: "bg-[#FFD700] text-black border border-[#E5E7EB] font-black",
         };
       case "MINOR":
         return {
           label: "Minor Stylistic",
-          className: "bg-[#00C2CB] text-black border-2 border-black font-black",
+          className: "bg-[#00C2CB] text-black border border-[#E5E7EB] font-black",
         };
       default:
         return {
           label: severity,
-          className: "bg-white text-black border-2 border-black font-bold",
+          className: "bg-white text-black border border-[#E5E7EB] font-bold",
         };
     }
   };
@@ -356,7 +356,7 @@ function PolicyExplorerContent() {
   return (
     <div className="flex-1 w-full max-w-7xl mx-auto px-6 py-10 flex flex-col gap-8">
       {/* Page Header */}
-      <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 border-b-2.5 border-black pb-8">
+      <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 border-b border-[#E5E7EB] pb-8">
         <div className="flex flex-col gap-3 max-w-2xl">
           <div className="flex items-center gap-2">
             <span className="neo-badge bg-[#00C2CB] text-black">
@@ -392,7 +392,7 @@ function PolicyExplorerContent() {
                 ({policy.compiled_rules_count} rules &bull; {policy.approved_claims.length} claims)
               </span>
             </div>
-            <div className="text-[11px] font-mono font-bold text-[#444444] flex flex-col gap-0.5 border-t-2 border-black pt-2">
+            <div className="text-[11px] font-mono font-bold text-[#444444] flex flex-col gap-0.5 border-t border-[#E5E7EB] pt-2">
               <span>Effective: {new Date(policy.effective_date).toLocaleDateString()}</span>
               {policy.change_summary && (
                 <span className="truncate max-w-[240px]" title={policy.change_summary}>
@@ -407,7 +407,7 @@ function PolicyExplorerContent() {
       {/* Auth Gate Banner (Empty/Unauthenticated State) */}
       {error === "AUTHENTICATION_REQUIRED" && (
         <div className="neo-box p-8 flex flex-col items-center justify-center text-center gap-4 max-w-xl mx-auto my-12">
-          <div className="w-14 h-14 rounded-xl bg-[#00C2CB] border-2 border-black text-black flex items-center justify-center shadow-[2px_2px_0px_#000]">
+          <div className="w-14 h-14 rounded-xl bg-[#00C2CB] border border-[#E5E7EB] text-black flex items-center justify-center shadow-xs">
             <LogIn className="w-7 h-7" />
           </div>
           <div className="flex flex-col gap-1">
@@ -428,7 +428,7 @@ function PolicyExplorerContent() {
 
       {/* General Error State */}
       {error && error !== "AUTHENTICATION_REQUIRED" && (
-        <div className="p-6 rounded-xl bg-[#FF00FF] border-2.5 border-black text-white flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 shadow-[4px_4px_0px_#000]">
+        <div className="p-6 rounded-xl bg-[#FF00FF] border border-[#E5E7EB] text-white flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 shadow-sm">
           <div className="flex items-center gap-3">
             <AlertTriangle className="w-6 h-6 text-white shrink-0" />
             <div className="flex flex-col">
@@ -524,7 +524,7 @@ function PolicyExplorerContent() {
 
             {/* Layout Mode Toggle (Rules view only) */}
             {activeTab === "rules" && (
-              <div className="flex items-center gap-1 bg-[#F4F0EA] p-1 rounded-lg border-2 border-black shrink-0">
+              <div className="flex items-center gap-1 bg-[#F8F9FA] p-1 rounded-lg border border-[#E5E7EB] shrink-0">
                 <button
                   type="button"
                   onClick={() => {
@@ -533,7 +533,7 @@ function PolicyExplorerContent() {
                   }}
                   className={`px-2.5 py-1 text-xs font-black rounded border-2 transition flex items-center gap-1.5 cursor-pointer ${
                     layoutMode === "split"
-                      ? "bg-[#00C2CB] text-black border-black shadow-[2px_2px_0px_#000]"
+                      ? "bg-[#00C2CB] text-black border-black shadow-xs"
                       : "bg-transparent text-black border-transparent hover:bg-white"
                   }`}
                   title="Side-by-Side Guideline Document Reader"
@@ -549,7 +549,7 @@ function PolicyExplorerContent() {
                   }}
                   className={`px-2.5 py-1 text-xs font-black rounded border-2 transition flex items-center gap-1.5 cursor-pointer ${
                     layoutMode === "grid"
-                      ? "bg-[#FFD700] text-black border-black shadow-[2px_2px_0px_#000]"
+                      ? "bg-[#FFD700] text-black border-black shadow-xs"
                       : "bg-transparent text-black border-transparent hover:bg-white"
                   }`}
                   title="Full Card Grid"
@@ -566,7 +566,7 @@ function PolicyExplorerContent() {
             <div className="flex flex-col gap-4">
               {filteredRules.length === 0 ? (
                 <div className="neo-box p-12 text-center flex flex-col items-center justify-center gap-3">
-                  <div className="w-12 h-12 rounded-xl bg-[#F4F0EA] border-2 border-black flex items-center justify-center text-black shadow-[2px_2px_0px_#000]">
+                  <div className="w-12 h-12 rounded-xl bg-[#F8F9FA] border border-[#E5E7EB] flex items-center justify-center text-black shadow-xs">
                     <BookOpen className="w-6 h-6" />
                   </div>
                   <h3 className="text-base font-black text-black">No matching rules found</h3>
@@ -606,7 +606,7 @@ function PolicyExplorerContent() {
 
                         {policy.source_document?.content_hash && (
                           <div className="flex items-center gap-1.5">
-                            <span className="inline-flex items-center gap-1 bg-[#E6FAFA] border-2 border-black px-2 py-0.5 rounded text-[10px] font-mono font-bold text-black shadow-[2px_2px_0px_#000]">
+                            <span className="inline-flex items-center gap-1 bg-[#E6FAFA] border border-[#E5E7EB] px-2 py-0.5 rounded text-[10px] font-mono font-bold text-black shadow-xs">
                               <ShieldCheck className="w-3 h-3 text-black" />
                               <span>SHA-256: {policy.source_document.content_hash.slice(0, 14)}...</span>
                             </span>
@@ -619,7 +619,7 @@ function PolicyExplorerContent() {
                                   setTimeout(() => setCopiedHash(false), 2000);
                                 }
                               }}
-                              className="p-1 rounded border-2 border-black bg-white hover:bg-[#F4F0EA] text-black text-[10px] transition"
+                              className="p-1 rounded border border-[#E5E7EB] bg-white hover:bg-[#F8F9FA] text-black text-[10px] transition"
                               title="Copy full SHA-256 hash"
                             >
                               {copiedHash ? <Check className="w-3 h-3 text-black" /> : <Copy className="w-3 h-3 text-black" />}
@@ -675,8 +675,8 @@ function PolicyExplorerContent() {
                           }}
                           className={`neo-box p-4 flex flex-col justify-between gap-3 cursor-pointer transition ${
                             isSelected
-                              ? "bg-[#FFFDF5] border-black shadow-[6px_6px_0px_#000] ring-2 ring-black"
-                              : "hover:shadow-[4px_4px_0px_#000]"
+                              ? "bg-[#FFFDF5] border-black shadow-md ring-2 ring-black"
+                              : "hover:shadow-sm"
                           }`}
                         >
                           <div className="flex flex-col gap-2">
@@ -776,13 +776,13 @@ function PolicyExplorerContent() {
                           </div>
 
                           {/* Pattern & Replacement Boxes */}
-                          <div className="flex flex-col gap-2 pt-2 border-t-2 border-black">
+                          <div className="flex flex-col gap-2 pt-2 border-t border-[#E5E7EB]">
                             {rule.pattern_or_term && (
                               <div className="flex flex-col gap-1">
                                 <span className="text-[10px] font-mono font-black uppercase tracking-wider text-black">
                                   Trigger Pattern / Prohibited Term
                                 </span>
-                                <div className="bg-[#FFF0F5] border-2 border-black text-[#D6006E] font-mono font-black text-xs px-3 py-1.5 rounded-lg truncate shadow-[2px_2px_0px_#000]">
+                                <div className="bg-[#FFF0F5] border border-[#E5E7EB] text-[#D6006E] font-mono font-black text-xs px-3 py-1.5 rounded-lg truncate shadow-xs">
                                   {rule.pattern_or_term}
                                 </div>
                               </div>
@@ -793,7 +793,7 @@ function PolicyExplorerContent() {
                                 <span className="text-[10px] font-mono font-black uppercase tracking-wider text-black">
                                   Approved Alternative Replacement
                                 </span>
-                                <div className="bg-[#E6FAFA] border-2 border-black text-black font-mono font-black text-xs px-3 py-1.5 rounded-lg truncate shadow-[2px_2px_0px_#000]">
+                                <div className="bg-[#E6FAFA] border border-[#E5E7EB] text-black font-mono font-black text-xs px-3 py-1.5 rounded-lg truncate shadow-xs">
                                   {rule.suggested_replacement}
                                 </div>
                               </div>
@@ -803,7 +803,7 @@ function PolicyExplorerContent() {
 
                         {/* Double Receipt Source Citation Box */}
                         {rule.source_citation && (
-                          <div className="bg-[#F4F0EA] border-2 border-black rounded-lg p-3.5 flex flex-col gap-1.5 text-xs shadow-[2px_2px_0px_#000]">
+                          <div className="bg-[#F8F9FA] border border-[#E5E7EB] rounded-lg p-3.5 flex flex-col gap-1.5 text-xs shadow-xs">
                             <div className="flex items-center gap-1.5 text-[11px] font-black text-black">
                               <FileText className="w-4 h-4 text-black" />
                               <span>
@@ -836,7 +836,7 @@ function PolicyExplorerContent() {
             <div className="flex flex-col gap-4">
               {filteredClaims.length === 0 ? (
                 <div className="neo-box p-12 text-center flex flex-col items-center justify-center gap-3">
-                  <div className="w-12 h-12 rounded-xl bg-[#F4F0EA] border-2 border-black flex items-center justify-center text-black shadow-[2px_2px_0px_#000]">
+                  <div className="w-12 h-12 rounded-xl bg-[#F8F9FA] border border-[#E5E7EB] flex items-center justify-center text-black shadow-xs">
                     <Shield className="w-6 h-6" />
                   </div>
                   <h3 className="text-base font-black text-black">No matching approved claims found</h3>
@@ -883,7 +883,7 @@ function PolicyExplorerContent() {
                           </div>
 
                           {/* Substantiation Evidence */}
-                          <div className="flex flex-col gap-1 bg-[#F4F0EA] border-2 border-black rounded-lg p-3 shadow-[2px_2px_0px_#000]">
+                          <div className="flex flex-col gap-1 bg-[#F8F9FA] border border-[#E5E7EB] rounded-lg p-3 shadow-xs">
                             <span className="text-[10px] font-mono font-black uppercase tracking-wider text-black flex items-center gap-1">
                               <Sparkles className="w-3.5 h-3.5 text-black" />
                               Substantiation Evidence
@@ -895,7 +895,7 @@ function PolicyExplorerContent() {
                         </div>
 
                         {/* Validity Dates */}
-                        <div className="flex items-center justify-between text-xs font-mono font-bold border-t-2 border-black pt-3 text-black">
+                        <div className="flex items-center justify-between text-xs font-mono font-bold border-t border-[#E5E7EB] pt-3 text-black">
                           <span>From: {new Date(claim.valid_from).toLocaleDateString()}</span>
                           <span className={expired ? "bg-[#FFD700] px-1.5 py-0.5 rounded border border-black font-black" : ""}>
                             Until: {new Date(claim.valid_until).toLocaleDateString()}
@@ -912,9 +912,9 @@ function PolicyExplorerContent() {
       )}
 
       {/* Governance & Backtest CTA Banner */}
-      <div className="p-6 rounded-xl bg-[#FFD700] border-2.5 border-black text-black flex flex-col md:flex-row items-start md:items-center justify-between gap-4 shadow-[4px_4px_0px_#000]">
+      <div className="p-6 rounded-xl bg-[#FFD700] border border-[#E5E7EB] text-black flex flex-col md:flex-row items-start md:items-center justify-between gap-4 shadow-sm">
         <div className="flex items-center gap-4">
-          <div className="w-12 h-12 rounded-xl bg-white border-2 border-black flex items-center justify-center text-black shadow-[2px_2px_0px_#000] shrink-0">
+          <div className="w-12 h-12 rounded-xl bg-white border border-[#E5E7EB] flex items-center justify-center text-black shadow-xs shrink-0">
             <Shield className="w-6 h-6" />
           </div>
           <div>

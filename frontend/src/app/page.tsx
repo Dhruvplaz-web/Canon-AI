@@ -16,6 +16,8 @@ import {
   LogIn,
   UserCheck,
   Flame,
+  Award,
+  Layers,
 } from "lucide-react";
 import { useAuth } from "@/lib/auth-context";
 
@@ -65,7 +67,7 @@ export default function HomePage() {
         return {
           title: "Brand Governance & Policy Lead",
           badge: "Brand Manager",
-          badgeClass: "bg-purple-500/10 text-purple-400 border-purple-500/20",
+          badgeClass: "bg-purple-50 text-purple-700 border border-purple-200",
           actionText: "Manage Rule Health & Backtest",
           actionHref: "/governance",
           guidance:
@@ -77,7 +79,7 @@ export default function HomePage() {
         return {
           title: "Editorial & Compliance Triage",
           badge: "Reviewer",
-          badgeClass: "bg-amber-500/10 text-amber-400 border-amber-500/20",
+          badgeClass: "bg-amber-50 text-amber-700 border border-amber-200",
           actionText: "Open Review Queue",
           actionHref: "/review",
           guidance:
@@ -89,7 +91,7 @@ export default function HomePage() {
         return {
           title: "Marketing Copy & Creative Authoring",
           badge: "Creator",
-          badgeClass: "bg-blue-500/10 text-blue-400 border-blue-500/20",
+          badgeClass: "bg-blue-50 text-blue-700 border border-blue-200",
           actionText: "Stage New Submission",
           actionHref: "/submissions",
           guidance:
@@ -101,7 +103,7 @@ export default function HomePage() {
         return {
           title: "Workspace Member",
           badge: role,
-          badgeClass: "bg-white text-black border-2 border-black",
+          badgeClass: "bg-gray-50 text-gray-700 border border-gray-200",
           actionText: "Explore Workspace",
           actionHref: "/submissions",
           guidance: "Explore brand guidelines and review compliance workflows.",
@@ -114,32 +116,38 @@ export default function HomePage() {
   const roleInfo = user ? getRolePresentation(user.role) : null;
 
   return (
-    <div className="flex-1 w-full max-w-7xl mx-auto px-6 py-10 flex flex-col gap-10">
+    <div className="flex-1 w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 flex flex-col gap-10 text-[#111827]">
       {/* Top Banner / Hero Header */}
-      <section className="neo-box-prominent bg-white p-6 sm:p-8 md:p-10 flex flex-col lg:flex-row items-start lg:items-center justify-between gap-8">
+      <section className="bg-white border border-[#E5E7EB] rounded-2xl p-6 sm:p-8 md:p-10 shadow-xs flex flex-col lg:flex-row items-start lg:items-center justify-between gap-8">
         <div className="flex flex-col gap-4 max-w-2xl">
-          <div className="neo-badge bg-[#FFD700] text-black w-fit">
-            <Sparkles className="w-3.5 h-3.5 stroke-[2.5]" />
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-50 border border-blue-200 text-blue-700 text-xs font-semibold w-fit">
+            <Sparkles className="w-3.5 h-3.5" />
             <span>Deterministic Double-Receipt Brand Governance</span>
           </div>
-          <h1 className="text-3xl sm:text-4xl md:text-5xl font-black tracking-tight text-black leading-tight">
+          <h1 className="text-3xl sm:text-4xl md:text-5xl font-extrabold tracking-tight text-[#111827] leading-[1.15]">
             Pre-Publication Brand Compliance, Refereed by Provable Evidence
           </h1>
-          <p className="text-sm md:text-base text-black/80 font-medium leading-relaxed">
+          <p className="text-sm md:text-base text-[#4B5563] leading-relaxed">
             Eliminate compliance review bottlenecks and regulatory exposure. Canon verifies marketing copy against active guidelines with immutable double receipts, records human override signals, and safely backtests rule exceptions.
           </p>
-          <div className="flex items-center gap-4 pt-2 flex-wrap">
+          <div className="flex items-center gap-3 pt-2 flex-wrap">
             <Link
               href="/demo"
-              className="neo-btn neo-btn-teal py-3 px-5 text-sm"
+              className="neo-btn neo-btn-teal py-2.5 px-5 text-sm"
             >
-              <Sparkles className="w-4 h-4 stroke-[2.5]" />
-              <span>Take Interactive Tour (/demo)</span>
-              <ArrowRight className="w-4 h-4 stroke-[2.5]" />
+              <Sparkles className="w-4 h-4" />
+              <span>Launch Evaluator Demo Tour (/demo)</span>
+              <ArrowRight className="w-4 h-4 ml-1" />
+            </Link>
+            <Link
+              href="/submissions"
+              className="neo-btn neo-btn-white py-2.5 px-5 text-sm"
+            >
+              Author & Submit Copy
             </Link>
             <Link
               href="/policy"
-              className="neo-btn neo-btn-white py-3 px-5 text-sm"
+              className="neo-btn neo-btn-white py-2.5 px-4 text-sm text-[#4B5563]"
             >
               Explore Brand Policy
             </Link>
@@ -147,25 +155,25 @@ export default function HomePage() {
         </div>
 
         {/* Live Proxy Connectivity Card */}
-        <div className="p-5 rounded-xl bg-[#F4F0EA] border-[2px] border-black shadow-[2px_2px_0px_#000] flex flex-col gap-2 min-w-[240px] shrink-0">
-          <div className="flex items-center justify-between text-xs font-black text-black font-mono">
-            <span>EDGE PROXY STATUS</span>
+        <div className="p-5 rounded-xl bg-[#F8F9FA] border border-[#E5E7EB] shadow-xs flex flex-col gap-3 min-w-[260px] shrink-0">
+          <div className="flex items-center justify-between text-xs font-semibold text-[#6B7280] font-mono">
+            <span>EDGE GATEWAY STATUS</span>
             <button
               onClick={checkApiHealth}
-              className="neo-btn neo-btn-white p-1 text-black"
+              className="p-1 rounded hover:bg-white text-[#4B5563] border border-transparent hover:border-[#E5E7EB] transition"
               title="Refresh connection test"
               aria-label="Refresh API connection"
             >
-              <RefreshCw className={`w-3.5 h-3.5 stroke-[2.5] ${health.status === "checking" ? "animate-spin" : ""}`} />
+              <RefreshCw className={`w-3.5 h-3.5 ${health.status === "checking" ? "animate-spin" : ""}`} />
             </button>
           </div>
-          <div className="flex items-center gap-2 pt-1">
+          <div className="flex items-center gap-2 pt-0.5">
             {health.status === "connected" && (
               <>
-                <CheckCircle2 className="w-5 h-5 text-emerald-600 stroke-[2.5]" />
-                <span className="text-base font-black text-black">Connected</span>
+                <CheckCircle2 className="w-5 h-5 text-emerald-600" />
+                <span className="text-sm font-bold text-[#111827]">Live & Connected</span>
                 {health.latencyMs !== undefined && (
-                  <span className="text-xs font-mono font-bold text-black ml-auto bg-white border border-black px-1.5 py-0.5 rounded shadow-[1px_1px_0px_#000]">
+                  <span className="text-[11px] font-mono font-semibold text-emerald-700 ml-auto bg-emerald-50 border border-emerald-200 px-2 py-0.5 rounded-full">
                     {health.latencyMs}ms
                   </span>
                 )}
@@ -173,40 +181,40 @@ export default function HomePage() {
             )}
             {health.status === "checking" && (
               <>
-                <div className="w-4 h-4 rounded-full border-2 border-black border-t-transparent animate-spin" />
-                <span className="text-sm font-bold text-black">Probing /api/v1...</span>
+                <div className="w-4 h-4 rounded-full border-2 border-[#2563EB] border-t-transparent animate-spin" />
+                <span className="text-xs font-medium text-[#4B5563]">Probing /api/v1...</span>
               </>
             )}
             {(health.status === "degraded" || health.status === "error") && (
               <>
-                <AlertTriangle className="w-5 h-5 text-amber-600 stroke-[2.5]" />
-                <span className="text-sm font-black text-amber-700">Offline / Mock Mode</span>
+                <AlertTriangle className="w-5 h-5 text-amber-600" />
+                <span className="text-xs font-bold text-amber-700">Offline / Mock Mode</span>
               </>
             )}
           </div>
-          <span className="text-[11px] font-mono font-bold text-black/70 pt-2 border-t border-black/20">
-            Proxy: Next.js Edge &rarr; /api/v1
+          <span className="text-[11px] font-mono text-[#6B7280] pt-2 border-t border-[#E5E7EB]">
+            Proxy: Next.js Edge &rarr; FastAPI Backend
           </span>
         </div>
       </section>
 
       {/* Role-Adaptive Greeting & Contextual Alert */}
       {!authLoading && user && roleInfo && (
-        <section className="neo-box p-6 bg-[#00C2CB] flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
+        <section className="bg-blue-50/70 border border-blue-200 rounded-xl p-5 sm:p-6 flex flex-col md:flex-row items-start md:items-center justify-between gap-6 shadow-xs">
           <div className="flex items-start gap-4">
-            <div className="w-12 h-12 rounded-xl bg-white border-2 border-black flex items-center justify-center text-black shrink-0 shadow-[2px_2px_0px_#000]">
-              <UserCheck className="w-6 h-6" />
+            <div className="w-11 h-11 rounded-lg bg-white border border-blue-200 text-[#2563EB] flex items-center justify-center shrink-0 shadow-xs">
+              <UserCheck className="w-5 h-5" />
             </div>
-            <div className="flex flex-col gap-1.5">
+            <div className="flex flex-col gap-1">
               <div className="flex items-center gap-2 flex-wrap">
-                <h2 className="text-lg font-black text-black">
+                <h2 className="text-base font-bold text-[#111827]">
                   Welcome back, {user.full_name}
                 </h2>
-                <span className="neo-badge bg-black text-white">
+                <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-mono uppercase font-semibold ${roleInfo.badgeClass}`}>
                   {roleInfo.badge}
                 </span>
               </div>
-              <p className="text-xs text-black font-semibold leading-relaxed max-w-2xl">
+              <p className="text-xs text-[#4B5563] leading-relaxed max-w-2xl">
                 {roleInfo.guidance}
               </p>
             </div>
@@ -215,16 +223,16 @@ export default function HomePage() {
           <div className="flex items-center gap-3 w-full md:w-auto shrink-0">
             <Link
               href={roleInfo.secondaryHref}
-              className="neo-btn neo-btn-white flex-1 md:flex-initial text-center"
+              className="neo-btn neo-btn-white flex-1 md:flex-initial text-center text-xs"
             >
               {roleInfo.secondaryText}
             </Link>
             <Link
               href={roleInfo.actionHref}
-              className="neo-btn neo-btn-black flex-1 md:flex-initial text-center"
+              className="neo-btn neo-btn-teal flex-1 md:flex-initial text-center text-xs"
             >
               <span>{roleInfo.actionText}</span>
-              <ArrowRight className="w-3.5 h-3.5" />
+              <ArrowRight className="w-3.5 h-3.5 ml-1" />
             </Link>
           </div>
         </section>
@@ -232,26 +240,26 @@ export default function HomePage() {
 
       {/* Guest Mode Sign-in Banner (when unauthenticated) */}
       {!authLoading && !user && (
-        <section className="neo-box p-6 bg-[#FFD700] flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
+        <section className="bg-amber-50/80 border border-amber-200 rounded-xl p-5 sm:p-6 flex flex-col md:flex-row items-start md:items-center justify-between gap-6 shadow-xs">
           <div className="flex items-start gap-4">
-            <div className="w-12 h-12 rounded-xl bg-white border-2 border-black flex items-center justify-center text-black shrink-0 shadow-[2px_2px_0px_#000]">
-              <LogIn className="w-6 h-6" />
+            <div className="w-11 h-11 rounded-lg bg-white border border-amber-200 text-amber-700 flex items-center justify-center shrink-0 shadow-xs">
+              <LogIn className="w-5 h-5" />
             </div>
             <div className="flex flex-col gap-1">
-              <h2 className="text-lg font-black text-black">
+              <h2 className="text-base font-bold text-[#111827]">
                 Workspace Authentication Recommended
               </h2>
-              <p className="text-xs text-black font-semibold max-w-xl">
+              <p className="text-xs text-[#4B5563] max-w-xl">
                 You are currently browsing in guest mode. Sign in to access workspace submissions, triage review queues, or inspect and modify brand governance policies.
               </p>
             </div>
           </div>
           <Link
             href="/login"
-            className="neo-btn neo-btn-black shrink-0"
+            className="neo-btn neo-btn-teal shrink-0 text-xs"
           >
             <span>Sign In to Workspace</span>
-            <ArrowRight className="w-3.5 h-3.5" />
+            <ArrowRight className="w-3.5 h-3.5 ml-1" />
           </Link>
         </section>
       )}
@@ -261,25 +269,25 @@ export default function HomePage() {
         {/* Card 1: Copy Submission & Pre-Flight */}
         <Link
           href="/submissions"
-          className="neo-box p-6 flex flex-col justify-between gap-6 group hover:bg-[#F4F0EA]"
+          className="bg-white border border-[#E5E7EB] rounded-xl p-6 flex flex-col justify-between gap-6 group hover:border-blue-400 hover:shadow-md transition-all"
         >
           <div className="flex flex-col gap-4">
-            <div className="w-12 h-12 rounded-xl bg-[#00C2CB] border-2 border-black text-black flex items-center justify-center shadow-[2px_2px_0px_#000]">
-              <FileCheck2 className="w-6 h-6" />
+            <div className="w-11 h-11 rounded-lg bg-blue-50 border border-blue-200 text-[#2563EB] flex items-center justify-center">
+              <FileCheck2 className="w-5 h-5" />
             </div>
-            <div className="flex flex-col gap-1.5">
-              <span className="neo-badge bg-[#00C2CB] text-black w-fit">
+            <div className="flex flex-col gap-1">
+              <span className="text-[11px] font-mono uppercase tracking-wider text-blue-700 font-semibold">
                 Creator Workflow
               </span>
-              <h2 className="text-xl font-black text-black group-hover:underline">
+              <h2 className="text-lg font-bold text-[#111827] group-hover:text-[#2563EB] transition-colors">
                 Copy Submission & Pre-Flight
               </h2>
             </div>
-            <p className="text-xs text-black font-semibold leading-relaxed">
+            <p className="text-xs text-[#4B5563] leading-relaxed">
               Submit marketing drafts for immediate multi-stage analysis: injection sanitization, exact terminology matching, and substantiated claim verification.
             </p>
           </div>
-          <div className="flex items-center justify-between pt-4 border-t-2 border-black text-xs font-black text-black">
+          <div className="flex items-center justify-between pt-4 border-t border-[#E5E7EB] text-xs font-semibold text-[#2563EB]">
             <span>Stage Draft Copy</span>
             <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition" />
           </div>
@@ -288,52 +296,52 @@ export default function HomePage() {
         {/* Card 2: Double-Receipt Verification */}
         <Link
           href="/review"
-          className="neo-box p-6 flex flex-col justify-between gap-6 group hover:bg-[#F4F0EA]"
+          className="bg-white border border-[#E5E7EB] rounded-xl p-6 flex flex-col justify-between gap-6 group hover:border-amber-400 hover:shadow-md transition-all"
         >
           <div className="flex flex-col gap-4">
-            <div className="w-12 h-12 rounded-xl bg-[#FFD700] border-2 border-black text-black flex items-center justify-center shadow-[2px_2px_0px_#000]">
-              <ShieldCheck className="w-6 h-6" />
+            <div className="w-11 h-11 rounded-lg bg-amber-50 border border-amber-200 text-amber-700 flex items-center justify-center">
+              <ShieldCheck className="w-5 h-5" />
             </div>
-            <div className="flex flex-col gap-1.5">
-              <span className="neo-badge bg-[#FFD700] text-black w-fit">
+            <div className="flex flex-col gap-1">
+              <span className="text-[11px] font-mono uppercase tracking-wider text-amber-700 font-semibold">
                 Reviewer Workflow
               </span>
-              <h2 className="text-xl font-black text-black group-hover:underline">
+              <h2 className="text-lg font-bold text-[#111827] group-hover:text-amber-800 transition-colors">
                 Double-Receipt Findings
               </h2>
             </div>
-            <p className="text-xs text-black font-semibold leading-relaxed">
+            <p className="text-xs text-[#4B5563] leading-relaxed">
               Every violation carries two receipts: the verbatim text span in the draft, and the verbatim guideline rule quote in the source policy. Zero hallucinated claims.
             </p>
           </div>
-          <div className="flex items-center justify-between pt-4 border-t-2 border-black text-xs font-black text-black">
+          <div className="flex items-center justify-between pt-4 border-t border-[#E5E7EB] text-xs font-semibold text-amber-700">
             <span>Triage Violations</span>
             <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition" />
           </div>
         </Link>
 
-        {/* Card 3: Live Brand Policy Explorer (PROP-U12) */}
+        {/* Card 3: Live Brand Policy Explorer */}
         <Link
           href="/policy"
-          className="neo-box p-6 flex flex-col justify-between gap-6 group hover:bg-[#F4F0EA]"
+          className="bg-white border border-[#E5E7EB] rounded-xl p-6 flex flex-col justify-between gap-6 group hover:border-purple-400 hover:shadow-md transition-all"
         >
           <div className="flex flex-col gap-4">
-            <div className="w-12 h-12 rounded-xl bg-[#FF00FF] border-2 border-black text-white flex items-center justify-center shadow-[2px_2px_0px_#000]">
-              <BookOpen className="w-6 h-6" />
+            <div className="w-11 h-11 rounded-lg bg-purple-50 border border-purple-200 text-purple-700 flex items-center justify-center">
+              <BookOpen className="w-5 h-5" />
             </div>
-            <div className="flex flex-col gap-1.5">
-              <span className="neo-badge bg-[#FF00FF] text-white w-fit">
+            <div className="flex flex-col gap-1">
+              <span className="text-[11px] font-mono uppercase tracking-wider text-purple-700 font-semibold">
                 Guideline Registry
               </span>
-              <h2 className="text-xl font-black text-black group-hover:underline">
+              <h2 className="text-lg font-bold text-[#111827] group-hover:text-purple-800 transition-colors">
                 Live Brand Policy Explorer
               </h2>
             </div>
-            <p className="text-xs text-black font-semibold leading-relaxed">
+            <p className="text-xs text-[#4B5563] leading-relaxed">
               Inspect active compiled rules, verified source citations, and the temporal approved claims ledger with active validity windows.
             </p>
           </div>
-          <div className="flex items-center justify-between pt-4 border-t-2 border-black text-xs font-black text-black">
+          <div className="flex items-center justify-between pt-4 border-t border-[#E5E7EB] text-xs font-semibold text-purple-700">
             <span>Explore Active Policy</span>
             <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition" />
           </div>
@@ -342,25 +350,25 @@ export default function HomePage() {
         {/* Card 4: Rule Health & Backtesting */}
         <Link
           href="/governance"
-          className="neo-box p-6 flex flex-col justify-between gap-6 group hover:bg-[#F4F0EA]"
+          className="bg-white border border-[#E5E7EB] rounded-xl p-6 flex flex-col justify-between gap-6 group hover:border-emerald-400 hover:shadow-md transition-all"
         >
           <div className="flex flex-col gap-4">
-            <div className="w-12 h-12 rounded-xl bg-black border-2 border-black text-white flex items-center justify-center shadow-[2px_2px_0px_#000]">
-              <GitBranch className="w-6 h-6" />
+            <div className="w-11 h-11 rounded-lg bg-emerald-50 border border-emerald-200 text-emerald-700 flex items-center justify-center">
+              <GitBranch className="w-5 h-5" />
             </div>
-            <div className="flex flex-col gap-1.5">
-              <span className="neo-badge bg-black text-white w-fit">
+            <div className="flex flex-col gap-1">
+              <span className="text-[11px] font-mono uppercase tracking-wider text-emerald-700 font-semibold">
                 Brand Manager Workflow
               </span>
-              <h2 className="text-xl font-black text-black group-hover:underline">
+              <h2 className="text-lg font-bold text-[#111827] group-hover:text-emerald-800 transition-colors">
                 Rule Health & Backtest
               </h2>
             </div>
-            <p className="text-xs text-black font-semibold leading-relaxed">
+            <p className="text-xs text-[#4B5563] leading-relaxed">
               Analyze override telemetry, identify flapping rules (e.g. 37.5% override rate), backtest proposals, and approve Policy v1.1.
             </p>
           </div>
-          <div className="flex items-center justify-between pt-4 border-t-2 border-black text-xs font-black text-black">
+          <div className="flex items-center justify-between pt-4 border-t border-[#E5E7EB] text-xs font-semibold text-emerald-700">
             <span>Analyze Telemetry</span>
             <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition" />
           </div>
@@ -368,52 +376,56 @@ export default function HomePage() {
       </section>
 
       {/* Flapping Rule Insight Spotlight */}
-      <section className="neo-box p-6 bg-[#FFD700] flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
+      <section className="bg-amber-50/70 border border-amber-200 border-l-4 border-l-amber-500 rounded-xl p-6 flex flex-col md:flex-row items-start md:items-center justify-between gap-6 shadow-xs">
         <div className="flex items-start gap-4">
-          <div className="w-12 h-12 rounded-xl bg-white border-2 border-black flex items-center justify-center text-black shrink-0 shadow-[2px_2px_0px_#000]">
-            <Flame className="w-6 h-6 text-black" />
+          <div className="w-11 h-11 rounded-lg bg-white border border-amber-200 flex items-center justify-center text-amber-700 shrink-0">
+            <Flame className="w-5 h-5" />
           </div>
-          <div className="flex flex-col gap-1.5">
+          <div className="flex flex-col gap-1">
             <div className="flex items-center gap-2">
-              <span className="neo-badge bg-black text-white">
+              <span className="text-[10px] font-mono font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-amber-200 text-amber-900">
                 TELEMETRY ALERT
               </span>
-              <h3 className="text-base font-black text-black">Rule TERM-007 High Human Override Drag</h3>
+              <h3 className="text-sm sm:text-base font-bold text-[#111827]">
+                Rule TERM-007 High Human Override Drag (37.5%)
+              </h3>
             </div>
-            <p className="text-xs text-black font-semibold leading-relaxed max-w-2xl">
-              37.5% of evaluations for rule TERM-007 (&ldquo;guaranteed return&rdquo;) are currently overridden by human reviewers with code <code className="text-black font-mono font-bold bg-white border border-black px-1.5 py-0.5 rounded shadow-[1px_1px_0px_#000]">RATIONALE_DISCLOSURE</code>. Candidate proposal PROP-01 is ready for historical backtesting.
+            <p className="text-xs text-[#4B5563] leading-relaxed max-w-2xl">
+              37.5% of evaluations for rule TERM-007 (&ldquo;guaranteed return&rdquo;) are currently overridden by human reviewers with code <code className="text-[#111827] font-mono font-semibold bg-white border border-amber-200 px-1.5 py-0.5 rounded text-[11px]">RATIONALE_DISCLOSURE</code>. Candidate proposal PROP-01 is ready for historical backtesting.
             </p>
           </div>
         </div>
         <Link
           href="/governance"
-          className="neo-btn neo-btn-black shrink-0"
+          className="neo-btn neo-btn-white shrink-0 text-xs border-amber-300 hover:border-amber-400"
         >
           <span>Examine Proposal PROP-01</span>
-          <ArrowRight className="w-3.5 h-3.5" />
+          <ArrowRight className="w-3.5 h-3.5 ml-1" />
         </Link>
       </section>
 
-      {/* Evaluation Walkthrough Banner */}
-      <section className="neo-box p-6 bg-white flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+      {/* Evaluation Walkthrough & AI Benchmark Banner */}
+      <section className="bg-white border border-[#E5E7EB] rounded-xl p-6 flex flex-col md:flex-row items-start md:items-center justify-between gap-6 shadow-xs">
         <div className="flex items-center gap-4">
-          <div className="w-12 h-12 rounded-xl bg-[#00C2CB] border-2 border-black flex items-center justify-center text-black shrink-0 shadow-[2px_2px_0px_#000]">
-            <Clock className="w-6 h-6" />
+          <div className="w-11 h-11 rounded-lg bg-blue-50 border border-blue-200 text-[#2563EB] flex items-center justify-center shrink-0">
+            <Award className="w-5 h-5" />
           </div>
           <div>
-            <h3 className="text-base font-black text-black">Deterministic Evaluation Walkthrough</h3>
-            <p className="text-xs text-black font-semibold">
-              Pre-seeded Acme Financial guidelines (12 rules), active claims ledger with expired claim, and seeded proposal PROP-01 ready for deterministic verification.
+            <h3 className="text-base font-bold text-[#111827]">
+              AI Evaluation & Model Benchmark Suite
+            </h3>
+            <p className="text-xs text-[#4B5563]">
+              Verify 30 adversarial & regression test cases, latency metrics, and 100% OWASP prompt injection defense before submitting to production.
             </p>
           </div>
         </div>
         <div className="flex items-center gap-3">
           <Link
-            href="/submissions"
-            className="neo-btn neo-btn-teal"
+            href="/evaluation"
+            className="neo-btn neo-btn-teal text-xs"
           >
-            <span>Start with Submissions</span>
-            <ArrowRight className="w-3.5 h-3.5" />
+            <span>Run AI Benchmark Suite</span>
+            <ArrowRight className="w-3.5 h-3.5 ml-1" />
           </Link>
         </div>
       </section>

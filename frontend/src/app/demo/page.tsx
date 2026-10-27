@@ -434,7 +434,7 @@ function DemoTourContent() {
   return (
     <div className="flex-1 w-full max-w-7xl mx-auto px-6 py-10 flex flex-col gap-8 text-black">
       {/* Header Banner */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b-[2.5px] border-black pb-6">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-[#E5E7EB] pb-6">
         <div>
           <div className="flex items-center gap-2 mb-2">
             <span className="neo-badge bg-[#00C2CB] text-black text-xs font-black">
@@ -482,9 +482,9 @@ function DemoTourContent() {
               key={s.num}
               type="button"
               onClick={() => setStep(s.num)}
-              className={`p-4 rounded-xl border-[2.5px] border-black text-left transition flex flex-col gap-2 relative focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-black ${
+              className={`p-4 rounded-xl border border-[#E5E7EB] text-left transition flex flex-col gap-2 relative focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-black ${
                 isActive
-                  ? "bg-[#00C2CB] shadow-[4px_4px_0px_#000000] translate-x-[-1px] translate-y-[-1px]"
+                  ? "bg-[#00C2CB] shadow-[4px_4px_0px_#000000] translate-y-[-1px]"
                   : isPassed
                   ? "bg-[#F5F5DC] shadow-[2px_2px_0px_#000000] hover:translate-y-[-1px]"
                   : "bg-white shadow-[2px_2px_0px_#000000] hover:translate-y-[-1px]"
@@ -497,7 +497,7 @@ function DemoTourContent() {
                       ? "bg-white text-black"
                       : isPassed
                       ? "bg-[#00C2CB] text-black"
-                      : "bg-[#F4F0EA] text-black"
+                      : "bg-[#F8F9FA] text-black"
                   }`}
                 >
                   Step {s.num}.
@@ -554,12 +554,12 @@ function DemoTourContent() {
           {currentStep === 1 && (
             <div className="neo-box-prominent p-6 md:p-8 bg-white flex flex-col gap-6 animate-in fade-in duration-200">
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                <div className="p-4 rounded-xl bg-[#F4F0EA] border-[2px] border-black shadow-[2px_2px_0px_#000000] flex flex-col gap-1">
+                <div className="p-4 rounded-xl bg-[#F8F9FA] border-[2px] border-black shadow-[2px_2px_0px_#000000] flex flex-col gap-1">
                   <span className="text-[11px] text-black/70 uppercase font-mono font-bold">Policy Version</span>
                   <span className="text-2xl font-black font-mono text-black">v{step1Policy.version}</span>
                   <span className="text-[11px] text-black font-bold">Human Approved Baseline</span>
                 </div>
-                <div className="p-4 rounded-xl bg-[#F4F0EA] border-[2px] border-black shadow-[2px_2px_0px_#000000] flex flex-col gap-1">
+                <div className="p-4 rounded-xl bg-[#F8F9FA] border-[2px] border-black shadow-[2px_2px_0px_#000000] flex flex-col gap-1">
                   <span className="text-[11px] text-black/70 uppercase font-mono font-bold">Active Rules</span>
                   <span className="text-2xl font-black font-mono text-black">{step1Policy.rulesCount} Rules</span>
                   <span className="text-[11px] text-black font-bold">All with Exact Citations</span>
@@ -848,7 +848,7 @@ function DemoTourContent() {
               </div>
 
               {/* Reason-Coded Human Override Form */}
-              <div className="p-5 neo-box bg-[#F4F0EA] flex flex-col gap-4">
+              <div className="p-5 neo-box bg-[#F8F9FA] flex flex-col gap-4">
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
                   <div className="flex items-center gap-2">
                     <div className="w-7 h-7 rounded bg-[#FFD700] border-[2px] border-black flex items-center justify-center shadow-[1px_1px_0px_#000000]">
@@ -997,7 +997,7 @@ function DemoTourContent() {
               </div>
 
               {/* Empirical Backtest Simulation */}
-              <div className="p-5 neo-box bg-[#F4F0EA] flex flex-col gap-4">
+              <div className="p-5 neo-box bg-[#F8F9FA] flex flex-col gap-4">
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                   <div>
                     <h3 className="text-sm font-black text-black">Empirical Historical Backtest</h3>
@@ -1133,7 +1133,7 @@ function DemoTourContent() {
             </p>
 
             <ul className="flex flex-col gap-3 text-xs">
-              <li className="flex items-start gap-2.5 p-2 rounded-lg bg-[#F4F0EA] border border-black/30">
+              <li className="flex items-start gap-2.5 p-2 rounded-lg bg-[#F8F9FA] border border-black/30">
                 <CheckCircle2 className="w-4 h-4 text-black stroke-[2.5] shrink-0 mt-0.5" />
                 <div>
                   <span className="font-black text-black">Zero AI Authority</span>
@@ -1143,7 +1143,7 @@ function DemoTourContent() {
                 </div>
               </li>
 
-              <li className="flex items-start gap-2.5 p-2 rounded-lg bg-[#F4F0EA] border border-black/30">
+              <li className="flex items-start gap-2.5 p-2 rounded-lg bg-[#F8F9FA] border border-black/30">
                 <CheckCircle2 className="w-4 h-4 text-black stroke-[2.5] shrink-0 mt-0.5" />
                 <div>
                   <span className="font-black text-black">Double Receipts (A &amp; B)</span>
@@ -1153,7 +1153,7 @@ function DemoTourContent() {
                 </div>
               </li>
 
-              <li className="flex items-start gap-2.5 p-2 rounded-lg bg-[#F4F0EA] border border-black/30">
+              <li className="flex items-start gap-2.5 p-2 rounded-lg bg-[#F8F9FA] border border-black/30">
                 <CheckCircle2 className="w-4 h-4 text-black stroke-[2.5] shrink-0 mt-0.5" />
                 <div>
                   <span className="font-black text-black">Immutable Audit Ledger</span>
@@ -1163,7 +1163,7 @@ function DemoTourContent() {
                 </div>
               </li>
 
-              <li className="flex items-start gap-2.5 p-2 rounded-lg bg-[#F4F0EA] border border-black/30">
+              <li className="flex items-start gap-2.5 p-2 rounded-lg bg-[#F8F9FA] border border-black/30">
                 <CheckCircle2 className="w-4 h-4 text-black stroke-[2.5] shrink-0 mt-0.5" />
                 <div>
                   <span className="font-black text-black">Empirical Backtesting</span>
@@ -1185,7 +1185,7 @@ function DemoTourContent() {
                   className={`p-2 rounded-lg text-left border-[2px] border-black font-black transition ${
                     currentStep === 1
                       ? "bg-[#00C2CB] text-black shadow-[2px_2px_0px_#000000]"
-                      : "bg-[#F4F0EA] text-black hover:bg-white"
+                      : "bg-[#F8F9FA] text-black hover:bg-white"
                   }`}
                 >
                   1. Policy v1.0
@@ -1196,7 +1196,7 @@ function DemoTourContent() {
                   className={`p-2 rounded-lg text-left border-[2px] border-black font-black transition ${
                     currentStep === 2
                       ? "bg-[#00C2CB] text-black shadow-[2px_2px_0px_#000000]"
-                      : "bg-[#F4F0EA] text-black hover:bg-white"
+                      : "bg-[#F8F9FA] text-black hover:bg-white"
                   }`}
                 >
                   2. Pre-Flight Check
@@ -1207,7 +1207,7 @@ function DemoTourContent() {
                   className={`p-2 rounded-lg text-left border-[2px] border-black font-black transition ${
                     currentStep === 3
                       ? "bg-[#00C2CB] text-black shadow-[2px_2px_0px_#000000]"
-                      : "bg-[#F4F0EA] text-black hover:bg-white"
+                      : "bg-[#F8F9FA] text-black hover:bg-white"
                   }`}
                 >
                   3. Double Receipts
@@ -1218,7 +1218,7 @@ function DemoTourContent() {
                   className={`p-2 rounded-lg text-left border-[2px] border-black font-black transition ${
                     currentStep === 4
                       ? "bg-[#00C2CB] text-black shadow-[2px_2px_0px_#000000]"
-                      : "bg-[#F4F0EA] text-black hover:bg-white"
+                      : "bg-[#F8F9FA] text-black hover:bg-white"
                   }`}
                 >
                   4. Policy v1.1
