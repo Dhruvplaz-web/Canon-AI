@@ -41,7 +41,7 @@ jobs:
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install ruff mypy pytest psycopg2-binary httpx pydantic pydantic-settings sqlalchemy alembic argon2-cffi pyjwt rapidfuzz fastapi uvicorn email-validator python-dotenv
+          pip install ruff mypy pytest "psycopg[binary]" psycopg2-binary httpx pydantic pydantic-settings sqlalchemy alembic argon2-cffi pyjwt rapidfuzz fastapi uvicorn email-validator python-dotenv
 
       - name: Run Ruff Lint
         run: ruff check app tests
@@ -61,11 +61,13 @@ jobs:
 
       - name: Run Alembic Migrations as canon_owner
         env:
+          DATABASE_URL: postgresql://canon_owner:canon_owner_pw@localhost:5432/canon_test
           DIRECT_URL: postgresql://canon_owner:canon_owner_pw@localhost:5432/canon_test
         run: alembic upgrade head
 
       - name: Run PostgreSQL RLS Tests as canon_app
         env:
+          DATABASE_URL: postgresql://canon_app:canon_app_pw@localhost:5432/canon_test
           TEST_DATABASE_URL_OWNER: postgresql://canon_owner:canon_owner_pw@localhost:5432/canon_test
           TEST_DATABASE_URL_APP: postgresql://canon_app:canon_app_pw@localhost:5432/canon_test
         run: pytest -m postgres -v --tb=short
