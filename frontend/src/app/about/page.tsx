@@ -3,7 +3,7 @@ import { Shield, Sparkles, Scale, Lock, CheckCircle2, FileCode, Users, ArrowRigh
 
 export const metadata = {
   title: "About Canon — Pre-Publication Brand Governance Platform",
-  description: "Learn about Canon's mission, the Double-Receipt Invariant, and deterministic compliance verification architecture.",
+  description: "Learn about Canon's mission, dual-grounding evidence guarantees, and deterministic compliance verification architecture.",
 };
 
 export default function AboutPage() {
@@ -60,7 +60,7 @@ export default function AboutPage() {
           <ul className="space-y-2 text-xs text-[#4B5563]">
             <li className="flex items-start gap-2">
               <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
-              <span><strong>The Double-Receipt Invariant:</strong> Every flag links character-span Receipt A (draft text) with statutory Receipt B (verbatim policy quote).</span>
+              <span><strong>Dual Grounding Guarantee:</strong> Every finding links the exact draft citation span with the verbatim statutory policy rule quote.</span>
             </li>
             <li className="flex items-start gap-2">
               <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />

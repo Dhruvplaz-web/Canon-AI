@@ -41,7 +41,7 @@ export default function PrivacyPage() {
           </p>
           <ul className="list-disc pl-5 space-y-1.5 text-xs text-[#4B5563]">
             <li><strong>Session Identifiers:</strong> Ephemeral role identifiers (Creator, Reviewer, Brand Manager) stored in client memory or secure HTTP-only session cookies.</li>
-            <li><strong>Cryptographic Digests:</strong> SHA-256 one-way cryptographic hashes generated over draft content to verify the Double-Receipt Invariant without exposing raw plaintext.</li>
+            <li><strong>Cryptographic Digests:</strong> SHA-256 one-way cryptographic hashes generated over draft content to verify dual grounding without exposing raw plaintext.</li>
             <li><strong>Audit Logs:</strong> Reviewer override reason codes (`RC-01` through `RC-04`) and justification notes retained strictly in the tenant’s private PostgreSQL database.</li>
           </ul>
         </section>

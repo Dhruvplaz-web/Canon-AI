@@ -60,9 +60,9 @@ export default function TermsPage() {
         </section>
 
         <section>
-          <h2 className="text-lg font-bold text-[#111827] mb-3">4. The Double-Receipt Invariant &amp; Reviewer Liability</h2>
+          <h2 className="text-lg font-bold text-[#111827] mb-3">4. Dual Grounding Guarantees &amp; Reviewer Liability</h2>
           <p>
-            Canon enforces the Double-Receipt Invariant: every flagged issue must link Draft Span (Receipt A) to an exact statutory document citation (Receipt B). While Canon facilitates automated compliance checks, final release decisions and override authorizations reside solely with designated human compliance reviewers.
+            Canon enforces strict dual grounding: every flagged issue must link the verbatim draft text span to an exact statutory policy citation. While Canon facilitates automated compliance checks, final release decisions and override authorizations reside solely with designated human compliance reviewers.
           </p>
         </section>
 

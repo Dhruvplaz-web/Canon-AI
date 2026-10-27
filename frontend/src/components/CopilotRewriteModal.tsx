@@ -26,17 +26,22 @@ interface CopilotRewriteModalProps {
   isOpen: boolean;
   onClose: () => void;
   originalContent: string;
-  findings: Finding[];
-  onAcceptRewrite: (newContent: string) => void;
+  channel?: string;
+  findings?: Finding[];
+  onAcceptRewrite?: (newContent: string) => void;
+  onApplyRewrite?: (newContent: string) => void;
 }
 
 export function CopilotRewriteModal({
   isOpen,
   onClose,
   originalContent,
-  findings,
+  channel,
+  findings = [],
   onAcceptRewrite,
+  onApplyRewrite,
 }: CopilotRewriteModalProps) {
+  const handleApply = onAcceptRewrite || onApplyRewrite || (() => {});
   const [isLoading, setIsLoading] = useState(false);
   const [rewrittenContent, setRewrittenContent] = useState("");
   const [changesSummary, setChangesSummary] = useState<string[]>([]);
@@ -214,7 +219,7 @@ export function CopilotRewriteModal({
             type="button"
             onClick={() => {
               if (rewrittenContent) {
-                onAcceptRewrite(rewrittenContent);
+                handleApply(rewrittenContent);
                 onClose();
               }
             }}

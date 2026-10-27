@@ -27,6 +27,7 @@ interface GuidelineIngesterModalProps {
   isOpen: boolean;
   onClose: () => void;
   onIngestComplete?: (rules: ExtractedRule[]) => void;
+  onSuccess?: () => void;
 }
 
 export function GuidelineIngesterModal({

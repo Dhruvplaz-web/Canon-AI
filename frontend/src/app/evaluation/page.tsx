@@ -603,14 +603,14 @@ function EvaluationContent() {
                                   </div>
 
                                   <div className="text-[11px] text-black">
-                                    <span className="font-mono font-bold text-[#D6006E]">Receipt A (Draft Span): </span>
+                                    <span className="font-mono font-bold text-[#D6006E]">Draft Citation Span: </span>
                                     <span className="font-mono bg-[#FFF0F5] px-1 py-0.5 rounded border border-black/20">
                                       &ldquo;{f.receipt_a_draft_span}&rdquo;
                                     </span>
                                   </div>
 
                                   <div className="text-[11px] text-black">
-                                    <span className="font-mono font-bold text-[#008A90]">Receipt B (Policy Quote): </span>
+                                    <span className="font-mono font-bold text-[#008A90]">Policy Rule Quote: </span>
                                     <span className="italic">
                                       &ldquo;{f.receipt_b_rule_quote}&rdquo;
                                     </span>

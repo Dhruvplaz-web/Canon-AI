@@ -42,8 +42,10 @@ node_modules/
 out/
 .turbo/
 npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
+# Testing & reports
+test-results/
+playwright-report/
+coverage/
 
 # Database & Volumes
 *.sqlite

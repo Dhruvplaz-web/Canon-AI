@@ -31,7 +31,7 @@ export default function ContactPage() {
           Get in Touch with Canon Engineering
         </h1>
         <p className="text-base sm:text-lg text-[#4B5563] leading-relaxed">
-          Have questions about the Double-Receipt architecture, SOC-2 compliance integrations, or vulnerability disclosures? Reach our team directly.
+          Have questions about the Dual Grounding architecture, SOC-2 compliance integrations, or vulnerability disclosures? Reach our team directly.
         </p>
       </div>
 
@@ -154,9 +154,9 @@ export default function ContactPage() {
                     className="w-full px-3.5 py-2.5 rounded-xl border border-[#D1D5DB] text-sm focus:outline-none focus:ring-2 focus:ring-[#2563EB] bg-[#F9FAFB] focus:bg-white transition"
                   >
                     <option value="enterprise_demo">Enterprise Product Demonstration</option>
-                    <option value="compliance_advisory">Regulatory / Double-Receipt Technical Inquiry</option>
+                    <option value="compliance_advisory">Regulatory / Verification Architecture Inquiry</option>
                     <option value="security_disclosure">Vulnerability Disclosure (Security Team)</option>
-                    <option value="hackathon_judging">Hackathon Jury Evaluation</option>
+                    <option value="product_evaluation">Product Evaluation &amp; Enterprise Pilot</option>
                   </select>
                 </div>
               </div>
@@ -171,7 +171,7 @@ export default function ContactPage() {
                   required
                   value={formData.message}
                   onChange={(e) => setFormData({ ...formData, message: e.target.value })}
-                  placeholder="Provide context on your brand compliance requirements, custom rule compilation needs, or jury testing inquiries..."
+                  placeholder="Provide context on your brand compliance requirements, custom rule compilation needs, or enterprise evaluation inquiries..."
                   className="w-full px-3.5 py-2.5 rounded-xl border border-[#D1D5DB] text-sm focus:outline-none focus:ring-2 focus:ring-[#2563EB] bg-[#F9FAFB] focus:bg-white transition"
                 />
               </div>

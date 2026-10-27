@@ -44,14 +44,16 @@ interface Finding {
 interface CreativeStudioPreviewProps {
   content: string;
   title: string;
-  findings: Finding[];
+  channel?: string;
+  findings?: Finding[];
   onLocateFinding?: (finding: Finding) => void;
 }
 
 export function CreativeStudioPreview({
   content,
   title,
-  findings,
+  channel,
+  findings = [],
   onLocateFinding,
 }: CreativeStudioPreviewProps) {
   const [activeChannel, setActiveChannel] = useState<"linkedin" | "google" | "instagram" | "email">("linkedin");

@@ -140,13 +140,13 @@ export function ComplianceCertificateModal({
 
         {/* 2-Column Grounding Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {/* Card 1: Verified Copy Provenance (Receipt A) */}
+          {/* Card 1: Verified Copy Provenance (Draft Citation Span) */}
           <div className="neo-box p-4 bg-white flex flex-col gap-3">
             <div className="flex items-center justify-between border-b-2 border-black pb-2">
               <div className="flex items-center gap-2">
                 <FileCheck2 className="w-4 h-4 text-[#00C2CB]" />
                 <span className="text-xs font-black uppercase tracking-wider">
-                  Verified Copy (Receipt A)
+                  Verified Copy Provenance
                 </span>
               </div>
               <span className="neo-badge bg-[#00C2CB] text-black text-[10px]">
@@ -194,13 +194,13 @@ export function ComplianceCertificateModal({
             </div>
           </div>
 
-          {/* Card 2: Governing Policy Document (Receipt B Grounding) */}
+          {/* Card 2: Governing Policy Document (Policy Excerpt Grounding) */}
           <div className="neo-box p-4 bg-white flex flex-col gap-3">
             <div className="flex items-center justify-between border-b-2 border-black pb-2">
               <div className="flex items-center gap-2">
                 <Lock className="w-4 h-4 text-[#FFD700]" />
                 <span className="text-xs font-black uppercase tracking-wider">
-                  Governing Policy (Receipt B)
+                  Governing Policy Citation
                 </span>
               </div>
               <span className="neo-badge bg-[#FFD700] text-black text-[10px]">

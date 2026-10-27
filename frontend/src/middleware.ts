@@ -46,7 +46,49 @@ export function middleware(request: NextRequest) {
     }
   }
 
-  // 2. Security Headers
+  // 2. Authentication & Role Route Guard
+  const isProtected =
+    pathname.startsWith("/submissions") ||
+    pathname.startsWith("/review") ||
+    pathname.startsWith("/governance") ||
+    pathname.startsWith("/evaluation");
+
+  if (isProtected) {
+    const sessionCookie = request.cookies.get("canon_session_token");
+    let userRole: string | null = null;
+
+    if (sessionCookie?.value) {
+      try {
+        const parsed = JSON.parse(sessionCookie.value);
+        userRole = parsed?.role || null;
+      } catch {
+        userRole = null;
+      }
+    }
+
+    // If no valid session exists, redirect to login with safe returnUrl
+    if (!userRole) {
+      const loginUrl = new URL("/login", request.url);
+      loginUrl.searchParams.set("returnUrl", pathname);
+      return NextResponse.redirect(loginUrl);
+    }
+
+    // Role-based restrictions
+    if (pathname.startsWith("/review") && userRole === "creator") {
+      const submissionsUrl = new URL("/submissions", request.url);
+      return NextResponse.redirect(submissionsUrl);
+    }
+
+    if (
+      (pathname.startsWith("/governance") || pathname.startsWith("/evaluation")) &&
+      userRole !== "brand_manager"
+    ) {
+      const homeUrl = new URL("/", request.url);
+      return NextResponse.redirect(homeUrl);
+    }
+  }
+
+  // 3. Security Headers
   const response = NextResponse.next();
 
   response.headers.set("X-Content-Type-Options", "nosniff");

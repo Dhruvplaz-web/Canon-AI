@@ -1,159 +1,295 @@
 "use client";
 
+import * as React from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { LogOut, User as UserIcon, LogIn, Sparkles } from "lucide-react";
+import {
+  Menu,
+  Sparkles,
+  User as UserIcon,
+  LogOut,
+  LogIn,
+  ShieldCheck,
+  CheckCircle2,
+  Database,
+} from "lucide-react";
 import { useAuth } from "@/lib/auth-context";
+import { getNavItemsForRole } from "@/lib/navigation";
+import { ThemeToggle } from "@/components/theme-toggle";
+import {
+  Button,
+  Sheet,
+  SheetTrigger,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+  DropdownMenu,
+  DropdownMenuTrigger,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuLabel,
+} from "@/components/ui";
 
 export default function Navbar() {
   const { user, isLoading, logout } = useAuth();
   const pathname = usePathname();
+  const [isMobileOpen, setIsMobileOpen] = React.useState(false);
+
+  // Derive filtered nav items from canonical role map
+  const navLinks = React.useMemo(() => {
+    return getNavItemsForRole(user?.role);
+  }, [user?.role]);
+
+  const getInitials = (name?: string | null) => {
+    if (!name) return "U";
+    return name
+      .split(" ")
+      .map((part) => part[0])
+      .slice(0, 2)
+      .join("")
+      .toUpperCase();
+  };
 
   const getRoleBadge = (role: string) => {
     switch (role) {
       case "brand_manager":
         return {
           label: "Brand Manager",
-          className: "bg-purple-50 text-purple-700 border border-purple-200",
+          className: "bg-purple-50 text-purple-700 border-purple-200 dark:bg-purple-950 dark:text-purple-300 dark:border-purple-800",
         };
       case "reviewer":
         return {
           label: "Reviewer",
-          className: "bg-amber-50 text-amber-700 border border-amber-200",
+          className: "bg-amber-50 text-amber-800 border-amber-200 dark:bg-amber-950 dark:text-amber-300 dark:border-amber-800",
         };
       case "creator":
         return {
           label: "Creator",
-          className: "bg-blue-50 text-blue-700 border border-blue-200",
+          className: "bg-blue-50 text-blue-700 border-blue-200 dark:bg-blue-950 dark:text-blue-300 dark:border-blue-800",
         };
       default:
         return {
           label: role.replace("_", " "),
-          className: "bg-gray-50 text-gray-700 border border-gray-200",
+          className: "bg-gray-50 text-gray-700 border-gray-200 dark:bg-zinc-800 dark:text-zinc-300 dark:border-zinc-700",
         };
     }
   };
 
-  const navLinks = [
-    { href: "/submissions", label: "Submissions" },
-    { href: "/review", label: "Review Queue" },
-    { href: "/policy", label: "Brand Policy" },
-    { href: "/governance", label: "Rule Health & Backtest" },
-    { href: "/evaluation", label: "AI Evaluation" },
-    { href: "/transparency", label: "AI Transparency" },
-    { href: "/demo", label: "Demo Tour", highlight: true },
-    { href: "/about", label: "About" },
-  ];
-
   return (
-    <header className="border-b border-[#E5E7EB] bg-white/95 backdrop-blur-md sticky top-0 z-40 px-4 sm:px-6 py-3 shadow-xs">
-      <div className="w-full max-w-7xl mx-auto flex items-center justify-between gap-4">
-        <div className="flex items-center gap-6 lg:gap-8">
-          <Link
-            href="/"
-            className="flex items-center gap-2.5 text-base font-bold tracking-tight text-[#111827] hover:opacity-90 transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#2563EB] rounded shrink-0"
-            aria-label="Canon Home"
-          >
-            <div className="w-7 h-7 rounded-lg bg-[#2563EB] text-white flex items-center justify-center font-bold text-xs shadow-xs">
-              C
-            </div>
-            <span className="font-extrabold text-base tracking-tight text-[#111827]">CANON</span>
-          </Link>
+    <>
+      {/* Skip to Content Link (WCAG 2.4.1 Bypass Blocks) */}
+      <a
+        href="#main-content"
+        className="sr-only focus:not-sr-only focus:fixed focus:top-3 focus:left-3 focus:z-50 focus:px-4 focus:py-2 focus:bg-[var(--color-primary)] focus:text-white focus:rounded-[var(--radius-button)] focus:shadow-lg focus:font-semibold focus:text-xs"
+      >
+        Skip to main content
+      </a>
 
-          <nav
-            className="hidden md:flex items-center gap-1 text-xs font-medium text-[#4B5563]"
-            aria-label="Main Navigation"
-          >
-            {navLinks.map((link) => {
-              const isActive = pathname === link.href;
-              return (
-                <Link
-                  key={link.href}
-                  href={link.href}
-                  className={`px-3 py-1.5 rounded-lg transition flex items-center gap-1.5 text-xs ${
-                    isActive
-                      ? "bg-[#EFF6FF] text-[#2563EB] border border-[#BFDBFE] font-semibold"
-                      : link.highlight
-                      ? "bg-amber-50 text-amber-800 border border-amber-200 font-semibold hover:bg-amber-100"
-                      : "text-[#4B5563] hover:text-[#111827] hover:bg-[#F3F4F6] border border-transparent"
-                  }`}
-                >
-                  {link.highlight && <Sparkles className="w-3.5 h-3.5 text-amber-600" />}
-                  <span>{link.label}</span>
-                </Link>
-              );
-            })}
-          </nav>
-        </div>
-
-        <div className="flex items-center gap-3 lg:gap-4 text-xs shrink-0">
-
-          {/* User Session Profile & Role Badge */}
-          {isLoading ? (
-            <div className="flex items-center gap-2 animate-pulse">
-              <div className="w-20 h-6 bg-[#F3F4F6] rounded-md" />
-              <div className="w-16 h-6 bg-[#F3F4F6] rounded-md" />
-            </div>
-          ) : user ? (
-            <div className="flex items-center gap-2.5 pl-3 border-l border-[#E5E7EB]">
-              <div className="flex items-center gap-2 bg-[#F8F9FA] border border-[#E5E7EB] rounded-lg px-2.5 py-1">
-                <div className="w-5 h-5 rounded-md bg-white border border-[#E5E7EB] flex items-center justify-center text-[#4B5563]">
-                  <UserIcon className="w-3.5 h-3.5" />
-                </div>
-                <span className="text-xs text-[#111827] font-semibold hidden lg:inline-block max-w-[120px] truncate">
-                  {user.full_name}
-                </span>
-                <span
-                  className={`px-2 py-0.5 rounded-full text-[10px] font-mono uppercase tracking-wider font-semibold ${
-                    getRoleBadge(user.role).className
-                  }`}
-                >
-                  {getRoleBadge(user.role).label}
-                </span>
-              </div>
-              <button
-                onClick={() => logout()}
-                type="button"
-                className="neo-btn neo-btn-white py-1 px-2.5 text-xs"
-                title="Sign out"
+      <header className="border-b border-[var(--color-border-subtle)] bg-[var(--color-surface)] sticky top-0 z-40 px-4 sm:px-6 py-2.5 transition-colors shadow-xs">
+        <div className="w-full max-w-7xl mx-auto flex items-center justify-between gap-4">
+          {/* Logo & Desktop Navigation */}
+          <div className="flex items-center gap-6 lg:gap-8">
+            <Link
+              href="/"
+              className="flex items-center gap-2.5 text-base font-bold tracking-tight text-[var(--color-text-primary)] hover:opacity-90 transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-border-focus)] rounded shrink-0"
+            >
+              <div
+                aria-hidden="true"
+                className="w-7 h-7 rounded-lg bg-[var(--color-primary)] text-white flex items-center justify-center font-bold text-xs shadow-xs"
               >
-                <LogOut className="w-3.5 h-3.5" />
-                <span className="hidden sm:inline">Sign out</span>
-              </button>
+                C
+              </div>
+              <span className="font-extrabold text-base tracking-tight text-[var(--color-text-primary)]">
+                CANON
+              </span>
+            </Link>
+
+            <nav
+              className="hidden md:flex items-center gap-1 text-xs font-medium text-[var(--color-text-secondary)]"
+              aria-label="Main Navigation"
+            >
+              {navLinks.map((link) => {
+                const isActive = pathname === link.href;
+                return (
+                  <Link
+                    key={link.href}
+                    href={link.href}
+                    aria-current={isActive ? "page" : undefined}
+                    className={`px-3 py-1.5 rounded-[var(--radius-button)] transition flex items-center gap-1.5 text-xs ${
+                      isActive
+                        ? "bg-[var(--color-primary-subtle)] text-[var(--color-primary)] border border-[var(--color-primary-muted)] font-semibold"
+                        : link.highlight
+                        ? "bg-amber-50 text-amber-800 border border-amber-200 dark:bg-amber-950 dark:text-amber-200 dark:border-amber-800 font-semibold hover:opacity-90"
+                        : "text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] hover:bg-[var(--color-surface-hover)] border border-transparent"
+                    }`}
+                  >
+                    {link.highlight && <Sparkles className="w-3.5 h-3.5 text-amber-600" aria-hidden="true" />}
+                    <span>{link.label}</span>
+                  </Link>
+                );
+              })}
+            </nav>
+          </div>
+
+          {/* Right Header Controls: Demo Workspace Pill, Theme Toggle, User Menu, Mobile Drawer */}
+          <div className="flex items-center gap-2.5 sm:gap-3 text-xs shrink-0">
+            {/* Demo Workspace Active Indicator (Item C16) */}
+            <div
+              className="hidden lg:inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full border border-[var(--color-border-subtle)] bg-[var(--color-surface-muted)] text-[var(--color-text-muted)] font-mono text-[11px]"
+              title="Operating in demonstration workspace mode"
+            >
+              <Database className="w-3 h-3 text-blue-500" aria-hidden="true" />
+              <span>Demo Workspace</span>
             </div>
-          ) : (
-            <div className="flex items-center gap-2 pl-3 border-l border-[#E5E7EB]">
+
+            {/* Theme Toggle Button */}
+            <ThemeToggle />
+
+            {/* User Session Profile & Role Dropdown (Items 31, 46) */}
+            {isLoading ? (
+              <div className="flex items-center gap-2 animate-pulse">
+                <div className="w-20 h-7 bg-[var(--color-surface-muted)] rounded-md" />
+              </div>
+            ) : user ? (
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <button
+                    type="button"
+                    className="flex items-center gap-2 pl-2 pr-2.5 py-1 rounded-[var(--radius-button)] border border-[var(--color-border-subtle)] bg-[var(--color-surface)] hover:bg-[var(--color-surface-hover)] text-[var(--color-text-primary)] transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-border-focus)] cursor-pointer"
+                    aria-label={`User menu for ${user.full_name}`}
+                  >
+                    <div className="w-6 h-6 rounded-full bg-[var(--color-primary-subtle)] text-[var(--color-primary)] font-bold text-[11px] flex items-center justify-center border border-[var(--color-primary-muted)]">
+                      {getInitials(user.full_name)}
+                    </div>
+                    <span className="text-xs font-semibold max-w-[100px] truncate hidden sm:inline-block">
+                      {user.full_name}
+                    </span>
+                    <span
+                      className={`px-1.5 py-0.5 rounded text-[10px] font-mono uppercase font-semibold border ${
+                        getRoleBadge(user.role).className
+                      }`}
+                    >
+                      {getRoleBadge(user.role).label}
+                    </span>
+                  </button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" className="w-56">
+                  <DropdownMenuLabel>
+                    <p className="font-semibold text-xs text-[var(--color-text-primary)]">{user.full_name}</p>
+                    <p className="text-[11px] text-[var(--color-text-muted)] font-normal">{user.email}</p>
+                    <p className="text-[10px] text-[var(--color-text-muted)] font-mono mt-1">Acme Corp (Primary Workspace)</p>
+                  </DropdownMenuLabel>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem asChild>
+                    <Link href="/policy" className="flex items-center gap-2 w-full">
+                      <ShieldCheck className="w-3.5 h-3.5 text-blue-600" />
+                      <span>Brand Policy Authority</span>
+                    </Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem destructive onClick={() => logout()}>
+                    <LogOut className="w-3.5 h-3.5 mr-2" />
+                    <span>Sign out</span>
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            ) : (
               <Link
                 href="/login"
-                className="neo-btn neo-btn-teal py-1 px-3 text-xs"
+                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-[var(--radius-button)] bg-[var(--color-primary)] text-white hover:bg-[var(--color-primary-hover)] transition text-xs font-semibold shadow-xs"
               >
                 <LogIn className="w-3.5 h-3.5" />
                 <span>Sign in</span>
               </Link>
-            </div>
-          )}
-        </div>
-      </div>
+            )}
 
-      {/* Mobile Scrollable Navigation */}
-      <nav className="md:hidden border-t border-[#E5E7EB] mt-2 pt-2 flex items-center gap-1 overflow-x-auto text-xs font-medium text-[#4B5563] pb-1">
-        {navLinks.map((link) => {
-          const isActive = pathname === link.href;
-          return (
-            <Link
-              key={link.href}
-              href={link.href}
-              className={`px-2.5 py-1 rounded-md transition whitespace-nowrap text-xs ${
-                isActive
-                  ? "bg-[#EFF6FF] text-[#2563EB] font-semibold"
-                  : "text-[#4B5563] hover:text-[#111827] hover:bg-[#F3F4F6]"
-              }`}
-            >
-              {link.label}
-            </Link>
-          );
-        })}
-      </nav>
-    </header>
+            {/* Mobile Menu Drawer Button (Item 8) */}
+            <div className="md:hidden">
+              <Sheet open={isMobileOpen} onOpenChange={setIsMobileOpen}>
+                <SheetTrigger asChild>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    aria-label="Open mobile navigation drawer"
+                    className="w-8 h-8"
+                  >
+                    <Menu className="w-4 h-4" />
+                  </Button>
+                </SheetTrigger>
+                <SheetContent side="left" className="w-72">
+                  <SheetHeader>
+                    <SheetTitle className="flex items-center gap-2">
+                      <div className="w-6 h-6 rounded-md bg-[var(--color-primary)] text-white flex items-center justify-center font-bold text-xs">
+                        C
+                      </div>
+                      <span>CANON</span>
+                    </SheetTitle>
+                  </SheetHeader>
+
+                  <div className="flex-1 py-4 flex flex-col gap-1 overflow-y-auto">
+                    <span className="text-[11px] font-semibold text-[var(--color-text-muted)] uppercase tracking-wider px-2.5 mb-1">
+                      Navigation ({user ? getRoleBadge(user.role).label : "Guest"})
+                    </span>
+                    {navLinks.map((link) => {
+                      const isActive = pathname === link.href;
+                      return (
+                        <Link
+                          key={link.href}
+                          href={link.href}
+                          onClick={() => setIsMobileOpen(false)}
+                          aria-current={isActive ? "page" : undefined}
+                          className={`px-3 py-2 rounded-[var(--radius-button)] text-xs font-medium transition flex items-center justify-between ${
+                            isActive
+                              ? "bg-[var(--color-primary-subtle)] text-[var(--color-primary)] font-semibold"
+                              : "text-[var(--color-text-secondary)] hover:bg-[var(--color-surface-hover)]"
+                          }`}
+                        >
+                          <div className="flex items-center gap-2">
+                            {link.highlight && <Sparkles className="w-3.5 h-3.5 text-amber-600" />}
+                            <span>{link.label}</span>
+                          </div>
+                          {isActive && <CheckCircle2 className="w-3.5 h-3.5 text-[var(--color-primary)]" />}
+                        </Link>
+                      );
+                    })}
+                  </div>
+
+                  <div className="pt-4 border-t border-[var(--color-border-subtle)] space-y-3">
+                    <div className="flex items-center justify-between px-2 text-xs text-[var(--color-text-secondary)]">
+                      <span>Appearance</span>
+                      <ThemeToggle />
+                    </div>
+                    {user ? (
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => {
+                          setIsMobileOpen(false);
+                          logout();
+                        }}
+                        className="w-full justify-center"
+                      >
+                        <LogOut className="w-3.5 h-3.5 mr-1.5" />
+                        <span>Sign out ({user.full_name})</span>
+                      </Button>
+                    ) : (
+                      <Link
+                        href="/login"
+                        onClick={() => setIsMobileOpen(false)}
+                        className="w-full inline-flex items-center justify-center gap-1.5 px-3 py-2 rounded-[var(--radius-button)] bg-[var(--color-primary)] text-white text-xs font-semibold"
+                      >
+                        <LogIn className="w-3.5 h-3.5" />
+                        <span>Sign in</span>
+                      </Link>
+                    )}
+                  </div>
+                </SheetContent>
+              </Sheet>
+            </div>
+          </div>
+        </div>
+      </header>
+    </>
   );
 }
