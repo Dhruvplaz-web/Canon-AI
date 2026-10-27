@@ -1,0 +1,16 @@
+{
+  "name": "Canon Brand Governance Platform",
+  "short_name": "Canon",
+  "description": "Deterministic double-receipt brand compliance and policy governance platform.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#F8F9FA",
+  "theme_color": "#2563EB",
+  "icons": [
+    {
+      "src": "/favicon.ico",
+      "sizes": "64x64 32x32 24x24 16x16",
+      "type": "image/x-icon"
+    }
+  ]
+}

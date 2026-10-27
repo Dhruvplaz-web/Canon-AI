@@ -1,0 +1,44 @@
+# Canon: Pre-Publication Brand Governance Platform
+> Deterministic, double-receipt brand compliance and policy governance platform for enterprise marketing collateral.
+
+## Overview
+Canon decouples compliance verification from generative AI. It replaces probabilistic screening with an Abstract Syntax Tree (AST) tokenization compiler, verified claims ledger, and cryptographic HMAC-SHA256 release certificates.
+
+## Core Architectural Invariants
+- **Double-Receipt Invariant:**
+  - Receipt A: Character-exact slice `[start_offset, end_offset]` in user draft.
+  - Receipt B: Exact citation and verbatim quotation from the active brand policy charter.
+- **Zero Probabilistic Drift:** Compliance checking executes in <4ms via deterministic regex and AST lexing, eliminating LLM hallucinations.
+- **Multi-Provider AI Waterfall:** Groq (Qwen-3.8-27B) -> Google Gemini (Gemini 2.5 Flash) -> Deterministic Algorithmic NLP Engine.
+- **Cryptographic Release Verification:** HMAC-SHA256 signature calculated across `certificate_id`, `submission_id`, `content_sha256`, and sign-off timestamp.
+
+## Canonical Endpoints
+- `GET /api/v1/health/live`: Gateway live probe
+- `GET /api/v1/auth/me`: Active session telemetry (auto-hydrated role)
+- `POST /api/v1/submissions`: Create draft campaign
+- `POST /api/v1/submissions/{id}/check`: Execute real-time AST compliance verification
+- `GET /api/v1/submissions/{id}/certificate`: Generate cryptographic HMAC-SHA256 release certificate
+- `POST /api/v1/copilot/rewrite`: Universal multi-provider AI compliance rewrite
+- `POST /api/v1/copilot/extract-guidelines`: Synthesize structured AST rules from unstructured text
+- `GET /api/v1/copilot/showdown`: Head-to-head adversarial benchmark (LLM vs Canon)
+- `GET /api/v1/governance/policy/active`: Active compiled rules and claims ledger
+- `GET /api/v1/governance/health`: Continuous rule drift analytics
+- `POST /api/v1/governance/proposals/{id}/backtest`: Historical corpus simulation
+- `GET /api/v1/governance/benchmark`: Live 30-case benchmark suite (Precision, Recall, F1)
+- `GET /api/v1/review/queue`: Reviewer queue with pushdown filters
+- `GET /api/v1/transparency/disclosure`: EU AI Act Art. 50/52 audit disclosures
+
+## Core Pages
+- `/`: Platform overview, live gateway health badge, and architecture
+- `/submissions`: Interactive Creator Studio with live highlighting and AI copilot rewrite
+- `/review`: Compliance review queue with mandatory reason-code overrides and formal sign-off
+- `/policy`: Active rules catalog, statutory quotes, and guideline ingester
+- `/governance`: Proposal backtesting and rule health metrics
+- `/evaluation`: Real-time 30-case benchmark harness and Adversarial Showdown
+- `/transparency`: EU AI Act Article 50 & 52 transparency ledger
+- `/demo`: Guided evaluator tour
+- `/about`: Platform mission and technical architecture
+- `/contact`: Direct communication & vulnerability reporting
+- `/privacy`: Enterprise data protection and zero-retention guarantee
+- `/terms`: Enterprise SaaS terms and disclaimer of legal warranty
+- `/cookies`: Strictly essential cookies disclosure

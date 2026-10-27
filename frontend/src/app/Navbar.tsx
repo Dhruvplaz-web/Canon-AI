@@ -42,6 +42,7 @@ export default function Navbar() {
     { href: "/evaluation", label: "AI Evaluation" },
     { href: "/transparency", label: "AI Transparency" },
     { href: "/demo", label: "Demo Tour", highlight: true },
+    { href: "/about", label: "About" },
   ];
 
   return (

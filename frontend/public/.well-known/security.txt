@@ -1,0 +1,8 @@
+# Canon Security Vulnerability Disclosure Policy (RFC 9116)
+Contact: mailto:security@acme.corp
+Expires: 2027-12-31T23:59:59.000Z
+Preferred-Languages: en
+Canonical: https://canon-governance.vercel.app/.well-known/security.txt
+Policy: https://canon-governance.vercel.app/terms
+Hiring: https://canon-governance.vercel.app/about
+Acknowledgments: https://canon-governance.vercel.app/transparency

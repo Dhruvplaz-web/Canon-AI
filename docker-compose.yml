@@ -1,0 +1,18 @@
+services:
+  canon-frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: canon-governance-app
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=production
+      - NEXT_PUBLIC_DEMO_MODE=true
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:3000/api/v1/health/live"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 10s

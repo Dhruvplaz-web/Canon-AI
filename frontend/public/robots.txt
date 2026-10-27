@@ -1,0 +1,19 @@
+# Canon Enterprise Brand Governance Platform robots.txt
+User-agent: *
+Allow: /
+Allow: /submissions
+Allow: /review
+Allow: /policy
+Allow: /governance
+Allow: /evaluation
+Allow: /transparency
+Allow: /demo
+Allow: /about
+Allow: /contact
+Allow: /privacy
+Allow: /terms
+Allow: /cookies
+Allow: /llms.txt
+Disallow: /api/v1/auth/
+
+Sitemap: https://canon-governance.vercel.app/sitemap.xml

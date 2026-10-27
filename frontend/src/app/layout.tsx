@@ -42,7 +42,7 @@ export default function RootLayout({
         {/* Multi-Column Enterprise Footer (Markup.ai Reference Architecture) */}
         <footer className="border-t border-[#E5E7EB] bg-white text-[#4B5563] mt-16">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
+            <div className="grid grid-cols-1 md:grid-cols-5 gap-8 mb-8">
               {/* Brand Column */}
               <div className="md:col-span-2 flex flex-col gap-3">
                 <div className="flex items-center gap-2">
@@ -54,23 +54,37 @@ export default function RootLayout({
                 <p className="text-xs text-[#4B5563] max-w-md leading-relaxed">
                   Enterprise pre-publication brand governance platform providing deterministic compliance verification refereed by provable evidence and the Double-Receipt Invariant.
                 </p>
-                <div className="flex items-center gap-2 mt-2">
+                <div className="flex flex-wrap items-center gap-2 mt-2">
                   <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full border border-[#E5E7EB] bg-[#F8F9FA] text-[#6B7280] font-mono text-[11px]">
                     Milestone 1 Release · Architecture Verified
                   </span>
+                  <Link href="/llms.txt" className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full border border-blue-200 bg-blue-50 text-blue-700 font-mono text-[11px] hover:bg-blue-100 transition">
+                    llms.txt available
+                  </Link>
                 </div>
               </div>
 
               {/* Navigation Shortcuts */}
               <div className="flex flex-col gap-2.5 text-xs">
                 <span className="font-semibold text-[#111827] uppercase tracking-wider text-[11px]">Platform</span>
-                <Link href="/submissions" className="hover:text-[#2563EB] transition">Author & Submit Copy</Link>
+                <Link href="/submissions" className="hover:text-[#2563EB] transition">Author &amp; Submit Copy</Link>
                 <Link href="/review" className="hover:text-[#2563EB] transition">Human Reviewer Queue</Link>
                 <Link href="/policy" className="hover:text-[#2563EB] transition">Brand Policy Explorer</Link>
                 <Link href="/governance" className="hover:text-[#2563EB] transition">Rule Health Intelligence</Link>
-                <Link href="/evaluation" className="hover:text-[#2563EB] transition">AI Evaluation & Benchmark</Link>
+                <Link href="/evaluation" className="hover:text-[#2563EB] transition">AI Evaluation &amp; Benchmark</Link>
                 <Link href="/transparency" className="hover:text-[#2563EB] transition">AI Service Telemetry</Link>
                 <Link href="/demo" className="hover:text-[#2563EB] transition font-semibold text-[#2563EB]">Evaluator Demo Tour</Link>
+              </div>
+
+              {/* Company & Legal Links */}
+              <div className="flex flex-col gap-2.5 text-xs">
+                <span className="font-semibold text-[#111827] uppercase tracking-wider text-[11px]">Company &amp; Legal</span>
+                <Link href="/about" className="hover:text-[#2563EB] transition">About Canon</Link>
+                <Link href="/contact" className="hover:text-[#2563EB] transition">Contact &amp; Inquiries</Link>
+                <Link href="/privacy" className="hover:text-[#2563EB] transition">Privacy &amp; EU AI Act</Link>
+                <Link href="/terms" className="hover:text-[#2563EB] transition">Terms of Service</Link>
+                <Link href="/cookies" className="hover:text-[#2563EB] transition">Cookie Policy</Link>
+                <Link href="/security.txt" className="hover:text-[#2563EB] transition font-mono text-[11px]">security.txt</Link>
               </div>
 
               {/* Core Invariants */}
