@@ -1,13 +1,37 @@
 "use client";
 
+import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { LogOut, User as UserIcon, LogIn, Sparkles } from "lucide-react";
+import { LogOut, User as UserIcon, LogIn, Sparkles, Search } from "lucide-react";
 import { useAuth } from "@/lib/auth-context";
+import { CommandPalette } from "@/components/CommandPalette";
 
 export default function Navbar() {
   const { user, isLoading, logout } = useAuth();
   const pathname = usePathname();
+
+  const [isCommandPaletteOpen, setIsCommandPaletteOpen] = useState(false);
+
+  // Safe SSR platform detection via standard React external store
+  const isMac = React.useSyncExternalStore(
+    () => () => {},
+    () => typeof navigator !== "undefined" && /(Mac|iPhone|iPod|iPad)/i.test(navigator.userAgent),
+    () => false
+  );
+
+  // Global Ctrl+K / Cmd+K shortcut listener
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "k") {
+        e.preventDefault();
+        setIsCommandPaletteOpen((prev) => !prev);
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, []);
 
   const getRoleBadge = (role: string) => {
     switch (role) {
@@ -46,114 +70,136 @@ export default function Navbar() {
   ];
 
   return (
-    <header className="border-b border-[#E5E7EB] bg-white/95 backdrop-blur-md sticky top-0 z-40 px-4 sm:px-6 py-3 shadow-xs">
-      <div className="w-full max-w-7xl mx-auto flex items-center justify-between gap-4">
-        <div className="flex items-center gap-6 lg:gap-8">
-          <Link
-            href="/"
-            className="flex items-center gap-2.5 text-base font-bold tracking-tight text-[#111827] hover:opacity-90 transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#2563EB] rounded shrink-0"
-            aria-label="Canon Home"
-          >
-            <div className="w-7 h-7 rounded-lg bg-[#2563EB] text-white flex items-center justify-center font-bold text-xs shadow-xs">
-              C
-            </div>
-            <span className="font-extrabold text-base tracking-tight text-[#111827]">CANON</span>
-          </Link>
-
-          <nav
-            className="hidden md:flex items-center gap-1 text-xs font-medium text-[#4B5563]"
-            aria-label="Main Navigation"
-          >
-            {navLinks.map((link) => {
-              const isActive = pathname === link.href;
-              return (
-                <Link
-                  key={link.href}
-                  href={link.href}
-                  className={`px-3 py-1.5 rounded-lg transition flex items-center gap-1.5 text-xs ${
-                    isActive
-                      ? "bg-[#EFF6FF] text-[#2563EB] border border-[#BFDBFE] font-semibold"
-                      : link.highlight
-                      ? "bg-amber-50 text-amber-800 border border-amber-200 font-semibold hover:bg-amber-100"
-                      : "text-[#4B5563] hover:text-[#111827] hover:bg-[#F3F4F6] border border-transparent"
-                  }`}
-                >
-                  {link.highlight && <Sparkles className="w-3.5 h-3.5 text-amber-600" />}
-                  <span>{link.label}</span>
-                </Link>
-              );
-            })}
-          </nav>
-        </div>
-
-        <div className="flex items-center gap-3 lg:gap-4 text-xs shrink-0">
-
-          {/* User Session Profile & Role Badge */}
-          {isLoading ? (
-            <div className="flex items-center gap-2 animate-pulse">
-              <div className="w-20 h-6 bg-[#F3F4F6] rounded-md" />
-              <div className="w-16 h-6 bg-[#F3F4F6] rounded-md" />
-            </div>
-          ) : user ? (
-            <div className="flex items-center gap-2.5 pl-3 border-l border-[#E5E7EB]">
-              <div className="flex items-center gap-2 bg-[#F8F9FA] border border-[#E5E7EB] rounded-lg px-2.5 py-1">
-                <div className="w-5 h-5 rounded-md bg-white border border-[#E5E7EB] flex items-center justify-center text-[#4B5563]">
-                  <UserIcon className="w-3.5 h-3.5" />
-                </div>
-                <span className="text-xs text-[#111827] font-semibold hidden lg:inline-block max-w-[120px] truncate">
-                  {user.full_name}
-                </span>
-                <span
-                  className={`px-2 py-0.5 rounded-full text-[10px] font-mono uppercase tracking-wider font-semibold ${
-                    getRoleBadge(user.role).className
-                  }`}
-                >
-                  {getRoleBadge(user.role).label}
-                </span>
-              </div>
-              <button
-                onClick={() => logout()}
-                type="button"
-                className="neo-btn neo-btn-white py-1 px-2.5 text-xs"
-                title="Sign out"
-              >
-                <LogOut className="w-3.5 h-3.5" />
-                <span className="hidden sm:inline">Sign out</span>
-              </button>
-            </div>
-          ) : (
-            <div className="flex items-center gap-2 pl-3 border-l border-[#E5E7EB]">
-              <Link
-                href="/login"
-                className="neo-btn neo-btn-teal py-1 px-3 text-xs"
-              >
-                <LogIn className="w-3.5 h-3.5" />
-                <span>Sign in</span>
-              </Link>
-            </div>
-          )}
-        </div>
-      </div>
-
-      {/* Mobile Scrollable Navigation */}
-      <nav className="md:hidden border-t border-[#E5E7EB] mt-2 pt-2 flex items-center gap-1 overflow-x-auto text-xs font-medium text-[#4B5563] pb-1">
-        {navLinks.map((link) => {
-          const isActive = pathname === link.href;
-          return (
+    <>
+      <header className="border-b border-[#E5E7EB] bg-white/95 backdrop-blur-md sticky top-0 z-40 px-4 sm:px-6 py-3 shadow-xs">
+        <div className="w-full max-w-7xl mx-auto flex items-center justify-between gap-4">
+          <div className="flex items-center gap-6 lg:gap-8">
             <Link
-              key={link.href}
-              href={link.href}
-              className={`px-2.5 py-1 rounded-md transition whitespace-nowrap text-xs ${
-                isActive
-                  ? "bg-[#EFF6FF] text-[#2563EB] font-semibold"
-                  : "text-[#4B5563] hover:text-[#111827] hover:bg-[#F3F4F6]"
-              }`}
+              href="/"
+              className="flex items-center gap-2.5 text-base font-bold tracking-tight text-[#111827] hover:opacity-90 transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#2563EB] rounded shrink-0"
+              aria-label="Canon Home"
             >
-              {link.label}
+              <div className="w-7 h-7 rounded-lg bg-[#2563EB] text-white flex items-center justify-center font-bold text-xs shadow-xs">
+                C
+              </div>
+              <span className="font-extrabold text-base tracking-tight text-[#111827]">CANON</span>
             </Link>
-          );
-        })}
-      </nav>
-    </header>
+
+            <nav
+              className="hidden md:flex items-center gap-1 text-xs font-medium text-[#4B5563]"
+              aria-label="Main Navigation"
+            >
+              {navLinks.map((link) => {
+                const isActive = pathname === link.href;
+                return (
+                  <Link
+                    key={link.href}
+                    href={link.href}
+                    className={`px-3 py-1.5 rounded-lg transition flex items-center gap-1.5 text-xs ${
+                      isActive
+                        ? "bg-[#EFF6FF] text-[#2563EB] border border-[#BFDBFE] font-semibold"
+                        : link.highlight
+                        ? "bg-amber-50 text-amber-800 border border-amber-200 font-semibold hover:bg-amber-100"
+                        : "text-[#4B5563] hover:text-[#111827] hover:bg-[#F3F4F6] border border-transparent"
+                    }`}
+                  >
+                    {link.highlight && <Sparkles className="w-3.5 h-3.5 text-amber-600" />}
+                    <span>{link.label}</span>
+                  </Link>
+                );
+              })}
+            </nav>
+          </div>
+
+          <div className="flex items-center gap-3 lg:gap-4 text-xs shrink-0">
+            {/* Quick Command Palette Trigger Button */}
+            <button
+              type="button"
+              onClick={() => setIsCommandPaletteOpen(true)}
+              className="flex items-center gap-2 px-2.5 py-1.5 rounded-lg border border-[#E5E7EB] bg-[#F8F9FA] hover:bg-[#F3F4F6] hover:border-[#D1D5DB] transition text-xs text-[#6B7280] shadow-2xs cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#2563EB]"
+              aria-label="Open command palette"
+              title={`Open Command Palette (${isMac ? "⌘K" : "Ctrl+K"})`}
+            >
+              <Search className="w-3.5 h-3.5 text-[#6B7280]" />
+              <span className="hidden sm:inline font-medium">Quick Search...</span>
+              <kbd className="font-mono text-[10px] bg-white border border-[#D1D5DB] text-[#4B5563] px-1.5 py-0.5 rounded font-semibold shadow-2xs">
+                {isMac ? "⌘K" : "Ctrl+K"}
+              </kbd>
+            </button>
+
+            {/* User Session Profile & Role Badge */}
+            {isLoading ? (
+              <div className="flex items-center gap-2 animate-pulse">
+                <div className="w-20 h-6 bg-[#F3F4F6] rounded-md" />
+                <div className="w-16 h-6 bg-[#F3F4F6] rounded-md" />
+              </div>
+            ) : user ? (
+              <div className="flex items-center gap-2.5 pl-3 border-l border-[#E5E7EB]">
+                <div className="flex items-center gap-2 bg-[#F8F9FA] border border-[#E5E7EB] rounded-lg px-2.5 py-1">
+                  <div className="w-5 h-5 rounded-md bg-white border border-[#E5E7EB] flex items-center justify-center text-[#4B5563]">
+                    <UserIcon className="w-3.5 h-3.5" />
+                  </div>
+                  <span className="text-xs text-[#111827] font-semibold hidden lg:inline-block max-w-[120px] truncate">
+                    {user.full_name}
+                  </span>
+                  <span
+                    className={`px-2 py-0.5 rounded-full text-[10px] font-mono uppercase tracking-wider font-semibold ${
+                      getRoleBadge(user.role).className
+                    }`}
+                  >
+                    {getRoleBadge(user.role).label}
+                  </span>
+                </div>
+                <button
+                  onClick={() => logout()}
+                  type="button"
+                  className="neo-btn neo-btn-white py-1 px-2.5 text-xs cursor-pointer"
+                  title="Sign out"
+                >
+                  <LogOut className="w-3.5 h-3.5" />
+                  <span className="hidden sm:inline">Sign out</span>
+                </button>
+              </div>
+            ) : (
+              <div className="flex items-center gap-2 pl-3 border-l border-[#E5E7EB]">
+                <Link
+                  href="/login"
+                  className="neo-btn neo-btn-teal py-1 px-3 text-xs"
+                >
+                  <LogIn className="w-3.5 h-3.5" />
+                  <span>Sign in</span>
+                </Link>
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* Mobile Scrollable Navigation */}
+        <nav className="md:hidden border-t border-[#E5E7EB] mt-2 pt-2 flex items-center gap-1 overflow-x-auto text-xs font-medium text-[#4B5563] pb-1">
+          {navLinks.map((link) => {
+            const isActive = pathname === link.href;
+            return (
+              <Link
+                key={link.href}
+                href={link.href}
+                className={`px-2.5 py-1 rounded-md transition whitespace-nowrap text-xs ${
+                  isActive
+                    ? "bg-[#EFF6FF] text-[#2563EB] font-semibold"
+                    : "text-[#4B5563] hover:text-[#111827] hover:bg-[#F3F4F6]"
+                }`}
+              >
+                {link.label}
+              </Link>
+            );
+          })}
+        </nav>
+      </header>
+
+      {/* Global Quick Command Palette Modal */}
+      <CommandPalette
+        isOpen={isCommandPaletteOpen}
+        onClose={() => setIsCommandPaletteOpen(false)}
+      />
+    </>
   );
 }

@@ -7,6 +7,7 @@ import {
   ShieldCheck,
   FileText,
   AlertCircle,
+  AlertTriangle,
   ExternalLink,
   Send,
   RefreshCw,
@@ -443,6 +444,17 @@ function SubmissionsContent() {
     selectedFindingId
   );
 
+  // Live word, character, reading time, and channel length constraints (Feature 1)
+  const trimmedContent = content.trim();
+  const wordCount = trimmedContent ? trimmedContent.split(/\s+/).length : 0;
+  const charCount = content.length;
+  const readingTime = wordCount === 0 ? "0 min read" : `${(wordCount / 200).toFixed(1)} min read`;
+
+  const isAdCopy = channel === "ad_copy";
+  const adCopyLimit = 280;
+  const isAdOverLimit = isAdCopy && charCount > adCopyLimit;
+  const adCharsRemaining = isAdCopy ? adCopyLimit - charCount : null;
+
   return (
     <div className="flex-1 w-full max-w-7xl mx-auto px-6 py-10 flex flex-col gap-8">
       {/* Page Header */}
@@ -744,12 +756,50 @@ function SubmissionsContent() {
                       🎨 Multi-Channel Studio
                     </button>
                   </div>
-
-                  <span className="font-mono font-bold text-[11px] text-[#555555]">
-                    {content.length} chars • {content.trim().split(/\s+/).filter(Boolean).length} words
-                  </span>
                 </div>
               </div>
+
+              {/* Real-Time Word, Character & Channel Constraints Ribbon */}
+              <div className="flex items-center flex-wrap gap-2 text-xs font-mono">
+                <span className="px-2.5 py-1 rounded-md bg-[#F3F4F6] border border-[#E5E7EB] font-bold text-[#111827]">
+                  {wordCount} {wordCount === 1 ? "word" : "words"}
+                </span>
+                <span
+                  className={`px-2.5 py-1 rounded-md border font-bold ${
+                    isAdOverLimit
+                      ? "bg-red-50 border-red-300 text-red-700"
+                      : "bg-[#F3F4F6] border-[#E5E7EB] text-[#111827]"
+                  }`}
+                >
+                  {isAdCopy ? `${charCount} / ${adCopyLimit} chars` : `${charCount} chars`}
+                </span>
+                <span className="px-2.5 py-1 rounded-md bg-[#F3F4F6] border border-[#E5E7EB] font-bold text-[#111827]">
+                  {readingTime}
+                </span>
+                {isAdCopy && (
+                  <span
+                    className={`px-2.5 py-1 rounded-md border font-bold ${
+                      isAdOverLimit
+                        ? "bg-red-100 border-red-300 text-red-800"
+                        : "bg-emerald-50 border-emerald-200 text-emerald-800"
+                    }`}
+                  >
+                    {isAdOverLimit ? `+${charCount - adCopyLimit} over limit` : `${adCharsRemaining} left`}
+                  </span>
+                )}
+              </div>
+
+              {/* Channel Constraint Warning Banner (Ad Copy > 280 chars) */}
+              {isAdOverLimit && (
+                <div className="p-3 rounded-xl bg-amber-50 border border-amber-300 text-amber-900 text-xs font-medium flex items-center justify-between gap-3 shadow-xs animate-in fade-in duration-150">
+                  <div className="flex items-center gap-2">
+                    <AlertTriangle className="w-4 h-4 text-amber-600 shrink-0" />
+                    <span>
+                      <strong>Channel Constraint:</strong> Paid ad copy exceeds the standard 280-character limit ({charCount} / 280 chars, <strong>{charCount - adCopyLimit} characters over</strong>). Text may be truncated in ad placements.
+                    </span>
+                  </div>
+                </div>
+              )}
 
               {/* Conditional View: Creative Studio Simulator vs Overlay Backdrop Textarea */}
               {editorViewMode === "studio" ? (
