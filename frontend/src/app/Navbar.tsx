@@ -57,9 +57,6 @@ export default function Navbar() {
               C
             </div>
             <span className="font-extrabold text-base tracking-tight text-[#111827]">CANON</span>
-            <span className="text-[10px] font-mono tracking-widest uppercase px-2 py-0.5 rounded-full bg-[#F3F4F6] border border-[#E5E7EB] text-[#6B7280]">
-              v1.0 M1
-            </span>
           </Link>
 
           <nav
@@ -89,11 +86,6 @@ export default function Navbar() {
         </div>
 
         <div className="flex items-center gap-3 lg:gap-4 text-xs shrink-0">
-          {/* API Status Badge */}
-          <span className="hidden sm:inline-flex items-center gap-1.5 px-3 py-1 rounded-full border border-emerald-500/20 bg-emerald-50 text-emerald-700 font-mono text-[11px] font-medium">
-            <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
-            API: ONLINE
-          </span>
 
           {/* User Session Profile & Role Badge */}
           {isLoading ? (

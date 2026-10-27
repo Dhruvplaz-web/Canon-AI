@@ -30,7 +30,7 @@ const TOUR_STEPS: StepInfo[] = [
     num: 1,
     id: "policy",
     title: "Inspect Policy Baseline & Claims",
-    badge: "SCR-02 & SCR-12",
+    badge: "Stage 1: Policy",
     description:
       "Explore compiled brand rules and the temporal claims ledger. Notice expired claim CLAIM-001 with its strict end date.",
   },
@@ -38,7 +38,7 @@ const TOUR_STEPS: StepInfo[] = [
     num: 2,
     id: "check",
     title: "Run Verification on Flawed Draft",
-    badge: "SCR-03 & SCR-04",
+    badge: "Stage 2: Authoring",
     description:
       "Submit marketing copy containing stale claims and forbidden terms. Witness the live check pipeline and synchronized highlight overlay.",
   },
@@ -46,7 +46,7 @@ const TOUR_STEPS: StepInfo[] = [
     num: 3,
     id: "triage",
     title: "Review Double Receipts & Override",
-    badge: "SCR-05 & SCR-06",
+    badge: "Stage 3: Review",
     description:
       "Inspect Double Receipts A and B with exact character offsets. Execute a reason-coded override logged in the immutable audit ledger.",
   },
@@ -54,7 +54,7 @@ const TOUR_STEPS: StepInfo[] = [
     num: 4,
     id: "governance",
     title: "Backtest Simulation & Adopt Policy v1.1",
-    badge: "SCR-07 & SCR-08",
+    badge: "Stage 4: Evolution",
     description:
       "Analyze rule flapping telemetry on TERM-007, execute an empirical backtest on 24 historical drafts, and grant human approval for Policy v1.1.",
   },
@@ -724,7 +724,7 @@ function DemoTourContent() {
                     className="neo-btn neo-btn-yellow text-xs font-black inline-flex items-center gap-2 px-4 py-2"
                   >
                     <Wand2 className="w-3.5 h-3.5 stroke-[2.5]" />
-                    <span>Apply One-Click Remediation (PROP-U05)</span>
+                    <span>Apply One-Click Remediation</span>
                   </button>
                 )}
               </div>

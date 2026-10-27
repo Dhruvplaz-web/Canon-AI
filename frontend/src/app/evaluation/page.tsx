@@ -159,10 +159,10 @@ function EvaluationContent() {
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-[#E5E7EB] pb-6">
         <div>
           <div className="flex items-center gap-2 mb-2">
-            <span className="neo-badge bg-[#00C2CB] text-black">SCR-08</span>
+            <span className="neo-badge bg-[#00C2CB] text-black">Empirical AI Safety</span>
             <span className="text-black font-black text-xs">•</span>
             <span className="text-xs font-mono font-bold text-black uppercase tracking-wider">
-              Empirical AI Safety &amp; Governance Matrix
+              Safety &amp; Governance Matrix
             </span>
           </div>
           <h1 className="text-3xl md:text-4xl font-black tracking-tight text-black">

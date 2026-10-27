@@ -449,17 +449,17 @@ function SubmissionsContent() {
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-[#E5E7EB] pb-6">
         <div>
           <div className="flex items-center gap-2 mb-2">
-            <span className="neo-badge bg-[#00C2CB] text-black">SCR-03 & SCR-04</span>
+            <span className="neo-badge bg-[#00C2CB] text-black">Live Pre-Flight</span>
             <span className="text-black font-black text-xs">•</span>
             <span className="text-xs font-mono font-bold text-black uppercase tracking-wider">
-              Authoring & Live Check Runner
+              Authoring & Multi-Channel Studio
             </span>
           </div>
           <h1 className="text-3xl md:text-4xl font-black tracking-tight text-black">
             Submission Draft & Live Compliance Check
           </h1>
           <p className="text-sm font-medium text-[#333333] mt-1.5 max-w-2xl">
-            Draft marketing copy with real-time synchronized highlight backdrop (PROP-U04) and one-click suggestion remediations (PROP-U05).
+            Evaluate marketing drafts in real-time with synchronized violation highlights, multi-channel ad previews, and AI Brand Copilot auto-remediations.
           </p>
         </div>
 

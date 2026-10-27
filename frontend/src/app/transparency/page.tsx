@@ -74,11 +74,11 @@ export default function TransparencyPage() {
         <div>
           <div className="flex items-center gap-2 mb-2">
             <span className="neo-badge bg-[#00C2CB] text-black text-xs font-black">
-              SCR-09
+              Audit Ledger
             </span>
             <span className="text-black font-black text-xs">•</span>
             <span className="text-xs font-black uppercase font-mono tracking-wider text-black">
-              Enterprise AI Transparency
+              AI Transparency &amp; Regulatory Disclosures
             </span>
           </div>
           <h1 className="text-3xl md:text-4xl font-black tracking-tight text-black">
