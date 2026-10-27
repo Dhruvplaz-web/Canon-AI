@@ -39,7 +39,7 @@ ${rawContent}
             "Content-Type": "application/json",
           },
           body: JSON.stringify({
-            model: "llama-3.3-70b-versatile",
+            model: "qwen/qwen3.8-27b",
             response_format: { type: "json_object" },
             messages: [{ role: "user", content: extractionPrompt }],
             temperature: 0.1,
@@ -60,7 +60,7 @@ ${rawContent}
     // 2. Gemini
     if (!extractedRules && geminiKey) {
       try {
-        const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${geminiKey}`;
+        const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${geminiKey}`;
         const res = await fetch(url, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
