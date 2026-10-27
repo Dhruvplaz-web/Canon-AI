@@ -8,7 +8,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from starlette.exceptions import HTTPException as StarletteHTTPException
 
-from app.api.v1 import auth, decisions, governance, health, submissions, transparency
+from app.api.v1 import auth, copilot, decisions, governance, health, submissions, transparency
 from app.core.config import settings
 
 # Setup logging
@@ -95,6 +95,7 @@ app.include_router(submissions.router, prefix="/api/v1")
 app.include_router(decisions.router, prefix="/api/v1")
 app.include_router(governance.router, prefix="/api/v1")
 app.include_router(transparency.router, prefix="/api/v1")
+app.include_router(copilot.router, prefix="/api/v1")
 
 
 @app.get("/", tags=["Root"])

@@ -22,6 +22,7 @@ import {
   Check,
 } from "lucide-react";
 import { useAuth } from "@/lib/auth-context";
+import { GuidelineIngesterModal } from "@/components/GuidelineIngesterModal";
 
 interface SourceCitation {
   document_title?: string;
@@ -182,6 +183,8 @@ function PolicyExplorerContent() {
   const [refreshTrigger, setRefreshTrigger] = useState<number>(0);
   const [currentTimestamp] = useState<number>(() => Date.now());
   const [copiedHash, setCopiedHash] = useState(false);
+  const [isIngesterModalOpen, setIsIngesterModalOpen] = useState(false);
+  const [ingestedNotice, setIngestedNotice] = useState<string | null>(null);
 
   // View & Filter states initialized from URL parameters (Rule 3 URL-First State)
   const initialTab = searchParams.get("tab") === "claims" ? "claims" : "rules";
@@ -375,34 +378,62 @@ function PolicyExplorerContent() {
           </div>
         </div>
 
-        {policy && (
-          <div className="neo-box p-5 flex flex-col gap-2 min-w-[270px]">
-            <div className="flex items-center justify-between text-xs text-black font-black uppercase tracking-wider">
-              <span>Active Policy</span>
-              <span className="neo-badge bg-[#00C2CB] text-black text-[10px]">
-                <CheckCircle2 className="w-3 h-3 mr-0.5" />
-                {policy.status}
-              </span>
-            </div>
-            <div className="flex items-baseline gap-2">
-              <span className="text-2xl font-black font-mono text-black">
-                v{policy.version_number}
-              </span>
-              <span className="text-xs font-bold text-[#555555]">
-                ({policy.compiled_rules_count} rules &bull; {policy.approved_claims.length} claims)
-              </span>
-            </div>
-            <div className="text-[11px] font-mono font-bold text-[#444444] flex flex-col gap-0.5 border-t border-[#E5E7EB] pt-2">
-              <span>Effective: {new Date(policy.effective_date).toLocaleDateString()}</span>
-              {policy.change_summary && (
-                <span className="truncate max-w-[240px]" title={policy.change_summary}>
-                  Summary: {policy.change_summary}
+        <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 shrink-0">
+          <button
+            type="button"
+            onClick={() => setIsIngesterModalOpen(true)}
+            className="neo-btn neo-btn-teal text-xs py-2.5 px-4 flex items-center justify-center gap-2 shadow-xs"
+          >
+            <Sparkles className="w-3.5 h-3.5" />
+            <span>+ Ingest Custom Guidelines</span>
+          </button>
+
+          {policy && (
+            <div className="neo-box p-5 flex flex-col gap-2 min-w-[270px]">
+              <div className="flex items-center justify-between text-xs text-black font-black uppercase tracking-wider">
+                <span>Active Policy</span>
+                <span className="neo-badge bg-[#00C2CB] text-black text-[10px]">
+                  <CheckCircle2 className="w-3 h-3 mr-0.5" />
+                  {policy.status}
                 </span>
-              )}
+              </div>
+              <div className="flex items-baseline gap-2">
+                <span className="text-2xl font-black font-mono text-black">
+                  v{policy.version_number}
+                </span>
+                <span className="text-xs font-bold text-[#555555]">
+                  ({policy.compiled_rules_count} rules &bull; {policy.approved_claims.length} claims)
+                </span>
+              </div>
+              <div className="text-[11px] font-mono font-bold text-[#444444] flex flex-col gap-0.5 border-t border-[#E5E7EB] pt-2">
+                <span>Effective: {new Date(policy.effective_date).toLocaleDateString()}</span>
+                {policy.change_summary && (
+                  <span className="truncate max-w-[240px]" title={policy.change_summary}>
+                    Summary: {policy.change_summary}
+                  </span>
+                )}
+              </div>
             </div>
-          </div>
-        )}
+          )}
+        </div>
       </div>
+
+      {/* Ingested Notice Banner */}
+      {ingestedNotice && (
+        <div className="p-4 rounded-xl bg-[#00C2CB] border border-[#E5E7EB] text-black font-bold text-xs flex items-center justify-between gap-3 shadow-xs">
+          <div className="flex items-center gap-2">
+            <CheckCircle2 className="w-4 h-4 shrink-0 text-black" />
+            <span>{ingestedNotice}</span>
+          </div>
+          <button
+            type="button"
+            onClick={() => setIngestedNotice(null)}
+            className="text-black hover:opacity-70 p-1 font-mono text-sm"
+          >
+            ✕
+          </button>
+        </div>
+      )}
 
       {/* Auth Gate Banner (Empty/Unauthenticated State) */}
       {error === "AUTHENTICATION_REQUIRED" && (
@@ -932,6 +963,16 @@ function PolicyExplorerContent() {
           <ArrowRight className="w-4 h-4" />
         </Link>
       </div>
+
+      {/* Guideline Ingester Modal */}
+      <GuidelineIngesterModal
+        isOpen={isIngesterModalOpen}
+        onClose={() => setIsIngesterModalOpen(false)}
+        onIngestComplete={(rules) => {
+          setIngestedNotice(`✨ Successfully compiled ${rules.length} custom brand rules into active policy AST!`);
+          handleManualRefresh();
+        }}
+      />
     </div>
   );
 }

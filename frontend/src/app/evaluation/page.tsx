@@ -17,7 +17,9 @@ import {
   Flame,
   Search,
   Filter,
+  Swords,
 } from "lucide-react";
+import { AdversarialShowdown } from "@/components/AdversarialShowdown";
 
 interface FindingTrace {
   rule_code: string;
@@ -82,6 +84,8 @@ function EvaluationContent() {
   // URL-first state
   const initialCohort = searchParams.get("cohort") || "ALL";
   const [selectedCohort, setSelectedCohort] = useState<string>(initialCohort);
+  const initialTab = searchParams.get("tab") === "showdown" ? "showdown" : "benchmark";
+  const [activeTab, setActiveTab] = useState<"benchmark" | "showdown">(initialTab);
   const [expandedCaseId, setExpandedCaseId] = useState<string | null>(
     searchParams.get("caseId") || null
   );
@@ -170,20 +174,60 @@ function EvaluationContent() {
         </div>
 
         <div className="flex items-center gap-3">
-          <button
-            type="button"
-            onClick={() => fetchBenchmark(true)}
-            disabled={isLoading || isReRunning}
-            className="neo-btn neo-btn-teal text-xs py-2 px-4 shrink-0"
-          >
-            <RefreshCw className={`w-3.5 h-3.5 ${isReRunning ? "animate-spin" : ""}`} />
-            <span>{isReRunning ? "Evaluating 30 Cases..." : "Re-run Benchmark Suite"}</span>
-          </button>
+          {/* View Mode Toggle: Benchmark Suite vs Live Adversarial Showdown */}
+          <div className="flex items-center p-1 bg-[#F3F4F6] rounded-xl border border-[#E5E7EB]">
+            <button
+              type="button"
+              onClick={() => {
+                setActiveTab("benchmark");
+                syncUrlParams({ tab: "benchmark" });
+              }}
+              className={`px-3 py-1.5 text-xs font-bold rounded-lg transition ${
+                activeTab === "benchmark"
+                  ? "bg-white text-[#111827] shadow-xs"
+                  : "text-[#6B7280] hover:text-[#111827]"
+              }`}
+            >
+              📊 30-Case Benchmark
+            </button>
+            <button
+              type="button"
+              onClick={() => {
+                setActiveTab("showdown");
+                syncUrlParams({ tab: "showdown" });
+              }}
+              className={`px-3 py-1.5 text-xs font-bold rounded-lg transition flex items-center gap-1.5 ${
+                activeTab === "showdown"
+                  ? "bg-[#2563EB] text-white shadow-xs"
+                  : "text-[#6B7280] hover:text-[#111827]"
+              }`}
+            >
+              <Swords className="w-3.5 h-3.5" />
+              <span>Live LLM Showdown</span>
+            </button>
+          </div>
+
+          {activeTab === "benchmark" && (
+            <button
+              type="button"
+              onClick={() => fetchBenchmark(true)}
+              disabled={isLoading || isReRunning}
+              className="neo-btn neo-btn-teal text-xs py-2 px-4 shrink-0"
+            >
+              <RefreshCw className={`w-3.5 h-3.5 ${isReRunning ? "animate-spin" : ""}`} />
+              <span>{isReRunning ? "Evaluating 30 Cases..." : "Re-run Benchmark Suite"}</span>
+            </button>
+          )}
         </div>
       </div>
 
-      {/* Error state */}
-      {error && (
+      {/* Tab Content */}
+      {activeTab === "showdown" ? (
+        <AdversarialShowdown />
+      ) : (
+        <>
+          {/* Error state */}
+          {error && (
         <div className="p-5 rounded-xl bg-[#FF00FF] border border-[#E5E7EB] text-white text-xs flex items-center justify-between gap-4 shadow-sm">
           <div className="flex items-center gap-3">
             <AlertTriangle className="w-5 h-5 shrink-0" />
@@ -595,6 +639,8 @@ function EvaluationContent() {
             </div>
           </div>
         </div>
+      )}
+        </>
       )}
     </div>
   );

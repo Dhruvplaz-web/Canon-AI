@@ -21,6 +21,8 @@ import {
   ComplianceCertificateModal,
   ReleaseCertificate,
 } from "@/components/ComplianceCertificateModal";
+import { CreativeStudioPreview } from "@/components/CreativeStudioPreview";
+import { CopilotRewriteModal } from "@/components/CopilotRewriteModal";
 
 interface Finding {
   id: string;
@@ -185,6 +187,8 @@ function SubmissionsContent() {
   const [selectedFindingId, setSelectedFindingId] = useState<string | null>(null);
   const [appliedNotice, setAppliedNotice] = useState<string | null>(null);
   const [isDraggingFile, setIsDraggingFile] = useState(false);
+  const [editorViewMode, setEditorViewMode] = useState<"editor" | "studio">("editor");
+  const [isCopilotModalOpen, setIsCopilotModalOpen] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   // Compliance Certificate State
@@ -541,6 +545,33 @@ function SubmissionsContent() {
               </div>
             </div>
 
+            {/* AI Brand Copilot Auto-Remediator Callout Banner */}
+            {checkResult && checkResult.findings.length > 0 && (
+              <div className="bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200 rounded-xl p-3.5 flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-xs">
+                <div className="flex items-center gap-2.5">
+                  <div className="w-8 h-8 rounded-lg bg-[#2563EB] text-white flex items-center justify-center shrink-0 shadow-xs">
+                    <Sparkles className="w-4 h-4" />
+                  </div>
+                  <div>
+                    <h4 className="text-xs font-bold text-[#111827]">
+                      AI Brand Copilot: {checkResult.findings.length} Policy Violations Detected
+                    </h4>
+                    <p className="text-[11px] text-[#4B5563]">
+                      Auto-remediate copy to 100% compliance while preserving tone and conversion hook.
+                    </p>
+                  </div>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setIsCopilotModalOpen(true)}
+                  className="px-3.5 py-1.5 bg-[#2563EB] hover:bg-[#1D4ED8] text-white text-xs font-bold rounded-lg shadow-xs flex items-center gap-1.5 shrink-0 transition"
+                >
+                  <Sparkles className="w-3.5 h-3.5" />
+                  <span>Auto-Remediate Copy</span>
+                </button>
+              </div>
+            )}
+
             {/* Violation Navigation Bar & Quick Remediations (PROP-U04 / PROP-U05) */}
             {checkResult && checkResult.findings.length > 0 && (
               <div className="flex flex-col gap-2.5 pt-3 border-t border-[#E5E7EB]">
@@ -654,9 +685,9 @@ function SubmissionsContent() {
               </div>
             )}
 
-            {/* Textarea with Zero-Dependency Synchronized Backdrop (PROP-U04) */}
-            <div className="flex flex-col gap-1.5">
-              <div className="flex items-center justify-between text-xs text-black">
+            {/* Textarea with Zero-Dependency Synchronized Backdrop or Creative Studio Preview */}
+            <div className="flex flex-col gap-2">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-xs text-black">
                 <div className="flex items-center gap-3">
                   <label htmlFor="copy-content" className="font-black uppercase tracking-wider flex items-center gap-2">
                     <span>Draft Copy Content</span>
@@ -687,77 +718,120 @@ function SubmissionsContent() {
                   </button>
                 </div>
 
-                <span className="font-mono font-bold text-[11px] text-[#555555]">
-                  {content.length} chars • {content.trim().split(/\s+/).filter(Boolean).length} words
-                </span>
-              </div>
-
-              {/* Overlay Backdrop Container with Drag-and-Drop */}
-              <div
-                onDragOver={(e) => {
-                  e.preventDefault();
-                  setIsDraggingFile(true);
-                }}
-                onDragLeave={(e) => {
-                  e.preventDefault();
-                  setIsDraggingFile(false);
-                }}
-                onDrop={(e) => {
-                  e.preventDefault();
-                  setIsDraggingFile(false);
-                  const file = e.dataTransfer.files?.[0];
-                  if (file) processFile(file);
-                }}
-                className={`relative w-full rounded-xl bg-white border border-[#E5E7EB] shadow-sm focus-within:shadow-md focus-within:border-black overflow-hidden transition-all ${
-                  isDraggingFile ? "ring-4 ring-[#FFD700] border-dashed" : ""
-                }`}
-              >
-                {/* Drag-and-Drop Floating Visual Overlay */}
-                {isDraggingFile && (
-                  <div className="absolute inset-0 z-30 bg-[#FFD700]/95 flex flex-col items-center justify-center gap-2 font-mono font-black text-black p-4 text-center border-4 border-dashed border-black animate-in fade-in">
-                    <UploadCloud className="w-10 h-10 animate-bounce" />
-                    <span className="text-base uppercase tracking-wider">Drop Draft Copy File (.txt / .md)</span>
-                    <span className="text-xs font-semibold">Instantly load & evaluate against active brand policy</span>
+                <div className="flex items-center gap-2">
+                  {/* View Mode Toggle: In-Line Editor vs Multi-Channel Creative Studio */}
+                  <div className="flex items-center p-0.5 bg-[#F3F4F6] rounded-lg border border-[#E5E7EB]">
+                    <button
+                      type="button"
+                      onClick={() => setEditorViewMode("editor")}
+                      className={`px-2.5 py-1 text-xs font-bold rounded-md transition ${
+                        editorViewMode === "editor"
+                          ? "bg-white text-[#111827] shadow-xs"
+                          : "text-[#6B7280] hover:text-[#111827]"
+                      }`}
+                    >
+                      📝 In-Line Editor
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setEditorViewMode("studio")}
+                      className={`px-2.5 py-1 text-xs font-bold rounded-md transition flex items-center gap-1.5 ${
+                        editorViewMode === "studio"
+                          ? "bg-[#2563EB] text-white shadow-xs"
+                          : "text-[#6B7280] hover:text-[#111827]"
+                      }`}
+                    >
+                      🎨 Multi-Channel Studio
+                    </button>
                   </div>
-                )}
 
-                {/* Synchronized Highlight Backdrop */}
-                <div
-                  ref={backdropRef}
-                  aria-hidden="true"
-                  className="absolute inset-0 p-4 font-mono text-sm leading-relaxed whitespace-pre-wrap break-words pointer-events-none select-none overflow-hidden text-transparent"
-                  style={{ wordBreak: "break-word" }}
-                >
-                  {renderedHighlightSpans}
+                  <span className="font-mono font-bold text-[11px] text-[#555555]">
+                    {content.length} chars • {content.trim().split(/\s+/).filter(Boolean).length} words
+                  </span>
                 </div>
-
-                {/* Primary Interactive Textarea */}
-                <textarea
-                  ref={textareaRef}
-                  id="copy-content"
-                  rows={10}
-                  value={content}
-                  onChange={(e) => {
-                    setContent(e.target.value);
-                    handleCursorActivity();
-                  }}
-                  onKeyDown={(e) => {
-                    if ((e.metaKey || e.ctrlKey) && e.key === "Enter" && !isChecking && content.trim()) {
-                      e.preventDefault();
-                      handleRunCheck();
-                    } else if (e.key === "Escape") {
-                      setSelectedFindingId(null);
-                    }
-                  }}
-                  onScroll={handleScroll}
-                  onSelect={handleCursorActivity}
-                  onClick={handleCursorActivity}
-                  onKeyUp={handleCursorActivity}
-                  className="relative z-10 w-full min-h-[260px] bg-transparent p-4 text-sm text-black font-mono font-medium leading-relaxed resize-y focus:outline-none whitespace-pre-wrap break-words caret-black selection:bg-[#FFD700]"
-                  style={{ wordBreak: "break-word" }}
-                  placeholder="Paste or write marketing draft copy here, or drop a .txt/.md file..."
-                />
               </div>
+
+              {/* Conditional View: Creative Studio Simulator vs Overlay Backdrop Textarea */}
+              {editorViewMode === "studio" ? (
+                <div className="w-full">
+                  <CreativeStudioPreview
+                    content={content}
+                    title={title}
+                    findings={checkResult?.findings || []}
+                    onLocateFinding={(f) => {
+                      const matched = checkResult?.findings.find((item) => item.id === f.id);
+                      if (matched) handleLocateFinding(matched);
+                    }}
+                  />
+                </div>
+              ) : (
+                /* Overlay Backdrop Container with Drag-and-Drop */
+                <div
+                  onDragOver={(e) => {
+                    e.preventDefault();
+                    setIsDraggingFile(true);
+                  }}
+                  onDragLeave={(e) => {
+                    e.preventDefault();
+                    setIsDraggingFile(false);
+                  }}
+                  onDrop={(e) => {
+                    e.preventDefault();
+                    setIsDraggingFile(false);
+                    const file = e.dataTransfer.files?.[0];
+                    if (file) processFile(file);
+                  }}
+                  className={`relative w-full rounded-xl bg-white border border-[#E5E7EB] shadow-sm focus-within:shadow-md focus-within:border-black overflow-hidden transition-all ${
+                    isDraggingFile ? "ring-4 ring-[#FFD700] border-dashed" : ""
+                  }`}
+                >
+                  {/* Drag-and-Drop Floating Visual Overlay */}
+                  {isDraggingFile && (
+                    <div className="absolute inset-0 z-30 bg-[#FFD700]/95 flex flex-col items-center justify-center gap-2 font-mono font-black text-black p-4 text-center border-4 border-dashed border-black animate-in fade-in">
+                      <UploadCloud className="w-10 h-10 animate-bounce" />
+                      <span className="text-base uppercase tracking-wider">Drop Draft Copy File (.txt / .md)</span>
+                      <span className="text-xs font-semibold">Instantly load & evaluate against active brand policy</span>
+                    </div>
+                  )}
+
+                  {/* Synchronized Highlight Backdrop */}
+                  <div
+                    ref={backdropRef}
+                    aria-hidden="true"
+                    className="absolute inset-0 p-4 font-mono text-sm leading-relaxed whitespace-pre-wrap break-words pointer-events-none select-none overflow-hidden text-transparent"
+                    style={{ wordBreak: "break-word" }}
+                  >
+                    {renderedHighlightSpans}
+                  </div>
+
+                  {/* Primary Interactive Textarea */}
+                  <textarea
+                    ref={textareaRef}
+                    id="copy-content"
+                    rows={10}
+                    value={content}
+                    onChange={(e) => {
+                      setContent(e.target.value);
+                      handleCursorActivity();
+                    }}
+                    onKeyDown={(e) => {
+                      if ((e.metaKey || e.ctrlKey) && e.key === "Enter" && !isChecking && content.trim()) {
+                        e.preventDefault();
+                        handleRunCheck();
+                      } else if (e.key === "Escape") {
+                        setSelectedFindingId(null);
+                      }
+                    }}
+                    onScroll={handleScroll}
+                    onSelect={handleCursorActivity}
+                    onClick={handleCursorActivity}
+                    onKeyUp={handleCursorActivity}
+                    className="relative z-10 w-full min-h-[260px] bg-transparent p-4 text-sm text-black font-mono font-medium leading-relaxed resize-y focus:outline-none whitespace-pre-wrap break-words caret-black selection:bg-[#FFD700]"
+                    style={{ wordBreak: "break-word" }}
+                    placeholder="Paste or write marketing draft copy here, or drop a .txt/.md file..."
+                  />
+                </div>
+              )}
             </div>
 
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pt-2">
@@ -1007,6 +1081,19 @@ function SubmissionsContent() {
         certificate={certificateData}
         isOpen={isCertModalOpen}
         onClose={() => setIsCertModalOpen(false)}
+      />
+
+      {/* AI Brand Copilot Rewrite Modal */}
+      <CopilotRewriteModal
+        isOpen={isCopilotModalOpen}
+        onClose={() => setIsCopilotModalOpen(false)}
+        originalContent={content}
+        findings={checkResult?.findings || []}
+        onAcceptRewrite={(newContent) => {
+          setContent(newContent);
+          setAppliedNotice("✨ AI Copilot auto-remediated copy accepted! Re-evaluating compliance...");
+          runCheckWithContent(newContent);
+        }}
       />
     </div>
   );
