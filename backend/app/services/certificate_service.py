@@ -8,11 +8,10 @@ for approved submissions. Enforces:
 4. Composite certificate digital signature hash.
 """
 
-from datetime import UTC, datetime
 import hashlib
-import json
-from typing import Any
 import uuid
+from datetime import UTC, datetime
+from typing import Any
 
 from sqlalchemy.orm import Session
 

@@ -40,7 +40,7 @@ def postgres_setup():
         )
         with owner_engine.connect() as conn:
             conn.execute(text("SELECT 1"))
-    except Exception as exc:
+    except Exception as exc:  # noqa: BLE001
         pytest.skip(f"PostgreSQL test database not available: {exc}")
 
     # Generate test tenant IDs

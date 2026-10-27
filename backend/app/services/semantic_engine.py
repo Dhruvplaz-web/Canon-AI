@@ -161,6 +161,6 @@ def scan_semantic_violations(
 
         return results
 
-    except Exception as e:
+    except Exception as e:  # noqa: BLE001
         logger.warning("Semantic scanning encountered an issue: %s", e)
         return []

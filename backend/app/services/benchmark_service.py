@@ -5,13 +5,12 @@ deterministic brand policy violations, temporal claims, and clean compliant copy
 Emits confusion matrix metrics (TP, FP, TN, FN), Precision, Recall, F1, and execution latency.
 """
 
-from collections.abc import Sequence
 import json
 import logging
-from pathlib import Path
 import time
-from typing import Any
 import uuid
+from pathlib import Path
+from typing import Any
 
 from sqlalchemy.orm import Session
 
@@ -28,6 +27,18 @@ REPO_ROOT = Path(__file__).resolve().parent.parent.parent.parent
 BENCHMARK_FILE = REPO_ROOT / "data" / "benchmark_dataset.json"
 
 
+def _resolve_benchmark_file() -> Path:
+    candidates = [
+        BENCHMARK_FILE,
+        Path("data/benchmark_dataset.json"),
+        Path("../data/benchmark_dataset.json"),
+    ]
+    for c in candidates:
+        if c.exists():
+            return c
+    return BENCHMARK_FILE
+
+
 def run_benchmark_suite(
     db: Session,
     workspace_id: uuid.UUID,
@@ -36,10 +47,11 @@ def run_benchmark_suite(
     Executes the 30-case benchmark suite against the workspace's active PolicyVersion.
     Returns empirical Confusion Matrix, F1 Score, and per-case verification traces.
     """
-    if not BENCHMARK_FILE.exists():
-        raise FileNotFoundError(f"Benchmark dataset not found at {BENCHMARK_FILE}")
+    benchmark_path = _resolve_benchmark_file()
+    if not benchmark_path.exists():
+        raise FileNotFoundError(f"Benchmark dataset not found at {benchmark_path}")
 
-    with open(BENCHMARK_FILE, encoding="utf-8") as f:
+    with open(benchmark_path, encoding="utf-8") as f:
         data = json.load(f)
 
     policy = (
@@ -71,8 +83,6 @@ def run_benchmark_suite(
         if c.substantiation:
             policy_source_texts.append(c.substantiation)
             policy_source_texts.append(f"Claim: '{c.claim_text}' Substantiation: {c.substantiation}")
-
-    rules_map = {r.rule_code: r for r in policy.rules}
 
     cases = data.get("cases", [])
     results = []

@@ -230,7 +230,7 @@ def test_live_override_dynamically_updates_rule_health(client_and_db):
     Verifies that live human reviewer overrides immediately and dynamically
     recalculate rule health diagnostics without needing manual batch jobs.
     """
-    client, db = client_and_db
+    client, _ = client_and_db
 
     # Login as reviewer
     client.post(
@@ -275,7 +275,7 @@ def test_benchmark_endpoint_evaluates_30_cases_with_high_accuracy(client_and_db)
     Verifies that the reproducible benchmark endpoint executes across all 30 test cases,
     blocks 10/10 adversarial prompt injections, and returns verified metrics.
     """
-    client, db = client_and_db
+    client, _ = client_and_db
 
     # Login as brand manager
     client.post(

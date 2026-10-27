@@ -10,7 +10,7 @@ from sqlalchemy.orm import Session
 from app.api.v1.auth import get_current_user, require_role
 from app.core.database import get_db, set_tenant_context
 from app.models.audit import AuditLog
-from app.models.check import CheckRun, Decision, Finding
+from app.models.check import Finding
 from app.models.governance import RuleChangeProposal, RuleHealthSnapshot
 from app.models.policy import ApprovedClaim, PolicyVersion, Rule, SourceDocument
 from app.models.workspace import User
