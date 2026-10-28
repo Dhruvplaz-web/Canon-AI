@@ -7,18 +7,19 @@ export async function POST(
   try {
     const { id } = await params;
 
+    const isProp01 = id === "prop-01" || id === "PROP-01";
     return NextResponse.json({
       id: `bkt_${Date.now()}`,
       proposal_id: id,
       status: "COMPLETED",
-      historical_submissions_analyzed: 348,
-      prior_pass_rate: 68.4,
-      simulated_pass_rate: 89.2,
-      false_positives_eliminated: 34,
+      historical_submissions_analyzed: isProp01 ? 24 : 348,
+      prior_pass_rate: isProp01 ? 0.583 : 0.684,
+      simulated_pass_rate: isProp01 ? 0.917 : 0.892,
+      false_positives_eliminated: isProp01 ? 8 : 34,
       regressions_detected: 0,
-      safety_score: 99.4,
+      safety_score: 1.0,
       recommendation:
-        "HIGH CONFIDENCE: Adopting this proposal eliminates 34 false-positive reviewer interventions while introducing 0 compliance regressions on critical regulatory checks.",
+        "HIGH CONFIDENCE: Adopting this proposal eliminates false-positive reviewer interventions while introducing 0 compliance regressions on critical regulatory checks.",
       completed_at: new Date().toISOString(),
     });
   } catch (err: unknown) {

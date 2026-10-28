@@ -7,8 +7,17 @@ export async function POST(
 ) {
   try {
     const { id } = await params;
+    const isReset = req.nextUrl.searchParams.get("action") === "reset";
     const found = proposalsStore.find((p) => p.id === id);
     if (found) {
+      if (isReset) {
+        found.status = "PENDING_APPROVAL";
+        delete found.adopted_at;
+        return NextResponse.json({
+          status: "PENDING_APPROVAL",
+          message: `Proposal ${found.proposal_code} reset to pending approval state for repeatable demonstration.`,
+        });
+      }
       found.status = "ADOPTED";
       found.adopted_at = new Date().toISOString();
     }

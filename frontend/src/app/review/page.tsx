@@ -12,6 +12,7 @@ import {
 import { ApproverSignoffView } from "@/features/review/ApproverSignoffView";
 import { useReviewQueue } from "@/features/review/useReviewQueue";
 import { ComplianceCertificateModal } from "@/components/ComplianceCertificateModal";
+import { SlackWebhookNotification } from "@/components/SlackWebhookNotification";
 import { Skeleton } from "@/components/ui/Skeleton";
 
 function ReviewContent() {
@@ -46,6 +47,8 @@ function ReviewContent() {
     handleOpenCertificate,
     pendingCount,
     activeSubmissionFindings,
+    webhookDispatch,
+    setWebhookDispatch,
   } = useReviewQueue();
 
   const setViewMode = (mode: "queue" | "signoff") => {
@@ -111,6 +114,12 @@ function ReviewContent() {
           certificate={certificateData}
         />
       )}
+
+      {/* Enterprise Slack Webhook Dispatcher (Task 3.2) */}
+      <SlackWebhookNotification
+        dispatchResult={webhookDispatch}
+        onDismiss={() => setWebhookDispatch(null)}
+      />
     </div>
   );
 }

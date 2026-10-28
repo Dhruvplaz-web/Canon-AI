@@ -4,6 +4,7 @@ import { useState, useEffect, useCallback } from "react";
 import { type ReviewItem, type ReasonCode } from "./OverrideModals";
 import { type SubmissionSummary } from "./ApproverSignoffView";
 import { type ReleaseCertificate } from "@/components/ComplianceCertificateModal";
+import { type WebhookDispatchResult } from "@/components/SlackWebhookNotification";
 import { toast } from "@/components/ui/Toast";
 
 export function useReviewQueue() {
@@ -13,6 +14,7 @@ export function useReviewQueue() {
   const [reasonCodes, setReasonCodes] = useState<ReasonCode[]>([]);
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [webhookDispatch, setWebhookDispatch] = useState<WebhookDispatchResult | null>(null);
 
   // Modals state
   const [overrideModalItem, setOverrideModalItem] = useState<ReviewItem | null>(null);
@@ -150,6 +152,30 @@ export function useReviewQueue() {
         title: "Submission Approved",
         description: "Release certificate issued and signed with SHA-256 HMAC.",
       });
+
+      // Dispatch real-time enterprise webhook to Slack #brand-governance (Task 3.2)
+      try {
+        const whRes = await fetch("/api/v1/webhooks/dispatch", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            event_type: "submission.approved",
+            submission_id: submissionId,
+            submission_title: activeSubmission?.title || "Campaign Submission",
+            channel: activeSubmission?.channel || "web_landing_page",
+            decision: "APPROVED",
+            reviewer_name: "Rachel Reviewer",
+            reviewer_email: "reviewer@acme.corp",
+            certificate_id: `CERT-ACME-${submissionId.slice(0, 8)}`,
+          }),
+        });
+        if (whRes.ok) {
+          const whData = await whRes.json();
+          setWebhookDispatch(whData);
+        }
+      } catch {
+        // Non-blocking webhook dispatch
+      }
     } catch {
       toast({
         title: "Approval Failed",
@@ -237,5 +263,7 @@ export function useReviewQueue() {
     handleOpenCertificate,
     pendingCount,
     activeSubmissionFindings,
+    webhookDispatch,
+    setWebhookDispatch,
   };
 }
