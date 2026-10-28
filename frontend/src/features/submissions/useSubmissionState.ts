@@ -8,8 +8,8 @@ import { toast } from "@/components/ui/Toast";
 
 export function useSubmissionState() {
   const [selectedPreset, setSelectedPreset] = useState<string>("VIOLATIONS");
-  const [channel, setChannel] = useState("web_landing_page");
-  const [title, setTitle] = useState("Product Launch Announcement Blast");
+  const [channel, setChannel] = useState("email_blast");
+  const [title, setTitle] = useState("UPI & Digital Lending Campaign (Bengaluru Launch)");
   const [content, setContent] = useState(
     "Bank on us for all your financial operations! We offer super dope yields with instant loan approval in seconds. Acme has been rated #1 banking app with 99.99% uptime across all major benchmarks."
   );

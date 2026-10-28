@@ -24,9 +24,12 @@ export interface ExecutiveGovernanceScorecardProps {
 }
 
 export function ExecutiveGovernanceScorecard({ className = "" }: ExecutiveGovernanceScorecardProps) {
+  // Region & Currency Mode: "GLOBAL" ($ USD) | "INDIA" (₹ INR)
+  const [regionMode, setRegionMode] = useState<"GLOBAL" | "INDIA">("INDIA"); // Default to India!
+
   // Calculator Interactive Inputs (Task 3.3)
   const [monthlyVolume, setMonthlyVolume] = useState<number>(50); // Default 50, range 10-500
-  const [hourlyLegalRate, setHourlyLegalRate] = useState<number>(350); // Default $350, range 150-750
+  const [hourlyLegalRate, setHourlyLegalRate] = useState<number>(25000); // Default ₹25,000 for India
   const [showAssumptions, setShowAssumptions] = useState<boolean>(true);
 
   // Generate unique stable IDs for form controls
@@ -36,10 +39,21 @@ export function ExecutiveGovernanceScorecard({ className = "" }: ExecutiveGovern
   const rateNumberId = useId();
 
   // Model Constants & Assumptions
+  const isIndia = regionMode === "INDIA";
   const BASELINE_LEGAL_HOURS_PER_CAMPAIGN = 2.0; // Hours spent by outside counsel on manual review
   const CANON_LEGAL_HOURS_PER_CAMPAIGN = 0.2; // Hours required with Canon Double Receipts (12 mins)
   const HOURS_SAVED_PER_CAMPAIGN = BASELINE_LEGAL_HOURS_PER_CAMPAIGN - CANON_LEGAL_HOURS_PER_CAMPAIGN; // 1.8 hrs saved
-  const ASSUMED_ANNUAL_PLATFORM_COST = 36000; // $3,000/mo illustrative enterprise license (DEC-02)
+  const ASSUMED_ANNUAL_PLATFORM_COST = isIndia ? 1200000 : 36000; // ₹12 Lakhs vs $36,000
+
+  // Switch region handler
+  const handleToggleRegion = (mode: "GLOBAL" | "INDIA") => {
+    setRegionMode(mode);
+    if (mode === "INDIA") {
+      setHourlyLegalRate(25000); // ₹25,000/hr average Indian Tier-1/Tier-2 firm rate
+    } else {
+      setHourlyLegalRate(350); // $350/hr average US law firm rate
+    }
+  };
 
   // Calculations
   const annualCampaignVolume = monthlyVolume * 12;
@@ -64,10 +78,37 @@ export function ExecutiveGovernanceScorecard({ className = "" }: ExecutiveGovern
 
   const handleReset = () => {
     setMonthlyVolume(50);
-    setHourlyLegalRate(350);
+    setHourlyLegalRate(isIndia ? 25000 : 350);
   };
 
   const formatCurrency = (val: number) => {
+    if (isIndia) {
+      if (Math.abs(val) >= 10000000) {
+        return `₹${(val / 10000000).toFixed(2)} Cr`;
+      } else if (Math.abs(val) >= 100000) {
+        return `₹${(val / 100000).toFixed(2)} Lakh`;
+      }
+      return new Intl.NumberFormat("en-IN", {
+        style: "currency",
+        currency: "INR",
+        maximumFractionDigits: 0,
+      }).format(val);
+    }
+    return new Intl.NumberFormat("en-US", {
+      style: "currency",
+      currency: "USD",
+      maximumFractionDigits: 0,
+    }).format(val);
+  };
+
+  const formatExactCurrency = (val: number) => {
+    if (isIndia) {
+      return new Intl.NumberFormat("en-IN", {
+        style: "currency",
+        currency: "INR",
+        maximumFractionDigits: 0,
+      }).format(val);
+    }
     return new Intl.NumberFormat("en-US", {
       style: "currency",
       currency: "USD",
@@ -99,10 +140,38 @@ export function ExecutiveGovernanceScorecard({ className = "" }: ExecutiveGovern
             </div>
           </div>
 
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 flex-wrap">
+            {/* Region / Currency Switcher */}
+            <div className="flex items-center gap-1 p-1 bg-slate-100 border border-slate-200 rounded-xl">
+              <button
+                type="button"
+                onClick={() => handleToggleRegion("INDIA")}
+                className={`px-2.5 py-1 rounded-lg text-xs font-bold transition flex items-center gap-1.5 cursor-pointer ${
+                  isIndia
+                    ? "bg-white text-slate-900 shadow-2xs border border-slate-200/80"
+                    : "text-slate-500 hover:text-slate-800"
+                }`}
+              >
+                <span>🇮🇳</span>
+                <span>India (INR ₹)</span>
+              </button>
+              <button
+                type="button"
+                onClick={() => handleToggleRegion("GLOBAL")}
+                className={`px-2.5 py-1 rounded-lg text-xs font-bold transition flex items-center gap-1.5 cursor-pointer ${
+                  !isIndia
+                    ? "bg-white text-slate-900 shadow-2xs border border-slate-200/80"
+                    : "text-slate-500 hover:text-slate-800"
+                }`}
+              >
+                <span>🌐</span>
+                <span>Global ($ USD)</span>
+              </button>
+            </div>
+
             <span className="bg-slate-100 text-slate-600 border border-slate-200 text-[11px] font-medium px-2.5 py-1 rounded-full flex items-center gap-1.5">
               <span className="w-2 h-2 rounded-full bg-emerald-500" />
-              <span>Executive Briefing View</span>
+              <span>{isIndia ? "CCPA & ASCI Jurisdiction" : "Executive Briefing View"}</span>
             </span>
           </div>
         </div>
@@ -185,14 +254,14 @@ export function ExecutiveGovernanceScorecard({ className = "" }: ExecutiveGovern
             <div className="flex items-start justify-between gap-2">
               <div className="flex flex-col gap-1">
                 <span className="text-xs font-semibold text-slate-500 uppercase tracking-wider">
-                  Est. Fines Prevented
+                  {isIndia ? "Max Statutory Fine Blocked" : "Est. Fines Prevented"}
                 </span>
                 <div className="flex items-baseline gap-2 mt-1">
                   <span className="text-3xl font-extrabold text-slate-900 tracking-tight font-mono">
-                    $185,000
+                    {isIndia ? "₹50 Lakhs" : "$185,000"}
                   </span>
                   <span className="inline-flex items-center text-xs font-semibold text-purple-700 bg-purple-50 px-1.5 py-0.5 rounded border border-purple-200">
-                    4 Blocks
+                    {isIndia ? "CCPA Fine Cap" : "4 Blocks"}
                   </span>
                 </div>
               </div>
@@ -204,10 +273,12 @@ export function ExecutiveGovernanceScorecard({ className = "" }: ExecutiveGovern
             <div className="flex flex-col gap-2 pt-3 border-t border-slate-100 text-xs">
               <div className="flex items-center justify-between text-slate-600">
                 <span>Statutory exposure blocked:</span>
-                <span className="font-mono font-medium text-slate-700">FTC / CFPB / EU AI Act</span>
+                <span className="font-mono font-medium text-slate-700">
+                  {isIndia ? "CCPA 2019 / ASCI / RBI Sec 7" : "FTC / CFPB / EU AI Act"}
+                </span>
               </div>
               <div className="flex items-center justify-between">
-                <span className="text-slate-500 text-[11px]">Pre-publication intercept</span>
+                <span className="text-slate-500 text-[11px]">{isIndia ? "CPA 2019 Sec 21 & ASCI 1.4" : "Pre-publication intercept"}</span>
                 <span className="bg-slate-100 text-slate-600 text-[10px] font-medium px-1.5 py-0.5 rounded border border-slate-200">
                   Illustrative Demo Metric
                 </span>
@@ -228,10 +299,12 @@ export function ExecutiveGovernanceScorecard({ className = "" }: ExecutiveGovern
             </div>
             <div>
               <h3 className="text-lg font-bold text-slate-900 tracking-tight">
-                Enterprise ROI &amp; Legal Cost Savings Calculator
+                {isIndia ? "India Enterprise ROI & Legal Counsel Savings Calculator" : "Enterprise ROI & Legal Cost Savings Calculator"}
               </h3>
               <p className="text-xs text-slate-500">
-                Adjust monthly volume and outside counsel rates to project annual operational savings and net ROI.
+                {isIndia
+                  ? "Adjust monthly volume and outside counsel rates (₹/hr) to project annual operational savings and net ROI across Indian operations."
+                  : "Adjust monthly volume and outside counsel rates to project annual operational savings and net ROI."}
               </p>
             </div>
           </div>
@@ -241,27 +314,55 @@ export function ExecutiveGovernanceScorecard({ className = "" }: ExecutiveGovern
             <span className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider mr-1">
               Presets:
             </span>
-            <button
-              type="button"
-              onClick={() => applyPreset(20, 275)}
-              className="text-xs font-medium px-2.5 py-1 rounded-lg border border-slate-200 bg-slate-50 hover:bg-slate-100 text-slate-700 transition cursor-pointer"
-            >
-              Seed (20/mo)
-            </button>
-            <button
-              type="button"
-              onClick={() => applyPreset(50, 350)}
-              className="text-xs font-semibold px-2.5 py-1 rounded-lg border border-blue-200 bg-blue-50 text-blue-700 hover:bg-blue-100 transition cursor-pointer"
-            >
-              Mid-Market (50/mo)
-            </button>
-            <button
-              type="button"
-              onClick={() => applyPreset(200, 500)}
-              className="text-xs font-medium px-2.5 py-1 rounded-lg border border-slate-200 bg-slate-50 hover:bg-slate-100 text-slate-700 transition cursor-pointer"
-            >
-              Enterprise (200/mo)
-            </button>
+            {isIndia ? (
+              <>
+                <button
+                  type="button"
+                  onClick={() => applyPreset(20, 15000)}
+                  className="text-xs font-medium px-2.5 py-1 rounded-lg border border-slate-200 bg-slate-50 hover:bg-slate-100 text-slate-700 transition cursor-pointer"
+                >
+                  India Seed (20/mo @ ₹15k)
+                </button>
+                <button
+                  type="button"
+                  onClick={() => applyPreset(50, 25000)}
+                  className="text-xs font-semibold px-2.5 py-1 rounded-lg border border-blue-200 bg-blue-50 text-blue-700 hover:bg-blue-100 transition cursor-pointer"
+                >
+                  Mid-Market (50/mo @ ₹25k)
+                </button>
+                <button
+                  type="button"
+                  onClick={() => applyPreset(200, 35000)}
+                  className="text-xs font-medium px-2.5 py-1 rounded-lg border border-slate-200 bg-slate-50 hover:bg-slate-100 text-slate-700 transition cursor-pointer"
+                >
+                  Enterprise (200/mo @ ₹35k)
+                </button>
+              </>
+            ) : (
+              <>
+                <button
+                  type="button"
+                  onClick={() => applyPreset(20, 275)}
+                  className="text-xs font-medium px-2.5 py-1 rounded-lg border border-slate-200 bg-slate-50 hover:bg-slate-100 text-slate-700 transition cursor-pointer"
+                >
+                  Seed (20/mo)
+                </button>
+                <button
+                  type="button"
+                  onClick={() => applyPreset(50, 350)}
+                  className="text-xs font-semibold px-2.5 py-1 rounded-lg border border-blue-200 bg-blue-50 text-blue-700 hover:bg-blue-100 transition cursor-pointer"
+                >
+                  Mid-Market (50/mo)
+                </button>
+                <button
+                  type="button"
+                  onClick={() => applyPreset(200, 500)}
+                  className="text-xs font-medium px-2.5 py-1 rounded-lg border border-slate-200 bg-slate-50 hover:bg-slate-100 text-slate-700 transition cursor-pointer"
+                >
+                  Enterprise (200/mo)
+                </button>
+              </>
+            )}
             <button
               type="button"
               onClick={handleReset}
@@ -339,24 +440,26 @@ export function ExecutiveGovernanceScorecard({ className = "" }: ExecutiveGovern
                   htmlFor={rateNumberId}
                   className="text-xs font-bold text-slate-800"
                 >
-                  External Legal Review Cost
+                  {isIndia ? "Outside Counsel Rate (₹/hr)" : "External Legal Review Cost ($/hr)"}
                 </label>
                 <div className="flex items-center gap-1">
-                  <span className="text-xs font-semibold text-slate-500">$</span>
+                  <span className="text-xs font-semibold text-slate-500">{isIndia ? "₹" : "$"}</span>
                   <input
                     id={rateNumberId}
                     type="number"
-                    min={150}
-                    max={750}
-                    step={25}
+                    min={isIndia ? 5000 : 150}
+                    max={isIndia ? 75000 : 750}
+                    step={isIndia ? 1000 : 25}
                     value={hourlyLegalRate}
                     onChange={(e) => {
                       const val = Number(e.target.value);
                       if (!isNaN(val)) {
-                        setHourlyLegalRate(Math.min(750, Math.max(150, val)));
+                        const min = isIndia ? 5000 : 150;
+                        const max = isIndia ? 75000 : 750;
+                        setHourlyLegalRate(Math.min(max, Math.max(min, val)));
                       }
                     }}
-                    className="w-20 px-2 py-1 text-right text-xs font-bold font-mono bg-white border border-slate-300 rounded-lg shadow-2xs focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500"
+                    className="w-24 px-2 py-1 text-right text-xs font-bold font-mono bg-white border border-slate-300 rounded-lg shadow-2xs focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500"
                   />
                   <span className="text-xs font-medium text-slate-500">/ hr</span>
                 </div>
@@ -366,18 +469,22 @@ export function ExecutiveGovernanceScorecard({ className = "" }: ExecutiveGovern
                 id={rateSliderId}
                 aria-label="External Legal Review Cost Slider"
                 type="range"
-                min={150}
-                max={750}
-                step={25}
+                min={isIndia ? 5000 : 150}
+                max={isIndia ? 75000 : 750}
+                step={isIndia ? 1000 : 25}
                 value={hourlyLegalRate}
                 onChange={(e) => setHourlyLegalRate(Number(e.target.value))}
                 className="w-full accent-blue-600 cursor-pointer"
               />
 
               <div className="flex justify-between text-[11px] text-slate-400 font-mono">
-                <span>$150/hr</span>
-                <span className="text-slate-600 font-semibold">${hourlyLegalRate}/hr billing rate</span>
-                <span>$750/hr</span>
+                <span>{isIndia ? "₹5,000/hr" : "$150/hr"}</span>
+                <span className="text-slate-600 font-semibold">
+                  {isIndia
+                    ? `₹${hourlyLegalRate.toLocaleString("en-IN")}/hr legal counsel rate`
+                    : `$${hourlyLegalRate}/hr billing rate`}
+                </span>
+                <span>{isIndia ? "₹75,000/hr" : "$750/hr"}</span>
               </div>
             </div>
 

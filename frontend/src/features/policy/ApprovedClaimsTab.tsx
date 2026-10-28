@@ -60,12 +60,17 @@ export function ApprovedClaimsTab({ claims }: ApprovedClaimsTabProps) {
     <div className="space-y-4">
       {/* Header Banner */}
       <div className="p-4 rounded-xl border border-blue-500/20 bg-blue-500/5 text-xs text-[var(--color-text-secondary)] space-y-1">
-        <h3 className="font-bold text-[var(--color-text-primary)] text-sm flex items-center gap-1.5">
-          <FileCheck className="w-4 h-4 text-blue-600 dark:text-blue-400" />
-          <span>Statutory Substantiated Claims Ledger</span>
-        </h3>
+        <div className="flex items-center justify-between gap-2 flex-wrap">
+          <h3 className="font-bold text-[var(--color-text-primary)] text-sm flex items-center gap-1.5">
+            <FileCheck className="w-4 h-4 text-blue-600 dark:text-blue-400" />
+            <span>Statutory Substantiated Claims Ledger</span>
+          </h3>
+          <span className="px-2 py-0.5 rounded-full border border-blue-500/30 bg-blue-500/10 text-[10px] font-mono font-bold text-blue-700 dark:text-blue-300">
+            🇮🇳 CCPA 2022 &bull; ASCI 1.4 &bull; SEC/FTC Substantive Ledger
+          </span>
+        </div>
         <p>
-          Approved marketing representations backed by regulatory evidence, formal certificates, and active time-bounded validity periods.
+          Approved marketing representations backed by regulatory evidence, formal certificates, and active time-bounded validity periods to prevent civil fines under Consumer Protection &amp; FTC acts.
         </p>
       </div>
 

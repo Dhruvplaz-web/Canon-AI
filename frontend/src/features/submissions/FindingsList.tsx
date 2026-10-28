@@ -53,6 +53,23 @@ interface FindingsListProps {
   isChecking: boolean;
 }
 
+const getJurisdictionBadge = (code: string) => {
+  switch (code) {
+    case "TERM-001":
+      return { label: "RBI Banking Reg. Sec 7", color: "bg-orange-500/10 text-orange-700 dark:text-orange-400 border-orange-500/30" };
+    case "TERM-004":
+      return { label: "RBI Digital Lending '22", color: "bg-blue-500/10 text-blue-700 dark:text-blue-400 border-blue-500/30" };
+    case "TERM-003":
+      return { label: "SEBI Ad Code", color: "bg-purple-500/10 text-purple-700 dark:text-purple-400 border-purple-500/30" };
+    case "CLAIM-001":
+      return { label: "ASCI 1.4 • CCPA '22", color: "bg-rose-500/10 text-rose-700 dark:text-rose-400 border-rose-500/30" };
+    case "TERM-006":
+      return { label: "CCPA Dark Patterns '23", color: "bg-amber-500/10 text-amber-700 dark:text-amber-400 border-amber-500/30" };
+    default:
+      return null;
+  }
+};
+
 export function FindingsList({
   findings,
   selectedFindingId,
@@ -213,6 +230,12 @@ export function FindingsList({
                   <span className="px-1.5 py-0.5 rounded border border-[var(--color-border-default)] bg-[var(--color-surface-muted)] text-[11px] font-mono font-bold text-[var(--color-text-primary)]">
                     {f.rule_code}
                   </span>
+                  {getJurisdictionBadge(f.rule_code) && (
+                    <span className={`px-1.5 py-0.5 rounded border text-[10px] font-mono font-bold flex items-center gap-1 ${getJurisdictionBadge(f.rule_code)!.color}`}>
+                      <span>🇮🇳</span>
+                      <span>{getJurisdictionBadge(f.rule_code)!.label}</span>
+                    </span>
+                  )}
                   <StatusBadge
                     status={
                       f.severity === "CRITICAL"

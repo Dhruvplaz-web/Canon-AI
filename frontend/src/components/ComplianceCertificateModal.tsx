@@ -345,7 +345,7 @@ export function ComplianceCertificateModal({
               Enterprise Brand Governance Notice &amp; Legal Disclaimer
             </span>
             <p className="text-amber-950/90 dark:text-amber-100/90 font-medium">
-              This certificate attests to algorithmic policy verification and human oversight adherence under Canon&apos;s Double-Receipt Invariant and EU AI Act Article 14 governance workflows. It certifies internal compliance with designated organizational brand rules and does not constitute statutory legal counsel, binding regulatory exemption, or commercial warranty.
+              This certificate attests to algorithmic policy verification and human oversight adherence under Canon&apos;s Double-Receipt Invariant, Consumer Protection Act 2019 (CCPA Misleading Advertisements Guidelines 2022), RBI Banking Regulation Act 1949 (Sec 7), and ASCI Code for Self-Regulation. Prepared with tamper-evident cryptographic digital signatures for electronic audit admissibility under Section 65B of the Indian Evidence Act and EU AI Act Article 14 governance workflows. It certifies internal compliance with designated organizational brand rules and does not constitute statutory legal counsel, binding regulatory exemption, or commercial warranty.
             </p>
           </div>
         </div>
