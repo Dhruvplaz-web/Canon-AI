@@ -28,11 +28,32 @@ export interface Workspace {
 
 export type PolicyStatus = "DRAFT" | "ACTIVE" | "ARCHIVED";
 
+export type StatutoryJurisdiction = "US_FEDERAL" | "US_STATE_NY" | "EU" | "INTERNATIONAL";
+
+export type StatutoryMandateTier =
+  | "STATUTORY_MANDATE"
+  | "REGULATORY_RULE"
+  | "SUBSTANTIATION_MANDATE"
+  | "ACCESSIBILITY_STANDARD";
+
+export interface RegulatoryStatute {
+  statute_code: string;
+  act_name: string;
+  jurisdiction: StatutoryJurisdiction;
+  section_pin: string;
+  enforcement_body: string;
+  penalty_exposure: string;
+  mandate_tier: StatutoryMandateTier;
+  mandate_summary: string;
+  official_uri: string;
+}
+
 export interface SourceCitation {
   document: string;
   section: string;
   page?: number;
   exact_quote: string;
+  regulatory_statute?: RegulatoryStatute;
 }
 
 export interface Rule {
@@ -100,6 +121,7 @@ export interface Finding {
   source_section: string;
   status: FindingStatus;
   override_reason?: string;
+  regulatory_statute?: RegulatoryStatute;
 }
 
 export interface CheckRunResult {

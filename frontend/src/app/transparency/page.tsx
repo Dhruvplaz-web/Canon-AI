@@ -6,7 +6,18 @@ import {
   RefreshCw,
   Lock,
   FileCheck,
+  ShieldCheck,
+  ShieldAlert,
+  Download,
+  CheckCircle2,
+  AlertTriangle,
+  ChevronDown,
+  ChevronUp,
+  FileSpreadsheet,
+  FileCode,
+  Hash,
 } from "lucide-react";
+import { AuditBlock, ChainVerificationReport } from "@/lib/audit-chain-engine";
 
 interface AICallItem {
   id: string;
@@ -35,6 +46,14 @@ export default function TransparencyPage() {
   const [data, setData] = useState<TransparencyDisclosure | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
+  // Feature 2.3: Cryptographic Audit Trail Hash Chain Verifier State
+  const [chainBlocks, setChainBlocks] = useState<AuditBlock[]>([]);
+  const [verificationReport, setVerificationReport] = useState<ChainVerificationReport | null>(null);
+  const [isVerifying, setIsVerifying] = useState(false);
+  const [isTamperSimulated, setIsTamperSimulated] = useState(false);
+  const [showLedgerDetails, setShowLedgerDetails] = useState(false);
+  const [isExporting, setIsExporting] = useState<string | null>(null);
+
   useEffect(() => {
     let active = true;
 
@@ -51,6 +70,13 @@ export default function TransparencyPage() {
         if (active) setIsLoading(false);
       });
 
+    fetch("/api/v1/transparency/audit-chain")
+      .then((r) => (r.ok ? r.json() : null))
+      .then((res) => {
+        if (active && res?.chain) setChainBlocks(res.chain);
+      })
+      .catch(() => {});
+
     return () => {
       active = false;
     };
@@ -65,6 +91,39 @@ export default function TransparencyPage() {
         setIsLoading(false);
       })
       .catch(() => setIsLoading(false));
+  };
+
+  const handleVerifyChain = async (simulateTamper: boolean = false) => {
+    setIsVerifying(true);
+    setIsTamperSimulated(simulateTamper);
+    try {
+      const res = await fetch("/api/v1/transparency/audit-chain/verify", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          tamper_index: simulateTamper ? 2 : undefined,
+        }),
+      });
+      if (res.ok) {
+        const report = await res.json();
+        setVerificationReport(report);
+      }
+    } catch {
+      // fallback
+    } finally {
+      setIsVerifying(false);
+    }
+  };
+
+  const handleExportDossier = (format: "csv" | "json") => {
+    setIsExporting(format);
+    const link = document.createElement("a");
+    link.href = `/api/v1/transparency/export?format=${format}`;
+    link.download = `canon-audit-dossier.${format}`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    setTimeout(() => setIsExporting(null), 1500);
   };
 
   return (
@@ -174,6 +233,211 @@ export default function TransparencyPage() {
             {data?.median_latency_ms ? `${data.median_latency_ms}ms` : "1.8ms"}
           </span>
           <span className="text-[11px] text-black/60 font-mono font-bold">&lt;50ms cache target</span>
+        </div>
+      </div>
+
+      {/* Feature 2.3: Cryptographic Audit Trail Hash Chain Verifier */}
+      <div className="neo-box-prominent bg-white p-6 md:p-8 flex flex-col gap-6">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b-2 border-black pb-4">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-xl bg-[#FFD700] border-2 border-black flex items-center justify-center shadow-[2px_2px_0px_#000]">
+              <ShieldCheck className="w-6 h-6 text-black" />
+            </div>
+            <div>
+              <div className="flex items-center gap-2">
+                <span className="neo-badge bg-[#00C2CB] text-black text-[10px] font-black">
+                  Core Invariant #3
+                </span>
+                <span className="neo-badge bg-[#FFD700] text-black text-[10px] font-black">
+                  SHA-256 Non-Repudiation
+                </span>
+              </div>
+              <h2 className="text-xl font-black text-black tracking-tight mt-0.5">
+                Cryptographic Audit Trail Hash-Chain Verifier
+              </h2>
+            </div>
+          </div>
+
+          <div className="flex items-center gap-2 flex-wrap">
+            <button
+              type="button"
+              onClick={() => handleVerifyChain(false)}
+              disabled={isVerifying}
+              className="neo-btn neo-btn-teal text-xs py-2 px-4 flex items-center gap-2 shadow-xs cursor-pointer"
+            >
+              <RefreshCw className={`w-3.5 h-3.5 ${isVerifying ? "animate-spin" : ""}`} />
+              <span>{isVerifying ? "Re-Hashing Blocks..." : "Verify Ledger Integrity"}</span>
+            </button>
+
+            <button
+              type="button"
+              onClick={() => handleVerifyChain(!isTamperSimulated)}
+              disabled={isVerifying}
+              className="neo-btn neo-btn-white text-xs py-2 px-3 flex items-center gap-1.5 border-black/30 hover:border-black cursor-pointer text-red-600 hover:bg-red-50"
+              title="Simulate malicious tampering at Block #2 to demonstrate automated tamper detection"
+            >
+              <AlertTriangle className="w-3.5 h-3.5" />
+              <span>{isTamperSimulated ? "Reset To Valid Chain" : "Simulate Tamper Attack"}</span>
+            </button>
+          </div>
+        </div>
+
+        {/* Verification Report Banner */}
+        {verificationReport && (
+          <div
+            className={`p-4 rounded-xl border-2 border-black flex flex-col sm:flex-row sm:items-center justify-between gap-4 shadow-sm animate-in fade-in duration-150 ${
+              verificationReport.is_valid
+                ? "bg-[#E6FAFA] text-black"
+                : "bg-[#FFF0F5] border-[#FF0055] text-black"
+            }`}
+          >
+            <div className="flex items-start gap-3">
+              {verificationReport.is_valid ? (
+                <CheckCircle2 className="w-6 h-6 text-black shrink-0 mt-0.5" />
+              ) : (
+                <ShieldAlert className="w-6 h-6 text-[#FF0055] shrink-0 mt-0.5" />
+              )}
+              <div className="flex flex-col gap-0.5">
+                <span className="text-xs font-mono font-black uppercase tracking-wider">
+                  {verificationReport.is_valid
+                    ? "Cryptographic Integrity Verified (0 Broken Links)"
+                    : `Tamper Anomaly Detected at Block #${verificationReport.failed_at_index}`}
+                </span>
+                <p className="text-xs font-semibold">
+                  {verificationReport.message}
+                </p>
+                {verificationReport.root_hash && (
+                  <span className="text-[11px] font-mono font-bold text-[#555555] break-all">
+                    Root Hash: {verificationReport.root_hash}
+                  </span>
+                )}
+              </div>
+            </div>
+
+            <div className="flex items-center gap-2 shrink-0">
+              <span className="neo-badge bg-black text-white text-[11px] font-mono">
+                {verificationReport.verified_blocks} / {verificationReport.total_blocks} Blocks
+              </span>
+            </div>
+          </div>
+        )}
+
+        {/* Ledger Summary Stats */}
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs">
+          <div className="bg-[#F8F9FA] p-3 rounded-lg border border-[#E5E7EB] flex flex-col gap-1">
+            <span className="font-mono font-bold text-[#666666] uppercase text-[10px]">Total Logged Blocks</span>
+            <span className="font-mono font-black text-lg text-black">{chainBlocks.length} Blocks</span>
+          </div>
+          <div className="bg-[#F8F9FA] p-3 rounded-lg border border-[#E5E7EB] flex flex-col gap-1">
+            <span className="font-mono font-bold text-[#666666] uppercase text-[10px]">Hash Algorithm</span>
+            <span className="font-mono font-black text-lg text-black">SHA-256 HMAC</span>
+          </div>
+          <div className="bg-[#F8F9FA] p-3 rounded-lg border border-[#E5E7EB] flex flex-col gap-1">
+            <span className="font-mono font-bold text-[#666666] uppercase text-[10px]">Tamper Detection</span>
+            <span className="font-mono font-black text-lg text-black">Deterministic</span>
+          </div>
+          <div className="bg-[#F8F9FA] p-3 rounded-lg border border-[#E5E7EB] flex flex-col gap-1">
+            <span className="font-mono font-bold text-[#666666] uppercase text-[10px]">Chain Status</span>
+            <span className="font-mono font-black text-lg text-emerald-700">
+              {verificationReport ? (verificationReport.is_valid ? "VERIFIED" : "COMPROMISED") : "READY TO AUDIT"}
+            </span>
+          </div>
+        </div>
+
+        {/* Toggleable Block Ledger Inspector */}
+        <div className="flex flex-col gap-3 border-t border-[#E5E7EB] pt-4">
+          <button
+            type="button"
+            onClick={() => setShowLedgerDetails(!showLedgerDetails)}
+            className="flex items-center justify-between text-xs font-black text-black uppercase tracking-wider hover:text-[#00C2CB] transition cursor-pointer"
+          >
+            <div className="flex items-center gap-2">
+              <Hash className="w-4 h-4" />
+              <span>Inspect Cryptographic Block Ledger ({chainBlocks.length} Blocks)</span>
+            </div>
+            {showLedgerDetails ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
+          </button>
+
+          {showLedgerDetails && (
+            <div className="flex flex-col gap-3 max-h-[380px] overflow-y-auto pr-1 animate-in fade-in duration-150">
+              {chainBlocks.map((b) => (
+                <div
+                  key={b.id}
+                  className="neo-box p-3.5 bg-[#FFFDF5] text-xs flex flex-col gap-2 font-mono"
+                >
+                  <div className="flex items-center justify-between flex-wrap gap-2">
+                    <div className="flex items-center gap-2">
+                      <span className="neo-badge bg-black text-white text-[10px]">
+                        Block #{b.index}
+                      </span>
+                      <span className="font-black text-black">{b.action}</span>
+                    </div>
+                    <span className="text-[10px] text-[#666666]">
+                      {new Date(b.timestamp).toLocaleString()} • {b.actor}
+                    </span>
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-2 text-[10px] bg-white p-2.5 rounded border border-black/15">
+                    <div className="flex flex-col gap-0.5 truncate">
+                      <span className="font-bold text-[#666666]">PREVIOUS BLOCK HASH:</span>
+                      <code className="text-black font-semibold truncate select-all">{b.prev_hash}</code>
+                    </div>
+                    <div className="flex flex-col gap-0.5 truncate">
+                      <span className="font-bold text-[#00C2CB]">BLOCK SHA-256 HASH:</span>
+                      <code className="text-black font-semibold truncate select-all">{b.hash}</code>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* Feature 2.5: Exportable Regulatory Audit Dossier (CSV/JSON Bundle) */}
+      <div className="neo-box bg-[#F8F9FA] p-6 flex flex-col md:flex-row md:items-center justify-between gap-6 border-2 border-black shadow-sm">
+        <div className="flex items-start gap-4 max-w-2xl">
+          <div className="w-12 h-12 rounded-xl bg-white border-2 border-black flex items-center justify-center shrink-0 shadow-[2px_2px_0px_#000]">
+            <Download className="w-6 h-6 text-black" />
+          </div>
+          <div className="flex flex-col gap-1">
+            <div className="flex items-center gap-2">
+              <span className="neo-badge bg-black text-white text-[10px] font-black uppercase">
+                Regulatory Export
+              </span>
+              <span className="neo-badge bg-[#FFD700] text-black text-[10px] font-black uppercase">
+                OWASP Formula-Safe
+              </span>
+            </div>
+            <h3 className="text-lg font-black text-black tracking-tight">
+              Export Official Audit Dossier Bundle
+            </h3>
+            <p className="text-xs font-medium text-[#444444] leading-relaxed">
+              Generate standardized, tamper-evident audit dossiers for enterprise risk committees and regulatory compliance examinations (FTC, FDIC, SEC, and EU AI Act Art. 14). Fully protected against CSV formula injection vectors.
+            </p>
+          </div>
+        </div>
+
+        <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 shrink-0">
+          <button
+            type="button"
+            onClick={() => handleExportDossier("csv")}
+            disabled={Boolean(isExporting)}
+            className="neo-btn neo-btn-white text-xs py-2.5 px-4 flex items-center justify-center gap-2 border-black shadow-xs cursor-pointer hover:bg-[#E6FAFA]"
+          >
+            <FileSpreadsheet className="w-4 h-4 text-emerald-700" />
+            <span>{isExporting === "csv" ? "Exporting..." : "Download CSV Dossier"}</span>
+          </button>
+
+          <button
+            type="button"
+            onClick={() => handleExportDossier("json")}
+            disabled={Boolean(isExporting)}
+            className="neo-btn neo-btn-teal text-xs py-2.5 px-4 flex items-center justify-center gap-2 shadow-xs cursor-pointer"
+          >
+            <FileCode className="w-4 h-4 text-black" />
+            <span>{isExporting === "json" ? "Exporting..." : "Download JSON Dossier"}</span>
+          </button>
         </div>
       </div>
 

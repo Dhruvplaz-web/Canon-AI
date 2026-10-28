@@ -18,7 +18,18 @@
         "document": "ACME-GUIDELINES-2026-V1",
         "section": "SECTION 1: STATUTORY BRAND IDENTITY",
         "page": 1,
-        "exact_quote": "Marketing collateral must never instruct consumers to \"bank on us\" or imply Acme itself holds banking charters."
+        "exact_quote": "Marketing collateral must never instruct consumers to \"bank on us\" or imply Acme itself holds banking charters.",
+        "regulatory_statute": {
+          "statute_code": "FDIA-12-USC-1828",
+          "act_name": "Federal Deposit Insurance Act & FDIC Rule Part 328",
+          "jurisdiction": "US_FEDERAL",
+          "section_pin": "12 U.S.C. § 1828(a)(4) • 12 C.F.R. § 328.102",
+          "enforcement_body": "Federal Deposit Insurance Corporation (FDIC) / CFPB",
+          "penalty_exposure": "Civil Money Penalties up to $100,000/day + DOJ criminal referral",
+          "mandate_tier": "STATUTORY_MANDATE",
+          "mandate_summary": "Prohibits non-depository FinTechs and platform providers from using the verb 'bank' or misrepresenting depository insured status to retail consumers.",
+          "official_uri": "https://www.ecfr.gov/current/title-12/chapter-III/subchapter-B/part-328"
+        }
       }
     },
     {
@@ -32,7 +43,18 @@
         "document": "ACME-GUIDELINES-2026-V1",
         "section": "SECTION 1: STATUTORY BRAND IDENTITY",
         "page": 1,
-        "exact_quote": "All collateral must use the formal nomenclature: \"Digital asset custody solutions\"."
+        "exact_quote": "All collateral must use the formal nomenclature: \"Digital asset custody solutions\".",
+        "regulatory_statute": {
+          "statute_code": "NYDFS-23-NYCRR-200",
+          "act_name": "NYDFS Virtual Currency Framework & SEC SAB 121",
+          "jurisdiction": "US_STATE_NY",
+          "section_pin": "23 NYCRR Part 200 • SEC Staff Accounting Bulletin 121",
+          "enforcement_body": "New York Department of Financial Services (NYDFS) / SEC",
+          "penalty_exposure": "Civil fines up to $250,000 per violation; BitLicense revocation",
+          "mandate_tier": "REGULATORY_RULE",
+          "mandate_summary": "Requires clear distinction of custodial digital asset services and prohibits speculative slang in regulated retail financial collateral.",
+          "official_uri": "https://www.dfs.ny.gov/industry_guidance/regulations/virtual_currency_guidance"
+        }
       }
     },
     {
@@ -46,7 +68,18 @@
         "document": "ACME-GUIDELINES-2026-V1",
         "section": "SECTION 1: STATUTORY BRAND IDENTITY",
         "page": 1,
-        "exact_quote": "Copywriters must never use the phrase \"guaranteed returns\", \"risk-free yield\", or \"guaranteed APY\"."
+        "exact_quote": "Copywriters must never use the phrase \"guaranteed returns\", \"risk-free yield\", or \"guaranteed APY\".",
+        "regulatory_statute": {
+          "statute_code": "SEC-IAA-RULE-206-4-1",
+          "act_name": "Investment Advisers Act § 206(4) & SEC Marketing Rule",
+          "jurisdiction": "US_FEDERAL",
+          "section_pin": "15 U.S.C. § 80b-6 • 17 C.F.R. § 275.206(4)-1 • FINRA Rule 2210(d)",
+          "enforcement_body": "Securities and Exchange Commission (SEC) / FINRA",
+          "penalty_exposure": "Disgorgement of fees + civil penalties up to $1,000,000+ per violation; advisory bar",
+          "mandate_tier": "STATUTORY_MANDATE",
+          "mandate_summary": "Strict prohibition on promising or guaranteeing specific investment yields, risk-free returns, or unsubstantiated APYs in public investor communications.",
+          "official_uri": "https://www.ecfr.gov/current/title-17/chapter-II/part-275/section-275.206(4)-1"
+        }
       }
     },
     {
@@ -60,7 +93,18 @@
         "document": "ACME-GUIDELINES-2026-V1",
         "section": "SECTION 1: STATUTORY BRAND IDENTITY",
         "page": 1,
-        "exact_quote": "The phrase \"instant loan\" or \"instant approval\" is deceptive and forbidden."
+        "exact_quote": "The phrase \"instant loan\" or \"instant approval\" is deceptive and forbidden.",
+        "regulatory_statute": {
+          "statute_code": "CFPB-TILA-REG-Z",
+          "act_name": "Truth in Lending Act (TILA) & CFPB Regulation Z",
+          "jurisdiction": "US_FEDERAL",
+          "section_pin": "15 U.S.C. § 1601 et seq. • 12 C.F.R. Part 1026 • 12 U.S.C. § 5536",
+          "enforcement_body": "Consumer Financial Protection Bureau (CFPB)",
+          "penalty_exposure": "Civil money penalties up to $1,424,375/day for knowing UDAAP violations",
+          "mandate_tier": "REGULATORY_RULE",
+          "mandate_summary": "Advertising credit disbursement as 'instant' without clear qualification of underwriting conditions is classified as deceptive under federal consumer credit law.",
+          "official_uri": "https://www.consumerfinance.gov/rules-policy/regulations/1026/"
+        }
       }
     },
     {
@@ -88,7 +132,18 @@
         "document": "ACME-GUIDELINES-2026-V1",
         "section": "SECTION 1: STATUTORY BRAND IDENTITY",
         "page": 1,
-        "exact_quote": "Marketing text must never state \"zero fees\" without qualification."
+        "exact_quote": "Marketing text must never state \"zero fees\" without qualification.",
+        "regulatory_statute": {
+          "statute_code": "FTC-15-USC-45-FREE",
+          "act_name": "FTC Act Section 5(a) & CFPB Circular 2022-06",
+          "jurisdiction": "US_FEDERAL",
+          "section_pin": "15 U.S.C. § 45 • 16 C.F.R. Part 251 • CFPB Circular 2022-06",
+          "enforcement_body": "Federal Trade Commission (FTC) / CFPB",
+          "penalty_exposure": "Up to $51,744 per statutory violation under FTC Act Section 5",
+          "mandate_tier": "STATUTORY_MANDATE",
+          "mandate_summary": "Representing a financial product as 'zero fees' or 'free' when conditional interchange, wire, or third-party fees apply is deceptive unless conspicuously qualified.",
+          "official_uri": "https://www.ftc.gov/legal-library/browse/statutes/federal-trade-commission-act"
+        }
       }
     },
     {
@@ -116,7 +171,18 @@
         "document": "ACME-GUIDELINES-2026-V1",
         "section": "SECTION 2: VERIFIED SUBSTANTIATED CLAIMS",
         "page": 2,
-        "exact_quote": "Any marketing statement quoting system uptime, such as \"99.99% uptime\", must reference an active substantiated benchmark in the approved claims registry."
+        "exact_quote": "Any marketing statement quoting system uptime, such as \"99.99% uptime\", must reference an active substantiated benchmark in the approved claims registry.",
+        "regulatory_statute": {
+          "statute_code": "FTC-15-USC-45-SUBSTANTIATION",
+          "act_name": "FTC Advertising Substantiation Policy",
+          "jurisdiction": "US_FEDERAL",
+          "section_pin": "15 U.S.C. § 45 • 104 F.T.C. 839",
+          "enforcement_body": "Federal Trade Commission (FTC)",
+          "penalty_exposure": "Cease-and-desist orders; up to $51,744/day civil contempt penalties",
+          "mandate_tier": "SUBSTANTIATION_MANDATE",
+          "mandate_summary": "Objective empirical performance claims must possess a verifiable reasonable basis before public dissemination. Expired audit reports cannot substantiate ongoing claims.",
+          "official_uri": "https://www.ftc.gov/legal-library/browse/ftc-policy-statement-regarding-advertising-substantiation"
+        }
       }
     },
     {
@@ -130,7 +196,18 @@
         "document": "ACME-GUIDELINES-2026-V1",
         "section": "SECTION 2: VERIFIED SUBSTANTIATED CLAIMS",
         "page": 2,
-        "exact_quote": "Marketing text citing active customer scale (e.g., \"Over 2 million active accounts\") is verified through December 31, 2026."
+        "exact_quote": "Marketing text citing active customer scale (e.g., \"Over 2 million active accounts\") is verified through December 31, 2026.",
+        "regulatory_statute": {
+          "statute_code": "FTC-15-USC-45-METRICS",
+          "act_name": "FTC Act Section 5 Scale & Metric Verification",
+          "jurisdiction": "US_FEDERAL",
+          "section_pin": "15 U.S.C. § 45(a)(1)",
+          "enforcement_body": "Federal Trade Commission (FTC)",
+          "penalty_exposure": "Up to $51,744 per violation; corrective advertising mandates",
+          "mandate_tier": "SUBSTANTIATION_MANDATE",
+          "mandate_summary": "Quantitative customer count representations require audited ledger verification to avoid deceptive metric inflation.",
+          "official_uri": "https://www.ftc.gov/legal-library/browse/statutes/federal-trade-commission-act"
+        }
       }
     },
     {
@@ -144,7 +221,18 @@
         "document": "ACME-GUIDELINES-2026-V1",
         "section": "SECTION 3: EDITORIAL VOICE AND TONE",
         "page": 2,
-        "exact_quote": "High-pressure sales phrases such as \"Act now or miss out forever!\" or \"Don't get left behind!\" are strictly prohibited in public communications."
+        "exact_quote": "High-pressure sales phrases such as \"Act now or miss out forever!\" or \"Don't get left behind!\" are strictly prohibited in public communications.",
+        "regulatory_statute": {
+          "statute_code": "CFPB-DODD-FRANK-UDAAP",
+          "act_name": "Dodd-Frank § 1036 (UDAAP) & FTC Dark Patterns Guidance",
+          "jurisdiction": "US_FEDERAL",
+          "section_pin": "12 U.S.C. § 5531(d) • 12 U.S.C. § 5536(a)(1)",
+          "enforcement_body": "Consumer Financial Protection Bureau (CFPB) / FTC",
+          "penalty_exposure": "Up to $1,424,375/day civil money penalties for reckless or knowing abusive acts",
+          "mandate_tier": "REGULATORY_RULE",
+          "mandate_summary": "Prohibits artificial urgency, coercive countdowns, and dark commercial patterns that exploit consumer lack of financial understanding.",
+          "official_uri": "https://www.consumerfinance.gov/compliance/supervisory-guidance/abusive-acts-or-practices/"
+        }
       }
     },
     {
@@ -158,7 +246,18 @@
         "document": "ACME-GUIDELINES-2026-V1",
         "section": "SECTION 3: EDITORIAL VOICE AND TONE",
         "page": 2,
-        "exact_quote": "The use of internet slang, hype terminology (\"super dope yields\", \"moon shot\", \"HODL\"), or excessive exclamation marks is prohibited across all corporate releases and landing pages."
+        "exact_quote": "The use of internet slang, hype terminology (\"super dope yields\", \"moon shot\", \"HODL\"), or excessive exclamation marks is prohibited across all corporate releases and landing pages.",
+        "regulatory_statute": {
+          "statute_code": "SEC-RULE-10B-5",
+          "act_name": "Securities Exchange Act Rule 10b-5 & FINRA Rule 2210",
+          "jurisdiction": "US_FEDERAL",
+          "section_pin": "17 C.F.R. § 240.10b-5 • FINRA Rule 2210(d)(1)",
+          "enforcement_body": "Securities and Exchange Commission (SEC) / FINRA",
+          "penalty_exposure": "Disgorgement, federal injunctive orders, SEC administrative sanctions",
+          "mandate_tier": "REGULATORY_RULE",
+          "mandate_summary": "Public communications regarding investments must be fair, balanced, and strictly avoid misleading hype, speculative slang, or frivolous financial claims.",
+          "official_uri": "https://www.ecfr.gov/current/title-17/chapter-II/part-240/section-240.10b-5"
+        }
       }
     },
     {
@@ -172,7 +271,18 @@
         "document": "ACME-GUIDELINES-2026-V1",
         "section": "SECTION 4: ACCESSIBILITY & VISUAL DESIGN",
         "page": 2,
-        "exact_quote": "All promotional text rendered across web and mobile surfaces must maintain a minimum contrast ratio of 4.5:1 against the underlying background surface to ensure legibility and compliance."
+        "exact_quote": "All promotional text rendered across web and mobile surfaces must maintain a minimum contrast ratio of 4.5:1 against the underlying background surface to ensure legibility and compliance.",
+        "regulatory_statute": {
+          "statute_code": "ADA-TITLE-III-WCAG",
+          "act_name": "Americans with Disabilities Act (ADA) Title III & WCAG 2.1 AA",
+          "jurisdiction": "US_FEDERAL",
+          "section_pin": "42 U.S.C. § 12181 • 28 C.F.R. § 36.303 • WCAG 2.1 SC 1.4.3",
+          "enforcement_body": "U.S. Department of Justice (DOJ) Civil Rights Division",
+          "penalty_exposure": "Civil penalties up to $111,614 for first violation, $223,229 for subsequent; injunctive orders",
+          "mandate_tier": "ACCESSIBILITY_STANDARD",
+          "mandate_summary": "Public commercial web and mobile interfaces must maintain a minimum 4.5:1 color contrast ratio for standard text to ensure accessible communication for individuals with visual impairments.",
+          "official_uri": "https://www.ada.gov/resources/web-guidance/"
+        }
       }
     }
   ],
@@ -191,6 +301,14 @@
       "substantiation": "Audited Q4 2025 Ledger Report",
       "valid_from": "2026-01-01",
       "valid_until": "2026-12-31",
+      "status": "ACTIVE"
+    },
+    {
+      "claim_code": "CLAIM-003",
+      "claim_text": "zero maintenance fees on digital treasury accounts",
+      "substantiation": "Treasury Fee Schedule 2026-2028 Exhibit B",
+      "valid_from": "2026-01-01",
+      "valid_until": "2028-03-01",
       "status": "ACTIVE"
     }
   ]

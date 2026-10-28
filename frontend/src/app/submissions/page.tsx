@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useRef, useEffect, useCallback, Suspense } from "react";
+import Link from "next/link";
 import { useSearchParams, useRouter } from "next/navigation";
 import {
   ShieldAlert,
@@ -17,6 +18,7 @@ import {
   Sparkles,
   CheckCircle2,
   UploadCloud,
+  Clock,
 } from "lucide-react";
 import {
   ComplianceCertificateModal,
@@ -24,6 +26,8 @@ import {
 } from "@/components/ComplianceCertificateModal";
 import { CreativeStudioPreview } from "@/components/CreativeStudioPreview";
 import { CopilotRewriteModal } from "@/components/CopilotRewriteModal";
+import { StatutoryRegulatoryBadge } from "@/components/StatutoryRegulatoryBadge";
+import { RegulatoryStatute } from "@/types/api";
 
 interface Finding {
   id: string;
@@ -40,6 +44,7 @@ interface Finding {
   source_document_title: string;
   source_section: string;
   status: string;
+  regulatory_statute?: RegulatoryStatute;
 }
 
 interface CheckRunResult {
@@ -346,10 +351,20 @@ function SubmissionsContent() {
         }
       }
 
-      // Trigger check pipeline
-      const checkRes = await fetch(`/api/v1/submissions/${subId}/check`, {
+      // Trigger check pipeline with optional simulation date
+      const checkUrl = simDate
+        ? `/api/v1/submissions/${subId}/check?as_of=${encodeURIComponent(simDate)}&dry_run=true`
+        : `/api/v1/submissions/${subId}/check`;
+
+      const checkRes = await fetch(checkUrl, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          content: targetContent,
+          channel,
+          as_of: simDate || undefined,
+          dry_run: Boolean(simDate),
+        }),
       });
 
       if (!checkRes.ok) {
@@ -482,6 +497,51 @@ function SubmissionsContent() {
           </span>
         </div>
       </div>
+
+      {/* Simulation Mode Banner */}
+      {simDate && (
+        <div className="neo-box p-4 bg-[#FFD700] border-2 border-black flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 text-xs shadow-xs">
+          <div className="flex items-center gap-3 text-black">
+            <div className="w-9 h-9 rounded-xl bg-black text-[#FFD700] flex items-center justify-center shrink-0 shadow-xs">
+              <Clock className="w-5 h-5 stroke-[2.5]" />
+            </div>
+            <div>
+              <div className="flex items-center gap-2">
+                <span className="neo-badge bg-black text-white text-[10px] uppercase tracking-wider font-mono">
+                  Simulation Check Mode
+                </span>
+                <span className="font-mono font-bold text-black text-xs">
+                  Evaluating as of: <strong>{simDate}</strong>
+                </span>
+              </div>
+              <p className="text-[11px] font-semibold text-black/85 mt-0.5">
+                Checks evaluate against the simulated timeline in non-destructive dry-run mode. Real submission status is unaffected.
+              </p>
+            </div>
+          </div>
+          <div className="flex items-center gap-2 shrink-0">
+            <Link
+              href={`/policy?tab=claims&simDate=${encodeURIComponent(simDate)}`}
+              className="neo-btn neo-btn-white text-xs py-1.5 px-3 border border-black hover:bg-white"
+            >
+              View in Claims Ledger
+            </Link>
+            <button
+              type="button"
+              onClick={() => {
+                syncUrlParams({ simDate: null });
+                if (content.trim()) {
+                  runCheckWithContent(content);
+                }
+              }}
+              className="neo-btn neo-btn-black text-xs py-1.5 px-3 text-white"
+              title="Reset simulation to current date"
+            >
+              Reset Simulation
+            </button>
+          </div>
+        </div>
+      )}
 
       {/* Main Grid: Editor on Left, Check Output on Right */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
@@ -1031,7 +1091,7 @@ function SubmissionsContent() {
                       }`}
                     >
                       <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-2">
+                        <div className="flex items-center gap-2 flex-wrap">
                           <span
                             className={`neo-badge text-[10px] ${
                               f.severity === "CRITICAL"
@@ -1044,6 +1104,12 @@ function SubmissionsContent() {
                           <span className="font-mono text-xs font-black text-black">
                             {f.rule_code}
                           </span>
+                          {f.regulatory_statute && (
+                            <StatutoryRegulatoryBadge
+                              statute={f.regulatory_statute}
+                              compact
+                            />
+                          )}
                         </div>
 
                         <div className="flex items-center gap-2">
@@ -1090,6 +1156,12 @@ function SubmissionsContent() {
                           <p className="text-xs font-mono text-black font-semibold leading-relaxed">
                             &ldquo;{f.receipt_b_rule_quote}&rdquo;
                           </p>
+                          {f.regulatory_statute && (
+                            <div className="flex items-center gap-1.5 text-[10px] font-mono text-[#555555] border-t border-black/10 pt-1 mt-0.5 flex-wrap">
+                              <span className="font-bold">Statute:</span>
+                              <span className="font-black text-black">{f.regulatory_statute.section_pin}</span>
+                            </div>
+                          )}
                         </div>
                       </div>
 

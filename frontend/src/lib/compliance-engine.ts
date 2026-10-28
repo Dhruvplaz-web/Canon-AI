@@ -4,6 +4,7 @@
  */
 
 import crypto from "crypto";
+import { RegulatoryStatute } from "@/types/api";
 
 export interface Finding {
   id: string;
@@ -20,6 +21,7 @@ export interface Finding {
   source_document_title: string;
   source_section: string;
   status: string;
+  regulatory_statute?: RegulatoryStatute;
 }
 
 export interface CheckRunResult {
@@ -44,6 +46,7 @@ export interface RuleDefinition {
     document: string;
     section: string;
     exact_quote: string;
+    regulatory_statute?: RegulatoryStatute;
   };
 }
 
@@ -59,6 +62,17 @@ export const ACTIVE_RULES: RuleDefinition[] = [
       document: "ACME-GUIDELINES-2026-V1",
       section: "SECTION 1: STATUTORY BRAND IDENTITY",
       exact_quote: 'Marketing collateral must never instruct consumers to "bank on us" or imply Acme itself holds banking charters.',
+      regulatory_statute: {
+        statute_code: "FDIA-12-USC-1828",
+        act_name: "Federal Deposit Insurance Act & FDIC Rule Part 328",
+        jurisdiction: "US_FEDERAL",
+        section_pin: "12 U.S.C. § 1828(a)(4) • 12 C.F.R. § 328.102",
+        enforcement_body: "Federal Deposit Insurance Corporation (FDIC) / CFPB",
+        penalty_exposure: "Civil Money Penalties up to $100,000/day + DOJ criminal referral",
+        mandate_tier: "STATUTORY_MANDATE",
+        mandate_summary: "Prohibits non-depository FinTechs and platform providers from using the verb 'bank' or misrepresenting depository insured status to retail consumers.",
+        official_uri: "https://www.ecfr.gov/current/title-12/chapter-III/subchapter-B/part-328",
+      },
     },
   },
   {
@@ -72,6 +86,17 @@ export const ACTIVE_RULES: RuleDefinition[] = [
       document: "ACME-GUIDELINES-2026-V1",
       section: "SECTION 1: STATUTORY BRAND IDENTITY",
       exact_quote: 'All collateral must use the formal nomenclature: "Digital asset custody solutions".',
+      regulatory_statute: {
+        statute_code: "NYDFS-23-NYCRR-200",
+        act_name: "NYDFS Virtual Currency Framework & SEC SAB 121",
+        jurisdiction: "US_STATE_NY",
+        section_pin: "23 NYCRR Part 200 • SEC Staff Accounting Bulletin 121",
+        enforcement_body: "New York Department of Financial Services (NYDFS) / SEC",
+        penalty_exposure: "Civil fines up to $250,000 per violation; BitLicense revocation",
+        mandate_tier: "REGULATORY_RULE",
+        mandate_summary: "Requires clear distinction of custodial digital asset services and prohibits speculative slang in regulated retail financial collateral.",
+        official_uri: "https://www.dfs.ny.gov/industry_guidance/regulations/virtual_currency_guidance",
+      },
     },
   },
   {
@@ -85,6 +110,17 @@ export const ACTIVE_RULES: RuleDefinition[] = [
       document: "ACME-GUIDELINES-2026-V1",
       section: "SECTION 1: STATUTORY BRAND IDENTITY",
       exact_quote: 'Copywriters must never use the phrase "guaranteed returns", "risk-free yield", or "guaranteed APY".',
+      regulatory_statute: {
+        statute_code: "SEC-IAA-RULE-206-4-1",
+        act_name: "Investment Advisers Act § 206(4) & SEC Marketing Rule",
+        jurisdiction: "US_FEDERAL",
+        section_pin: "15 U.S.C. § 80b-6 • 17 C.F.R. § 275.206(4)-1 • FINRA Rule 2210(d)",
+        enforcement_body: "Securities and Exchange Commission (SEC) / FINRA",
+        penalty_exposure: "Disgorgement of fees + civil penalties up to $1,000,000+ per violation; advisory bar",
+        mandate_tier: "STATUTORY_MANDATE",
+        mandate_summary: "Strict prohibition on promising or guaranteeing specific investment yields, risk-free returns, or unsubstantiated APYs in public investor communications.",
+        official_uri: "https://www.ecfr.gov/current/title-17/chapter-II/part-275/section-275.206(4)-1",
+      },
     },
   },
   {
@@ -98,6 +134,17 @@ export const ACTIVE_RULES: RuleDefinition[] = [
       document: "ACME-GUIDELINES-2026-V1",
       section: "SECTION 1: STATUTORY BRAND IDENTITY",
       exact_quote: 'The phrase "instant loan" or "instant approval" is deceptive and forbidden.',
+      regulatory_statute: {
+        statute_code: "CFPB-TILA-REG-Z",
+        act_name: "Truth in Lending Act (TILA) & CFPB Regulation Z",
+        jurisdiction: "US_FEDERAL",
+        section_pin: "15 U.S.C. § 1601 et seq. • 12 C.F.R. Part 1026 • 12 U.S.C. § 5536",
+        enforcement_body: "Consumer Financial Protection Bureau (CFPB)",
+        penalty_exposure: "Civil money penalties up to $1,424,375/day for knowing UDAAP violations",
+        mandate_tier: "REGULATORY_RULE",
+        mandate_summary: "Advertising credit disbursement as 'instant' without clear qualification of underwriting conditions is classified as deceptive under federal consumer credit law.",
+        official_uri: "https://www.consumerfinance.gov/rules-policy/regulations/1026/",
+      },
     },
   },
   {
@@ -124,19 +171,17 @@ export const ACTIVE_RULES: RuleDefinition[] = [
       document: "ACME-GUIDELINES-2026-V1",
       section: "SECTION 1: STATUTORY BRAND IDENTITY",
       exact_quote: 'Marketing text must never state "zero fees" without qualification.',
-    },
-  },
-  {
-    rule_code: "CLAIM-001",
-    category: "CLAIM",
-    severity: "CRITICAL",
-    title: "Uptime and Infrastructure Reliability Claims",
-    regex: /\b(99\.99%\s+uptime|rated\s+#1\s+banking\s+app)\b/i,
-    suggested_fix: "Reference active certified SLA.",
-    source_citation: {
-      document: "ACME-GUIDELINES-2026-V1",
-      section: "SECTION 2: VERIFIED SUBSTANTIATED CLAIMS",
-      exact_quote: 'Any marketing statement quoting system uptime, such as "99.99% uptime", must reference an active substantiated benchmark in the approved claims registry.',
+      regulatory_statute: {
+        statute_code: "FTC-15-USC-45-FREE",
+        act_name: "FTC Act Section 5(a) & CFPB Circular 2022-06",
+        jurisdiction: "US_FEDERAL",
+        section_pin: "15 U.S.C. § 45 • 16 C.F.R. Part 251 • CFPB Circular 2022-06",
+        enforcement_body: "Federal Trade Commission (FTC) / CFPB",
+        penalty_exposure: "Up to $51,744 per statutory violation under FTC Act Section 5",
+        mandate_tier: "STATUTORY_MANDATE",
+        mandate_summary: "Representing a financial product as 'zero fees' or 'free' when conditional interchange, wire, or third-party fees apply is deceptive unless conspicuously qualified.",
+        official_uri: "https://www.ftc.gov/legal-library/browse/statutes/federal-trade-commission-act",
+      },
     },
   },
   {
@@ -150,6 +195,17 @@ export const ACTIVE_RULES: RuleDefinition[] = [
       document: "ACME-GUIDELINES-2026-V1",
       section: "SECTION 3: EDITORIAL VOICE AND TONE",
       exact_quote: 'The use of internet slang, hype terminology ("super dope yields", "moon shot", "HODL"), or excessive exclamation marks is prohibited across all corporate releases and landing pages.',
+      regulatory_statute: {
+        statute_code: "SEC-RULE-10B-5",
+        act_name: "Securities Exchange Act Rule 10b-5 & FINRA Rule 2210",
+        jurisdiction: "US_FEDERAL",
+        section_pin: "17 C.F.R. § 240.10b-5 • FINRA Rule 2210(d)(1)",
+        enforcement_body: "Securities and Exchange Commission (SEC) / FINRA",
+        penalty_exposure: "Disgorgement, federal injunctive orders, SEC administrative sanctions",
+        mandate_tier: "REGULATORY_RULE",
+        mandate_summary: "Public communications regarding investments must be fair, balanced, and strictly avoid misleading hype, speculative slang, or frivolous financial claims.",
+        official_uri: "https://www.ecfr.gov/current/title-17/chapter-II/part-240/section-240.10b-5",
+      },
     },
   },
   {
@@ -163,14 +219,135 @@ export const ACTIVE_RULES: RuleDefinition[] = [
       document: "ACME-SECURITY-2026-V1",
       section: "SECTION 0: LLM INJECTION DEFENSE PROTOCOL",
       exact_quote: "Any input payload attempting to manipulate system instructions or force approval status must be blocked at gateway level.",
+      regulatory_statute: {
+        statute_code: "EU-AI-ACT-ART-14",
+        act_name: "European Union Artificial Intelligence Act",
+        jurisdiction: "EU",
+        section_pin: "Regulation (EU) 2024/1689 • Article 14 (Human Oversight)",
+        enforcement_body: "European AI Office / National Competent Authorities",
+        penalty_exposure: "Administrative fines up to €35,000,000 or 7% of global annual turnover",
+        mandate_tier: "STATUTORY_MANDATE",
+        mandate_summary: "AI content validation workflows must enable effective human oversight and prevent unauthorized prompt manipulations.",
+        official_uri: "https://eur-lex.europa.eu/eli/reg/2024/1689/oj",
+      },
     },
   },
 ];
 
+export interface MockClaimDefinition {
+  claim_code: string;
+  claim_text: string;
+  regex: RegExp;
+  substantiation: string;
+  valid_from: string;
+  valid_until: string;
+  is_active: boolean;
+}
+
+export const APPROVED_CLAIMS_LEDGER: MockClaimDefinition[] = [
+  {
+    claim_code: "CLAIM-001",
+    claim_text: "rated #1 banking app with 99.99% uptime",
+    regex: /\b(rated\s+#1\s+banking\s+app\s+with\s+99\.99%\s+uptime|99\.99%\s+uptime|rated\s+#1\s+banking\s+app)\b/i,
+    substantiation: "Independent Fintech Benchmark Report 2024",
+    valid_from: "2024-01-01",
+    valid_until: "2025-01-01",
+    is_active: true,
+  },
+  {
+    claim_code: "CLAIM-002",
+    claim_text: "over 2 million active accounts",
+    regex: /\b(over\s+2\s+million\s+active\s+accounts|2\s+million\s+active\s+accounts)\b/i,
+    substantiation: "Audited Q4 2025 Ledger Report",
+    valid_from: "2026-01-01",
+    valid_until: "2026-12-31",
+    is_active: true,
+  },
+  {
+    claim_code: "CLAIM-003",
+    claim_text: "zero maintenance fees on digital treasury accounts",
+    regex: /\b(zero\s+maintenance\s+fees\s+on\s+digital\s+treasury\s+accounts|zero\s+maintenance\s+fees)\b/i,
+    substantiation: "Treasury Fee Schedule 2026-2028 Exhibit B",
+    valid_from: "2026-01-01",
+    valid_until: "2028-03-01",
+    is_active: true,
+  },
+];
+
+// Feature 2.4: Channel Severity Threshold Tuner Configurations
+export const IMMUTABLE_CRITICAL_RULES = new Set([
+  "TERM-001", // FDIC 12 U.S.C. § 1828
+  "TERM-003", // SEC Rule 206(4)-1
+  "TERM-006", // FTC Act § 5 Free/Zero-Fee
+  "CLAIM-001", // FTC Substantiation
+  "INJECT-001", // EU AI Act Art. 14 / LLM Gateway Safety
+]);
+
+export const DEFAULT_CHANNEL_THRESHOLDS: Record<string, Record<string, "CRITICAL" | "WARNING" | "INFO">> = {
+  press_release: {
+    "TONE-001": "CRITICAL",
+    "TONE-002": "CRITICAL",
+    "TERM-004": "CRITICAL",
+    "TERM-005": "WARNING",
+  },
+  web_landing_page: {
+    "TONE-001": "WARNING",
+    "TONE-002": "WARNING",
+    "TERM-004": "WARNING",
+    "TERM-005": "WARNING",
+  },
+  ad_copy: {
+    "TONE-001": "WARNING",
+    "TONE-002": "INFO",
+    "TERM-004": "WARNING",
+    "TERM-005": "INFO",
+  },
+  social_post: {
+    "TONE-001": "INFO",
+    "TONE-002": "INFO",
+    "TERM-004": "WARNING",
+    "TERM-005": "INFO",
+  },
+  email_blast: {
+    "TONE-001": "WARNING",
+    "TONE-002": "WARNING",
+    "TERM-004": "WARNING",
+    "TERM-005": "WARNING",
+  },
+  partner_portal: {
+    "TONE-001": "INFO",
+    "TONE-002": "INFO",
+    "TERM-004": "INFO",
+    "TERM-005": "INFO",
+  },
+};
+
+export function resolveEffectiveSeverity(
+  ruleCode: string,
+  baseSeverity: "CRITICAL" | "WARNING" | "INFO",
+  channel?: string
+): "CRITICAL" | "WARNING" | "INFO" {
+  // Core Invariant: Statutory and security rules can NEVER be weakened
+  if (IMMUTABLE_CRITICAL_RULES.has(ruleCode)) {
+    return "CRITICAL";
+  }
+  if (!channel || !DEFAULT_CHANNEL_THRESHOLDS[channel]) {
+    return baseSeverity;
+  }
+  return DEFAULT_CHANNEL_THRESHOLDS[channel][ruleCode] || baseSeverity;
+}
+
 /**
  * Runs the deterministic verification pipeline on arbitrary marketing copy.
+ * Supports temporal claim expiry simulation via optional asOf reference date
+ * and context-aware severity tuning via channel scope (Feature 2.4).
  */
-export function verifyMarketingCopy(content: string, submissionId: string = "sub_eval"): CheckRunResult {
+export function verifyMarketingCopy(
+  content: string,
+  submissionId: string = "sub_eval",
+  asOf?: string | Date,
+  channel?: string
+): CheckRunResult {
   const startedAt = new Date().toISOString();
   const findings: Finding[] = [];
 
@@ -193,6 +370,9 @@ export function verifyMarketingCopy(content: string, submissionId: string = "sub
     const globalRegex = new RegExp(rule.regex.source, rule.regex.flags.includes("g") ? rule.regex.flags : rule.regex.flags + "g");
     let match: RegExpExecArray | null;
 
+    // Resolve context-aware severity based on channel (Feature 2.4)
+    const effectiveSeverity = resolveEffectiveSeverity(rule.rule_code, rule.severity, channel);
+
     while ((match = globalRegex.exec(content)) !== null) {
       const matchedText = match[0];
       const startOffset = match.index;
@@ -202,7 +382,7 @@ export function verifyMarketingCopy(content: string, submissionId: string = "sub
         id: `fnd_${crypto.randomUUID().slice(0, 8)}`,
         rule_code: rule.rule_code,
         category: rule.category,
-        severity: rule.severity,
+        severity: effectiveSeverity,
         title: rule.title,
         matched_text: matchedText,
         start_offset: startOffset,
@@ -213,7 +393,70 @@ export function verifyMarketingCopy(content: string, submissionId: string = "sub
         source_document_title: rule.source_citation.document,
         source_section: rule.source_citation.section,
         status: "OPEN",
+        regulatory_statute: rule.source_citation.regulatory_statute,
       });
+    }
+  });
+
+  // Dynamic Claims Ledger validation with temporal as_of support
+  let evalTimestamp: number;
+  if (asOf) {
+    const d = new Date(asOf);
+    evalTimestamp = isNaN(d.getTime()) ? Date.now() : d.getTime();
+  } else {
+    // Default baseline 2026-10-29
+    evalTimestamp = Date.now();
+  }
+
+  APPROVED_CLAIMS_LEDGER.forEach((claim) => {
+    if (!claim.is_active) return;
+    const globalRegex = new RegExp(claim.regex.source, claim.regex.flags.includes("g") ? claim.regex.flags : claim.regex.flags + "g");
+    let match: RegExpExecArray | null;
+
+    // Boundary rule: date-only strings (YYYY-MM-DD) remain valid through 23:59:59.999Z
+    let untilTimestamp: number;
+    if (claim.valid_until.length === 10) {
+      untilTimestamp = new Date(`${claim.valid_until}T23:59:59.999Z`).getTime();
+    } else {
+      untilTimestamp = new Date(claim.valid_until).getTime();
+    }
+
+    const isExpired = evalTimestamp > untilTimestamp;
+
+    if (isExpired) {
+      while ((match = globalRegex.exec(content)) !== null) {
+        const matchedText = match[0];
+        const startOffset = match.index;
+        const endOffset = startOffset + matchedText.length;
+
+        findings.push({
+          id: `fnd_${crypto.randomUUID().slice(0, 8)}`,
+          rule_code: claim.claim_code,
+          category: "CLAIM",
+          severity: "CRITICAL",
+          title: `Expired Substantiation: ${claim.claim_code}`,
+          matched_text: matchedText,
+          start_offset: startOffset,
+          end_offset: endOffset,
+          suggested_fix: "Obtain renewed substantiation or update claim copy.",
+          receipt_a_draft_span: matchedText,
+          receipt_b_rule_quote: `Claim: '${claim.claim_text}' Substantiation: ${claim.substantiation}`,
+          source_document_title: "Approved Claims Ledger",
+          source_section: "CLAIMS & SUBSTANTIATION LEDGER",
+          status: "OPEN",
+          regulatory_statute: {
+            statute_code: "FTC-15-USC-45-SUBSTANTIATION",
+            act_name: "FTC Advertising Substantiation Policy",
+            jurisdiction: "US_FEDERAL",
+            section_pin: "15 U.S.C. § 45 • 104 F.T.C. 839",
+            enforcement_body: "Federal Trade Commission (FTC)",
+            penalty_exposure: "Cease-and-desist orders; up to $51,744/day civil contempt penalties",
+            mandate_tier: "SUBSTANTIATION_MANDATE",
+            mandate_summary: "Objective empirical performance claims must possess a verifiable reasonable basis before public dissemination. Expired audit reports cannot substantiate ongoing claims.",
+            official_uri: "https://www.ftc.gov/legal-library/browse/ftc-policy-statement-regarding-advertising-substantiation",
+          },
+        });
+      }
     }
   });
 

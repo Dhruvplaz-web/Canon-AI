@@ -216,3 +216,58 @@ def test_one_click_apply_suggestion_remediation_cycle(client, creator_headers):
     assert "TERM-001" not in remaining_codes
     assert "TONE-002" in remaining_codes
 
+
+def test_pipeline_runner_simulated_date_dry_run_catches_claim_002():
+    """Simulating 2027-04-29 on SUB-01 flags CLAIM-002 without mutating submission status."""
+    from datetime import UTC, datetime
+
+    session = TestSessionLocal()
+    sub01 = session.query(Submission).filter(Submission.title.contains("Clean")).first()
+    assert sub01 is not None
+    initial_status = sub01.status
+
+    # Simulated future date: 2027-04-29 (CLAIM-002 expired on 2026-12-31)
+    sim_as_of = datetime(2027, 4, 29, tzinfo=UTC)
+    check_run = run_check_pipeline(session, sub01.id, as_of=sim_as_of, dry_run=True)
+
+    # In 2027, SUB-01 triggers finding for CLAIM-002
+    assert check_run.total_findings == 1
+    f = check_run.findings[0]
+    assert f.rule_code == "CLAIM-002"
+    assert f.category == "CLAIM"
+
+    # Verify dry_run did not commit status changes to database
+    reloaded_sub = session.query(Submission).filter(Submission.id == sub01.id).first()
+    assert reloaded_sub.status == initial_status
+    session.close()
+
+
+def test_trigger_check_api_with_simulated_as_of_param(client, creator_headers):
+    """API endpoint /check?as_of=... passes simulated date and executes dry-run."""
+    session = TestSessionLocal()
+    sub01 = session.query(Submission).filter(Submission.title.contains("Clean")).first()
+    assert sub01 is not None
+    sub_id = str(sub01.id)
+    session.close()
+
+    # Normal check without as_of (2026 baseline): passes with 0 findings
+    res_normal = client.post(f"/api/v1/submissions/{sub_id}/check", headers=creator_headers)
+    assert res_normal.status_code == 200
+    assert res_normal.json()["total_findings"] == 0
+
+    # Simulated check at 2027-04-29: flags CLAIM-002
+    res_sim = client.post(
+        f"/api/v1/submissions/{sub_id}/check?as_of=2027-04-29T00:00:00Z&dry_run=true",
+        headers=creator_headers,
+    )
+    assert res_sim.status_code == 200
+    sim_data = res_sim.json()
+    assert sim_data["total_findings"] == 1
+    assert sim_data["findings"][0]["rule_code"] == "CLAIM-002"
+
+    # Reset test: normal check still returns 0 findings
+    res_reset = client.post(f"/api/v1/submissions/{sub_id}/check", headers=creator_headers)
+    assert res_reset.status_code == 200
+    assert res_reset.json()["total_findings"] == 0
+
+

@@ -20,15 +20,28 @@ import {
   ExternalLink,
   Copy,
   Check,
+  Calendar,
+  RotateCcw,
+  FlaskConical,
+  Sliders,
+  Lock,
 } from "lucide-react";
 import { useAuth } from "@/lib/auth-context";
 import { GuidelineIngesterModal } from "@/components/GuidelineIngesterModal";
+import { StatutoryRegulatoryBadge } from "@/components/StatutoryRegulatoryBadge";
+import { RegulatoryStatute } from "@/types/api";
+import {
+  IMMUTABLE_CRITICAL_RULES,
+  DEFAULT_CHANNEL_THRESHOLDS,
+  resolveEffectiveSeverity,
+} from "@/lib/compliance-engine";
 
 interface SourceCitation {
   document_title?: string;
   section?: string;
   page?: number | string;
   exact_quote?: string;
+  regulatory_statute?: RegulatoryStatute;
   [key: string]: unknown;
 }
 
@@ -78,6 +91,36 @@ interface ActivePolicy {
   source_document?: SourceDocument | null;
   rules: RuleDetail[];
   approved_claims: ApprovedClaim[];
+}
+
+// Calendar month advance helper with month-end clamping (e.g. Oct 31 + 6 months -> Apr 30)
+function advanceCalendarMonths(baseDate: Date, months: number): Date {
+  const d = new Date(baseDate.getTime());
+  const origDay = d.getUTCDate();
+  d.setUTCMonth(d.getUTCMonth() + months);
+  if (d.getUTCDate() !== origDay) {
+    d.setUTCDate(0); // Clamps to last day of previous month
+  }
+  return d;
+}
+
+function formatDateIso(date: Date): string {
+  return date.toISOString().slice(0, 10);
+}
+
+function formatDisplayDate(dateStr: string): string {
+  try {
+    const d = new Date(dateStr.length === 10 ? `${dateStr}T00:00:00Z` : dateStr);
+    if (isNaN(d.getTime())) return dateStr;
+    return d.toLocaleDateString("en-US", {
+      timeZone: "UTC",
+      year: "numeric",
+      month: "short",
+      day: "numeric",
+    });
+  } catch {
+    return dateStr;
+  }
 }
 
 function SourceDocumentReader({
@@ -181,14 +224,33 @@ function PolicyExplorerContent() {
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
   const [refreshTrigger, setRefreshTrigger] = useState<number>(0);
-  const [currentTimestamp] = useState<number>(() => Date.now());
   const [copiedHash, setCopiedHash] = useState(false);
   const [isIngesterModalOpen, setIsIngesterModalOpen] = useState(false);
   const [ingestedNotice, setIngestedNotice] = useState<string | null>(null);
 
+  // Expiry Simulation State (URL-First via simDate)
+  const initialSimDate = searchParams.get("simDate");
+  const [simulatedDate, setSimulatedDate] = useState<string | null>(initialSimDate);
+  const baselineDate = useMemo(() => new Date(), []);
+
+  const effectiveTimestamp = useMemo(() => {
+    if (simulatedDate) {
+      const parsed = new Date(simulatedDate.length === 10 ? `${simulatedDate}T23:59:59.999Z` : simulatedDate);
+      if (!isNaN(parsed.getTime())) return parsed.getTime();
+    }
+    return baselineDate.getTime();
+  }, [simulatedDate, baselineDate]);
+
+  const isSimulating = Boolean(simulatedDate);
+
   // View & Filter states initialized from URL parameters (Rule 3 URL-First State)
-  const initialTab = searchParams.get("tab") === "claims" ? "claims" : "rules";
-  const [activeTab, setActiveTab] = useState<"rules" | "claims">(initialTab);
+  const rawTab = searchParams.get("tab");
+  const initialTab: "rules" | "claims" | "tuner" =
+    rawTab === "claims" || rawTab === "tuner" ? rawTab : "rules";
+  const [activeTab, setActiveTab] = useState<"rules" | "claims" | "tuner">(initialTab);
+  const [tunerChannel, setTunerChannel] = useState<string>("press_release");
+  const [channelOverrides, setChannelOverrides] = useState<Record<string, Record<string, "CRITICAL" | "WARNING" | "INFO">>>({});
+  const [tunerNotice, setTunerNotice] = useState<string | null>(null);
   const [layoutMode, setLayoutMode] = useState<"split" | "grid">(
     searchParams.get("view") === "grid" ? "grid" : "split"
   );
@@ -214,6 +276,33 @@ function PolicyExplorerContent() {
     },
     [router, searchParams]
   );
+
+  const handleTuneRule = (ruleCode: string, targetSev: "CRITICAL" | "WARNING" | "INFO") => {
+    if (IMMUTABLE_CRITICAL_RULES.has(ruleCode) && targetSev !== "CRITICAL") {
+      setTunerNotice(`⚠️ Safety Invariant: Statutory Rule ${ruleCode} is protected by federal mandate and cannot be downgraded below CRITICAL.`);
+      setTimeout(() => setTunerNotice(null), 4000);
+      return;
+    }
+    setChannelOverrides((prev) => ({
+      ...prev,
+      [tunerChannel]: {
+        ...(prev[tunerChannel] || {}),
+        [ruleCode]: targetSev,
+      },
+    }));
+    setTunerNotice(`✓ Updated ${ruleCode} on ${tunerChannel} to ${targetSev}.`);
+    setTimeout(() => setTunerNotice(null), 2500);
+  };
+
+  const handleResetChannelTuner = () => {
+    setChannelOverrides((prev) => {
+      const next = { ...prev };
+      delete next[tunerChannel];
+      return next;
+    });
+    setTunerNotice(`✓ Reset ${tunerChannel} to baseline factory defaults.`);
+    setTimeout(() => setTunerNotice(null), 2500);
+  };
 
   useEffect(() => {
     if (authLoading) return;
@@ -352,9 +441,123 @@ function PolicyExplorerContent() {
     }
   };
 
-  const isClaimExpired = (validUntil: string) => {
-    return new Date(validUntil).getTime() < currentTimestamp;
+  type ClaimTemporalStatus = "VALID" | "EXPIRED" | "NOT_YET_VALID" | "INACTIVE" | "INVALID_METADATA";
+
+  const evaluateClaimStatus = (claim: ApprovedClaim): {
+    status: ClaimTemporalStatus;
+    label: string;
+    description: string;
+    badgeClass: string;
+  } => {
+    if (!claim.is_active) {
+      return {
+        status: "INACTIVE",
+        label: "DEPRECATED / INACTIVE",
+        description: "Claim has been retired from active policy",
+        badgeClass: "bg-[#9CA3AF] text-white border border-black",
+      };
+    }
+
+    if (!claim.valid_until) {
+      return {
+        status: "INVALID_METADATA",
+        label: "INVALID DATE METADATA",
+        description: "Missing or unparseable validity date",
+        badgeClass: "bg-red-500 text-white border border-black",
+      };
+    }
+
+    // Boundary rule: date-only strings remain valid through end of calendar day (23:59:59.999 UTC)
+    let untilMs: number;
+    if (claim.valid_until.length === 10) {
+      untilMs = new Date(`${claim.valid_until}T23:59:59.999Z`).getTime();
+    } else {
+      untilMs = new Date(claim.valid_until).getTime();
+    }
+
+    if (isNaN(untilMs)) {
+      return {
+        status: "INVALID_METADATA",
+        label: "INVALID DATE METADATA",
+        description: "Malformed validity date",
+        badgeClass: "bg-red-500 text-white border border-black",
+      };
+    }
+
+    if (claim.valid_from) {
+      const fromMs = new Date(claim.valid_from.length === 10 ? `${claim.valid_from}T00:00:00.000Z` : claim.valid_from).getTime();
+      if (!isNaN(fromMs) && effectiveTimestamp < fromMs) {
+        return {
+          status: "NOT_YET_VALID",
+          label: "PENDING EFFECTIVE DATE",
+          description: `Evidence not yet effective until ${formatDisplayDate(claim.valid_from)}`,
+          badgeClass: "bg-[#93C5FD] text-black border border-black font-bold",
+        };
+      }
+    }
+
+    if (effectiveTimestamp > untilMs) {
+      return {
+        status: "EXPIRED",
+        label: "REVIEW REQUIRED (Substantiation Expired)",
+        description: `Evidence validity period ended on ${formatDisplayDate(claim.valid_until)}; review required`,
+        badgeClass: "bg-[#FFD700] text-black border border-black font-black",
+      };
+    }
+
+    return {
+      status: "VALID",
+      label: "ACTIVE & VALID",
+      description: `Substantiation valid through ${formatDisplayDate(claim.valid_until)}`,
+      badgeClass: "bg-[#00C2CB] text-black border border-black font-black",
+    };
   };
+
+  const isClaimExpired = (validUntil: string) => {
+    let untilMs: number;
+    if (validUntil.length === 10) {
+      untilMs = new Date(`${validUntil}T23:59:59.999Z`).getTime();
+    } else {
+      untilMs = new Date(validUntil).getTime();
+    }
+    return isNaN(untilMs) ? false : effectiveTimestamp > untilMs;
+  };
+
+  const handleAdvanceMonths = (months: number) => {
+    const currentRef = simulatedDate
+      ? new Date(simulatedDate.length === 10 ? `${simulatedDate}T00:00:00.000Z` : simulatedDate)
+      : baselineDate;
+    const nextDate = advanceCalendarMonths(currentRef, months);
+    const isoStr = formatDateIso(nextDate);
+    setSimulatedDate(isoStr);
+    syncUrlParams({ simDate: isoStr });
+  };
+
+  const handleSetCustomDate = (val: string) => {
+    if (!val) {
+      handleResetSimulation();
+      return;
+    }
+    setSimulatedDate(val);
+    syncUrlParams({ simDate: val });
+  };
+
+  const handleResetSimulation = () => {
+    setSimulatedDate(null);
+    syncUrlParams({ simDate: null });
+  };
+
+  const simulationMetrics = useMemo(() => {
+    if (!policy) return { total: 0, expired: 0, valid: 0 };
+    let expired = 0;
+    let valid = 0;
+    policy.approved_claims.forEach((c) => {
+      const res = evaluateClaimStatus(c);
+      if (res.status === "EXPIRED") expired++;
+      else if (res.status === "VALID") valid++;
+    });
+    return { total: policy.approved_claims.length, expired, valid };
+  }, [policy, effectiveTimestamp]);
 
   return (
     <div className="flex-1 w-full max-w-7xl mx-auto px-6 py-10 flex flex-col gap-8">
@@ -526,11 +729,27 @@ function PolicyExplorerContent() {
                   setActiveTab("claims");
                   syncUrlParams({ tab: "claims" });
                 }}
-                className={`neo-btn text-xs py-1.5 px-3.5 ${
+                className={`neo-btn text-xs py-1.5 px-3.5 flex items-center gap-1.5 ${
                   activeTab === "claims" ? "neo-btn-yellow" : "neo-btn-white"
                 }`}
               >
-                Claims Ledger ({policy.approved_claims.length})
+                <span>Claims Ledger ({policy.approved_claims.length})</span>
+                {isSimulating && (
+                  <span className="w-2 h-2 rounded-full bg-red-600 animate-pulse" title="Simulation Active" />
+                )}
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  setActiveTab("tuner");
+                  syncUrlParams({ tab: "tuner" });
+                }}
+                className={`neo-btn text-xs py-1.5 px-3.5 flex items-center gap-1.5 ${
+                  activeTab === "tuner" ? "neo-btn-pink" : "neo-btn-white"
+                }`}
+              >
+                <Sliders className="w-3.5 h-3.5" />
+                <span>Channel Tuner</span>
               </button>
             </div>
 
@@ -712,13 +931,19 @@ function PolicyExplorerContent() {
                         >
                           <div className="flex flex-col gap-2">
                             <div className="flex items-center justify-between gap-2 flex-wrap">
-                              <div className="flex items-center gap-1.5">
+                              <div className="flex items-center gap-1.5 flex-wrap">
                                 <span className="neo-badge bg-black text-white text-[11px]">
                                   {rule.rule_code}
                                 </span>
                                 <span className="neo-badge bg-[#00C2CB] text-black text-[10px]">
                                   {rule.category}
                                 </span>
+                                {rule.source_citation?.regulatory_statute && (
+                                  <StatutoryRegulatoryBadge
+                                    statute={rule.source_citation.regulatory_statute as RegulatoryStatute}
+                                    compact
+                                  />
+                                )}
                               </div>
                               <span className={`neo-badge text-[10px] ${sev.className}`}>
                                 {sev.label}
@@ -779,13 +1004,18 @@ function PolicyExplorerContent() {
                         <div className="flex flex-col gap-4">
                           {/* Card Header: Code, Category, Severity */}
                           <div className="flex items-center justify-between gap-2 flex-wrap">
-                            <div className="flex items-center gap-2">
+                            <div className="flex items-center gap-2 flex-wrap">
                               <span className="neo-badge bg-black text-white text-xs">
                                 {rule.rule_code}
                               </span>
                               <span className="neo-badge bg-[#00C2CB] text-black text-[11px]">
                                 {rule.category}
                               </span>
+                              {rule.source_citation?.regulatory_statute && (
+                                <StatutoryRegulatoryBadge
+                                  statute={rule.source_citation.regulatory_statute as RegulatoryStatute}
+                                />
+                              )}
                             </div>
                             <span
                               className={`neo-badge text-[10px] ${sev.className}`}
@@ -864,7 +1094,131 @@ function PolicyExplorerContent() {
 
           {/* Tab 2: Claims Ledger */}
           {activeTab === "claims" && (
-            <div className="flex flex-col gap-4">
+            <div className="flex flex-col gap-5">
+              {/* Simulation Safety Indicator Banner */}
+              {isSimulating && (
+                <div className="neo-box p-4 bg-[#FFD700] border-2 border-black flex flex-col md:flex-row items-start md:items-center justify-between gap-4 shadow-sm">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-xl bg-black text-[#FFD700] flex items-center justify-center shrink-0 shadow-xs">
+                      <Clock className="w-5 h-5 stroke-[2.5]" />
+                    </div>
+                    <div>
+                      <div className="flex flex-wrap items-center gap-2">
+                        <span className="neo-badge bg-black text-white text-[10px] uppercase tracking-wider font-mono">
+                          Simulation Mode Active
+                        </span>
+                        <span className="text-xs font-bold text-black font-mono">
+                          Simulated Date: <strong>{formatDisplayDate(simulatedDate!)}</strong>
+                        </span>
+                        <span className="text-[11px] font-semibold text-black/75">
+                          (Baseline: {formatDisplayDate(baselineDate.toISOString())})
+                        </span>
+                      </div>
+                      <p className="text-xs font-semibold text-black mt-1">
+                        Displaying temporal validity state. Real claim records and server clocks remain unaffected.
+                      </p>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-2 shrink-0">
+                    <Link
+                      href={`/submissions?simDate=${encodeURIComponent(simulatedDate!)}`}
+                      className="neo-btn neo-btn-black text-xs py-1.5 px-3 flex items-center gap-1.5"
+                    >
+                      <FlaskConical className="w-3.5 h-3.5" />
+                      <span>Test Submission Copy</span>
+                    </Link>
+                    <button
+                      type="button"
+                      onClick={handleResetSimulation}
+                      className="neo-btn neo-btn-white text-xs py-1.5 px-3 flex items-center gap-1 font-bold"
+                    >
+                      <RotateCcw className="w-3.5 h-3.5" />
+                      <span>Reset to Today</span>
+                    </button>
+                  </div>
+                </div>
+              )}
+
+              {/* Interactive Expiry Simulator Toolbar */}
+              <div className="neo-box p-4 bg-white flex flex-col md:flex-row items-start md:items-center justify-between gap-4 border border-[#E5E7EB]">
+                <div className="flex items-center gap-3">
+                  <div className="w-9 h-9 rounded-xl bg-[#00C2CB] text-black border border-black flex items-center justify-center shrink-0 shadow-xs">
+                    <Calendar className="w-5 h-5" />
+                  </div>
+                  <div>
+                    <div className="flex items-center gap-2">
+                      <h4 className="text-xs font-black uppercase tracking-wider text-black">
+                        Interactive Expiry Simulator
+                      </h4>
+                      {isSimulating ? (
+                        <span className="neo-badge bg-[#FFD700] text-black text-[10px] font-bold">
+                          Simulated State
+                        </span>
+                      ) : (
+                        <span className="neo-badge bg-[#F3F4F6] text-black text-[10px] font-semibold">
+                          Live Baseline
+                        </span>
+                      )}
+                    </div>
+                    <p className="text-[11px] font-medium text-[#555555]">
+                      Advance time to forecast substantiation lapse and inspect claims requiring review.
+                    </p>
+                  </div>
+                </div>
+
+                <div className="flex flex-wrap items-center gap-2">
+                  <span className="text-[11px] font-mono font-bold text-black uppercase tracking-wider mr-1">
+                    Advance:
+                  </span>
+                  <button
+                    type="button"
+                    onClick={() => handleAdvanceMonths(3)}
+                    className="neo-btn neo-btn-white text-xs py-1 px-2.5 font-bold hover:bg-[#00C2CB]"
+                    title="Advance simulated date by 3 calendar months"
+                  >
+                    +3 Months
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => handleAdvanceMonths(6)}
+                    className="neo-btn neo-btn-yellow text-xs py-1 px-2.5 font-bold shadow-xs"
+                    title="Advance simulated date by 6 calendar months"
+                  >
+                    +6 Months
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => handleAdvanceMonths(12)}
+                    className="neo-btn neo-btn-white text-xs py-1 px-2.5 font-bold hover:bg-[#00C2CB]"
+                    title="Advance simulated date by 1 year"
+                  >
+                    +1 Year
+                  </button>
+
+                  <div className="flex items-center gap-1.5 pl-2 border-l border-[#E5E7EB]">
+                    <input
+                      type="date"
+                      value={simulatedDate || formatDateIso(baselineDate)}
+                      onChange={(e) => handleSetCustomDate(e.target.value)}
+                      className="neo-input text-xs py-1 px-2 font-mono text-black"
+                      title="Select custom simulated date"
+                    />
+                    {isSimulating && (
+                      <button
+                        type="button"
+                        onClick={handleResetSimulation}
+                        className="neo-btn neo-btn-white text-xs py-1 px-2.5 font-bold text-red-600 hover:bg-red-50 flex items-center gap-1"
+                        title="Reset simulation to current date"
+                      >
+                        <RotateCcw className="w-3 h-3" />
+                        <span>Reset</span>
+                      </button>
+                    )}
+                  </div>
+                </div>
+              </div>
+
+              {/* Claims Cards */}
               {filteredClaims.length === 0 ? (
                 <div className="neo-box p-12 text-center flex flex-col items-center justify-center gap-3">
                   <div className="w-12 h-12 rounded-xl bg-[#F8F9FA] border border-[#E5E7EB] flex items-center justify-center text-black shadow-xs">
@@ -878,11 +1232,17 @@ function PolicyExplorerContent() {
               ) : (
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   {filteredClaims.map((claim) => {
-                    const expired = isClaimExpired(claim.valid_until);
+                    const evalResult = evaluateClaimStatus(claim);
                     return (
                       <article
                         key={claim.id}
-                        className="neo-box p-6 flex flex-col justify-between gap-5"
+                        className={`neo-box p-6 flex flex-col justify-between gap-5 transition-all ${
+                          evalResult.status === "EXPIRED"
+                            ? "border-l-4 border-l-[#FFD700]"
+                            : evalResult.status === "VALID"
+                            ? "border-l-4 border-l-[#00C2CB]"
+                            : ""
+                        }`}
                       >
                         <div className="flex flex-col gap-3">
                           {/* Claim Header */}
@@ -890,17 +1250,13 @@ function PolicyExplorerContent() {
                             <span className="neo-badge bg-black text-white text-xs">
                               {claim.claim_code}
                             </span>
-                            {expired ? (
-                              <span className="neo-badge bg-[#FFD700] text-black text-[10px]">
-                                <Clock className="w-3.5 h-3.5 mr-1" />
-                                EXPIRED (Flagged by Engine)
-                              </span>
-                            ) : (
-                              <span className="neo-badge bg-[#00C2CB] text-black text-[10px]">
-                                <CheckCircle2 className="w-3.5 h-3.5 mr-1" />
-                                ACTIVE &amp; VALID
-                              </span>
-                            )}
+                            <span className={`neo-badge text-[10px] flex items-center ${evalResult.badgeClass}`}>
+                              {evalResult.status === "EXPIRED" && <Clock className="w-3.5 h-3.5 mr-1" />}
+                              {evalResult.status === "VALID" && <CheckCircle2 className="w-3.5 h-3.5 mr-1" />}
+                              {evalResult.status === "NOT_YET_VALID" && <Calendar className="w-3.5 h-3.5 mr-1" />}
+                              {evalResult.status === "INACTIVE" && <AlertTriangle className="w-3.5 h-3.5 mr-1" />}
+                              {evalResult.label}
+                            </span>
                           </div>
 
                           {/* Claim Text */}
@@ -922,14 +1278,17 @@ function PolicyExplorerContent() {
                             <p className="text-xs font-medium text-black leading-relaxed">
                               {claim.substantiation}
                             </p>
+                            <p className="text-[10px] font-medium text-[#666666] mt-1 border-t border-[#E5E7EB] pt-1">
+                              {evalResult.description}
+                            </p>
                           </div>
                         </div>
 
                         {/* Validity Dates */}
                         <div className="flex items-center justify-between text-xs font-mono font-bold border-t border-[#E5E7EB] pt-3 text-black">
-                          <span>From: {new Date(claim.valid_from).toLocaleDateString()}</span>
-                          <span className={expired ? "bg-[#FFD700] px-1.5 py-0.5 rounded border border-black font-black" : ""}>
-                            Until: {new Date(claim.valid_until).toLocaleDateString()}
+                          <span>From: {formatDisplayDate(claim.valid_from)}</span>
+                          <span className={evalResult.status === "EXPIRED" ? "bg-[#FFD700] px-1.5 py-0.5 rounded border border-black font-black" : ""}>
+                            Until: {formatDisplayDate(claim.valid_until)}
                           </span>
                         </div>
                       </article>
@@ -937,6 +1296,166 @@ function PolicyExplorerContent() {
                   })}
                 </div>
               )}
+            </div>
+          )}
+
+          {/* Tab 3: Channel Severity Threshold Tuner (Feature 2.4) */}
+          {activeTab === "tuner" && (
+            <div className="flex flex-col gap-6">
+              {/* Tuner Header & Channel Selector */}
+              <div className="neo-box p-6 bg-white flex flex-col md:flex-row md:items-center justify-between gap-6">
+                <div className="flex flex-col gap-2 max-w-2xl">
+                  <div className="flex items-center gap-2">
+                    <span className="neo-badge bg-[#FF00FF] text-white text-[11px] font-black">
+                      Feature 2.4
+                    </span>
+                    <span className="neo-badge bg-[#00C2CB] text-black text-[11px] font-black">
+                      Context-Aware Governance
+                    </span>
+                  </div>
+                  <h2 className="text-xl font-black text-black tracking-tight">
+                    Channel Severity Threshold Matrix
+                  </h2>
+                  <p className="text-xs font-medium text-[#444444] leading-relaxed">
+                    Tune rule severity thresholds based on publication medium. Tone &amp; formatting rules can be relaxed for informal channels (e.g., social posts or paid ads) while remaining strict for press releases. Statutory rules (FDIC, SEC, FTC) are immutable and locked to CRITICAL across all channels.
+                  </p>
+                </div>
+
+                <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 shrink-0">
+                  <div className="flex flex-col gap-1">
+                    <label htmlFor="tuner-channel-select" className="text-[10px] font-mono font-black uppercase tracking-wider text-black">
+                      Target Channel
+                    </label>
+                    <select
+                      id="tuner-channel-select"
+                      value={tunerChannel}
+                      onChange={(e) => setTunerChannel(e.target.value)}
+                      className="neo-input text-xs py-2 px-3 font-bold"
+                    >
+                      <option value="press_release">📰 Press Release (High Strictness)</option>
+                      <option value="web_landing_page">🌐 Web Landing Page (Standard)</option>
+                      <option value="ad_copy">📣 Paid Ad Copy (Dynamic)</option>
+                      <option value="social_post">📱 Social Post (Relaxed Tone)</option>
+                      <option value="email_blast">✉️ Email Blast</option>
+                      <option value="partner_portal">🤝 Partner Portal</option>
+                    </select>
+                  </div>
+
+                  <button
+                    type="button"
+                    onClick={handleResetChannelTuner}
+                    className="neo-btn neo-btn-white text-xs py-2 px-3 mt-auto flex items-center gap-1.5 cursor-pointer hover:bg-red-50 text-red-600"
+                    title="Reset channel overrides to default baseline"
+                  >
+                    <RotateCcw className="w-3.5 h-3.5" />
+                    <span>Reset Defaults</span>
+                  </button>
+                </div>
+              </div>
+
+              {/* Status / Safety Notice Banner */}
+              {tunerNotice && (
+                <div className="p-3.5 rounded-xl bg-[#FFF9E6] border-2 border-black flex items-center justify-between gap-3 text-xs font-bold text-black shadow-xs animate-in fade-in">
+                  <span>{tunerNotice}</span>
+                  <button
+                    type="button"
+                    onClick={() => setTunerNotice(null)}
+                    className="p-1 rounded hover:bg-black/10 transition"
+                  >
+                    <X className="w-3.5 h-3.5" />
+                  </button>
+                </div>
+              )}
+
+              {/* Channel Rule Severity Tuning Table */}
+              <div className="neo-box overflow-hidden bg-white">
+                <div className="p-4 bg-[#F8F9FA] border-b-2 border-black flex items-center justify-between">
+                  <span className="text-xs font-black uppercase tracking-wider text-black font-mono">
+                    Active Rule Severity for: {tunerChannel.replace(/_/g, " ").toUpperCase()}
+                  </span>
+                  <span className="text-[11px] font-mono font-bold text-[#555555]">
+                    {policy.rules.length} Rules Configured
+                  </span>
+                </div>
+
+                <div className="divide-y divide-[#E5E7EB]">
+                  {policy.rules.map((rule) => {
+                    const isImmutable = IMMUTABLE_CRITICAL_RULES.has(rule.rule_code);
+                    const effectiveSev =
+                      channelOverrides[tunerChannel]?.[rule.rule_code] ||
+                      resolveEffectiveSeverity(rule.rule_code, rule.severity as any, tunerChannel);
+
+                    return (
+                      <div
+                        key={rule.id}
+                        className="p-4 flex flex-col md:flex-row md:items-center justify-between gap-4 hover:bg-[#FFFDF5] transition"
+                      >
+                        <div className="flex flex-col gap-1 max-w-xl">
+                          <div className="flex items-center gap-2 flex-wrap">
+                            <span className="neo-badge bg-black text-white text-[10px] font-mono">
+                              {rule.rule_code}
+                            </span>
+                            <span className="neo-badge bg-[#00C2CB] text-black text-[10px]">
+                              {rule.category}
+                            </span>
+                            {isImmutable ? (
+                              <span className="neo-badge bg-[#FF0055] text-white text-[10px] flex items-center gap-1 font-black">
+                                <Lock className="w-3 h-3" />
+                                <span>Statutory Mandate (Locked)</span>
+                              </span>
+                            ) : (
+                              <span className="neo-badge bg-[#E5E7EB] text-black text-[10px] font-mono">
+                                Tunable Scope
+                              </span>
+                            )}
+                          </div>
+                          <h4 className="text-sm font-black text-black">{rule.title}</h4>
+                          {rule.description && (
+                            <p className="text-xs text-[#555555] line-clamp-1">{rule.description}</p>
+                          )}
+                        </div>
+
+                        <div className="flex items-center gap-3 shrink-0">
+                          {isImmutable ? (
+                            <div className="flex items-center gap-2">
+                              <span className="neo-badge bg-[#FF00FF] text-white text-xs font-black py-1 px-3">
+                                CRITICAL (LOCKED)
+                              </span>
+                            </div>
+                          ) : (
+                            <div className="flex items-center gap-2">
+                              <label htmlFor={`sev-select-${rule.rule_code}`} className="text-[11px] font-bold text-[#666666]">
+                                Severity:
+                              </label>
+                              <select
+                                id={`sev-select-${rule.rule_code}`}
+                                value={effectiveSev}
+                                onChange={(e) =>
+                                  handleTuneRule(
+                                    rule.rule_code,
+                                    e.target.value as "CRITICAL" | "WARNING" | "INFO"
+                                  )
+                                }
+                                className={`neo-input text-xs py-1 px-2.5 font-black rounded border-2 border-black ${
+                                  effectiveSev === "CRITICAL"
+                                    ? "bg-[#FFF0F5] text-[#D6004B]"
+                                    : effectiveSev === "WARNING"
+                                    ? "bg-[#FFD700] text-black"
+                                    : "bg-[#E6FAFA] text-black"
+                                }`}
+                              >
+                                <option value="CRITICAL">CRITICAL</option>
+                                <option value="WARNING">WARNING</option>
+                                <option value="INFO">INFO</option>
+                              </select>
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
             </div>
           )}
         </div>

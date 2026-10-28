@@ -313,16 +313,26 @@ def create_submission_version(
 def trigger_check(
     submission_id: uuid.UUID,
     version_number: int | None = Query(None, description="Target version number (defaults to latest)"),
+    as_of: datetime | str | None = Query(None, description="Optional simulated reference timestamp for temporal expiry evaluation"),
+    dry_run: bool = Query(False, description="When true, executes check without mutating submission status"),
     db: Session = Depends(get_db),
     current_user: User = Depends(require_role("creator", "reviewer", "brand_manager")),
 ):
     """
     Executes synchronous verification pipeline across pre-flight prompt injection,
     deterministic forbidden terms, brand typos, and expired claims ledger.
+    Supports simulated time via as_of and non-destructive dry_run mode.
     """
     set_tenant_context(db, str(current_user.workspace_id))
     try:
-        check_run = run_check_pipeline(db, submission_id, version_number)
+        effective_dry_run = dry_run or (as_of is not None)
+        check_run = run_check_pipeline(
+            db,
+            submission_id,
+            version_number=version_number,
+            as_of=as_of,
+            dry_run=effective_dry_run,
+        )
     except ValueError as e:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,

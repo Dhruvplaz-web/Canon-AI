@@ -8,13 +8,20 @@ export async function POST(
 ) {
   try {
     const { id } = await params;
+    const url = new URL(req.url);
+    const queryAsOf = url.searchParams.get("as_of");
+
     const existing = submissionsStore[id];
     let contentToCheck = existing ? existing.content : "";
+    let asOf: string | null = queryAsOf;
+    let channel: string | undefined = existing?.channel;
 
-    // If client supplied content in body
+    // If client supplied content, as_of, or channel in body
     try {
       const body = await req.json();
       if (body.content) contentToCheck = body.content;
+      if (body.as_of) asOf = body.as_of;
+      if (body.channel) channel = body.channel;
     } catch {
       // Body may be empty
     }
@@ -23,7 +30,7 @@ export async function POST(
       contentToCheck = "Acme Financial delivers enterprise treasury solutions.";
     }
 
-    const checkResult = verifyMarketingCopy(contentToCheck, id);
+    const checkResult = verifyMarketingCopy(contentToCheck, id, asOf || undefined, channel);
     return NextResponse.json(checkResult);
   } catch (err: unknown) {
     const msg = err instanceof Error ? err.message : "Check pipeline execution failed";
