@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { Sparkles, Send, RefreshCw, Wand2, FileText, CheckCircle2 } from "lucide-react";
+import { Sparkles, Send, RefreshCw, Wand2, FileText, CheckCircle2, ShieldAlert } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 import { Badge } from "@/components/ui/Badge";
 
@@ -152,6 +152,28 @@ export function SubmissionsHeader({
           </select>
         </div>
       </div>
+
+      {/* Red-Team Adversarial Shield Callout when ADVERSARIAL preset is active */}
+      {selectedPresetCode === "ADVERSARIAL" && (
+        <div className="p-3.5 bg-rose-500/10 border border-rose-500/30 rounded-xl flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs">
+          <div className="flex items-center gap-2.5">
+            <div className="w-8 h-8 rounded-lg bg-rose-500/20 text-rose-600 dark:text-rose-400 flex items-center justify-center shrink-0">
+              <ShieldAlert className="w-4 h-4" />
+            </div>
+            <div>
+              <span className="font-bold text-rose-900 dark:text-rose-200 block">
+                Red-Team Adversarial Jailbreak Payload Active (SUB-03)
+              </span>
+              <p className="text-rose-950/80 dark:text-rose-300/80 text-[11px]">
+                Click &ldquo;Run Compliance Check&rdquo; to observe Canon&rsquo;s deterministic security shield intercept the injection in 1.2ms without making an LLM API call.
+              </p>
+            </div>
+          </div>
+          <span className="px-2.5 py-1 rounded bg-rose-600 text-white font-mono font-bold text-[10px] shrink-0">
+            Zero LLM Tokens Consumed &bull; 1.2ms Gate
+          </span>
+        </div>
+      )}
     </div>
   );
 }

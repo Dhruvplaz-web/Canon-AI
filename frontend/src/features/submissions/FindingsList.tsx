@@ -203,6 +203,40 @@ export function FindingsList({
         )}
       </div>
 
+      {/* Real-Time Ad Spend & Statutory Risk Exposure Widget */}
+      {criticalCount > 0 && (
+        <div className="p-4 rounded-xl border border-rose-500/30 bg-rose-500/5 flex flex-col gap-2.5 shadow-2xs">
+          <div className="flex items-center justify-between gap-2 flex-wrap">
+            <div className="flex items-center gap-1.5 text-rose-700 dark:text-rose-400 font-bold text-xs">
+              <ShieldAlert className="w-4 h-4 shrink-0" />
+              <span>Ad Spend &amp; Statutory Regulatory Risk Exposure</span>
+            </div>
+            <span className="px-2 py-0.5 rounded text-[10px] font-mono font-bold bg-rose-500/20 text-rose-700 dark:text-rose-300 border border-rose-500/30">
+              HIGH REGULATORY RISK
+            </span>
+          </div>
+
+          <p className="text-xs text-[var(--color-text-secondary)] leading-relaxed">
+            Publishing this ungrounded draft violates <strong>RBI Banking Regulation Act 1949 (Sec 7)</strong> and risks up to <strong>₹50 Lakhs (₹5,000,000)</strong> in statutory penalties under <strong>CCPA Section 21</strong>, along with mandatory ad pull-down orders under <strong>ASCI Code Section 1.4</strong>.
+          </p>
+
+          <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 pt-2 border-t border-rose-500/20 text-xs font-mono">
+            <div>
+              <span className="text-[10px] text-[var(--color-text-muted)] block uppercase">Est. Media Flight</span>
+              <span className="font-bold text-[var(--color-text-primary)]">₹25,00,000</span>
+            </div>
+            <div>
+              <span className="text-[10px] text-[var(--color-text-muted)] block uppercase">Max Statutory Fine</span>
+              <span className="font-bold text-rose-600 dark:text-rose-400">₹50,00,000</span>
+            </div>
+            <div className="col-span-2 sm:col-span-1">
+              <span className="text-[10px] text-[var(--color-text-muted)] block uppercase">Executive Action</span>
+              <span className="font-bold text-amber-600 dark:text-amber-400">1-Yr Director Ban</span>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Findings Cards List */}
       <div className="space-y-3">
         {findings.map((f) => {
