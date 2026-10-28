@@ -62,6 +62,7 @@ function SubmissionsStudioContent() {
             findings={findings}
             selectedFindingId={selectedFindingId}
             onSelectFinding={setSelectedFindingId}
+            channel={channel}
           />
 
           <CreativeStudioPreview

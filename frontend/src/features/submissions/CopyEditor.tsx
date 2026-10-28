@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useRef, useEffect } from "react";
+import { AlertTriangle } from "lucide-react";
 
 export interface FindingSpan {
   id: string;
@@ -17,6 +18,7 @@ interface CopyEditorProps {
   onSelectFinding?: (id: string) => void;
   title: string;
   onTitleChange: (val: string) => void;
+  channel?: string;
 }
 
 export function CopyEditor({
@@ -27,6 +29,7 @@ export function CopyEditor({
   onSelectFinding,
   title,
   onTitleChange,
+  channel,
 }: CopyEditorProps) {
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const backdropRef = useRef<HTMLDivElement>(null);
@@ -114,27 +117,67 @@ export function CopyEditor({
     return segments;
   };
 
-  const wordCount = content.trim() ? content.trim().split(/\s+/).length : 0;
+  const trimmedContent = content.trim();
+  const wordCount = trimmedContent ? trimmedContent.split(/\s+/).length : 0;
   const charCount = content.length;
+  const readingTime = wordCount === 0 ? "0 min read" : `${(wordCount / 200).toFixed(1)} min read`;
+
+  const isAdCopy = channel === "ad_copy";
+  const adCopyLimit = 280;
+  const isAdOverLimit = isAdCopy && charCount > adCopyLimit;
+  const adCharsRemaining = isAdCopy ? adCopyLimit - charCount : null;
 
   return (
     <div className="flex flex-col rounded-xl border border-[var(--color-border-subtle)] bg-[var(--color-surface)] shadow-xs overflow-hidden">
-      {/* Title Input Bar */}
-      <div className="px-4 py-2.5 border-b border-[var(--color-border-subtle)] bg-[var(--color-surface-muted)] flex items-center justify-between gap-4">
+      {/* Title & Metadata Input Bar */}
+      <div className="px-4 py-2.5 border-b border-[var(--color-border-subtle)] bg-[var(--color-surface-muted)] flex flex-wrap items-center justify-between gap-3">
         <input
           type="text"
           value={title}
           onChange={(e) => onTitleChange(e.target.value)}
           placeholder="Draft Submission Title..."
-          className="bg-transparent text-sm font-semibold text-[var(--color-text-primary)] placeholder-[var(--color-text-muted)] focus:outline-none flex-1"
+          className="bg-transparent text-sm font-semibold text-[var(--color-text-primary)] placeholder-[var(--color-text-muted)] focus:outline-none flex-1 min-w-[200px]"
           aria-label="Submission Title"
         />
-        <div className="flex items-center gap-3 text-[11px] font-mono text-[var(--color-text-muted)] shrink-0">
-          <span>{wordCount} words</span>
-          <span>&bull;</span>
-          <span>{charCount} chars</span>
+        <div className="flex items-center flex-wrap gap-2 text-[11px] font-mono shrink-0">
+          <span className="px-2 py-0.5 rounded bg-[var(--color-surface)] border border-[var(--color-border-subtle)] text-[var(--color-text-primary)] font-semibold">
+            {wordCount} {wordCount === 1 ? "word" : "words"}
+          </span>
+          <span
+            className={`px-2 py-0.5 rounded border font-semibold ${
+              isAdOverLimit
+                ? "bg-rose-500/10 border-rose-500/30 text-rose-600 dark:text-rose-400"
+                : "bg-[var(--color-surface)] border-[var(--color-border-subtle)] text-[var(--color-text-primary)]"
+            }`}
+          >
+            {isAdCopy ? `${charCount} / ${adCopyLimit} chars` : `${charCount} chars`}
+          </span>
+          <span className="px-2 py-0.5 rounded bg-[var(--color-surface)] border border-[var(--color-border-subtle)] text-[var(--color-text-muted)]">
+            {readingTime}
+          </span>
+          {isAdCopy && (
+            <span
+              className={`px-2 py-0.5 rounded border font-semibold ${
+                isAdOverLimit
+                  ? "bg-rose-500/10 border-rose-500/30 text-rose-600 dark:text-rose-400"
+                  : "bg-emerald-500/10 border-emerald-500/30 text-emerald-600 dark:text-emerald-400"
+              }`}
+            >
+              {isAdOverLimit ? `+${charCount - adCopyLimit} over limit` : `${adCharsRemaining} left`}
+            </span>
+          )}
         </div>
       </div>
+
+      {/* Channel Constraint Warning Banner (Ad Copy > 280 chars) */}
+      {isAdOverLimit && (
+        <div className="px-4 py-2 bg-amber-500/10 border-b border-amber-500/30 text-amber-800 dark:text-amber-200 text-xs font-medium flex items-center gap-2">
+          <AlertTriangle className="w-4 h-4 text-amber-600 dark:text-amber-400 shrink-0" />
+          <span>
+            <strong>Channel Constraint:</strong> Paid ad copy exceeds the standard 280-character limit ({charCount} / 280 chars, <strong>{charCount - adCopyLimit} characters over</strong>). Text may be truncated in ad placements.
+          </span>
+        </div>
+      )}
 
       {/* Synchronized Editor Viewport */}
       <div className="relative h-[420px] font-mono text-xs leading-relaxed">

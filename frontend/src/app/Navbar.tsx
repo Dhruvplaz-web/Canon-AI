@@ -12,10 +12,12 @@ import {
   ShieldCheck,
   CheckCircle2,
   Database,
+  Search,
 } from "lucide-react";
 import { useAuth } from "@/lib/auth-context";
 import { getNavItemsForRole } from "@/lib/navigation";
 import { ThemeToggle } from "@/components/theme-toggle";
+import { CommandPalette } from "@/components/CommandPalette";
 import {
   Button,
   Sheet,
@@ -35,6 +37,27 @@ export default function Navbar() {
   const { user, isLoading, logout } = useAuth();
   const pathname = usePathname();
   const [isMobileOpen, setIsMobileOpen] = React.useState(false);
+  const [isCommandPaletteOpen, setIsCommandPaletteOpen] = React.useState(false);
+
+  // Safe SSR platform detection via standard React external store
+  const isMac = React.useSyncExternalStore(
+    () => () => {},
+    () => typeof navigator !== "undefined" && /(Mac|iPhone|iPod|iPad)/i.test(navigator.userAgent),
+    () => false
+  );
+
+  // Global Ctrl+K / Cmd+K shortcut listener
+  React.useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "k") {
+        e.preventDefault();
+        setIsCommandPaletteOpen((prev) => !prev);
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, []);
 
   // Derive filtered nav items from canonical role map
   const navLinks = React.useMemo(() => {
@@ -142,6 +165,21 @@ export default function Navbar() {
               <Database className="w-3 h-3 text-blue-500" aria-hidden="true" />
               <span>Demo Workspace</span>
             </div>
+
+            {/* Quick Command Palette Search Button */}
+            <button
+              type="button"
+              onClick={() => setIsCommandPaletteOpen(true)}
+              className="hidden sm:inline-flex items-center gap-2 px-2.5 py-1.5 rounded-lg border border-[var(--color-border-subtle)] bg-[var(--color-surface-muted)] text-[var(--color-text-muted)] hover:text-[var(--color-text-primary)] hover:border-[var(--color-border-default)] transition text-xs cursor-pointer"
+              title="Open quick command palette (Ctrl+K / Cmd+K)"
+              aria-label="Open command palette"
+            >
+              <Search className="w-3.5 h-3.5" aria-hidden="true" />
+              <span className="text-xs font-medium">Quick search...</span>
+              <kbd className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-[var(--color-surface)] border border-[var(--color-border-subtle)] text-[var(--color-text-muted)]">
+                {isMac ? "⌘K" : "Ctrl K"}
+              </kbd>
+            </button>
 
             {/* Theme Toggle Button */}
             <ThemeToggle />
@@ -290,6 +328,12 @@ export default function Navbar() {
           </div>
         </div>
       </header>
+
+      {/* Global Quick Command Palette Modal */}
+      <CommandPalette
+        isOpen={isCommandPaletteOpen}
+        onClose={() => setIsCommandPaletteOpen(false)}
+      />
     </>
   );
 }

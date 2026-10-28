@@ -3,15 +3,16 @@
 import React, { useState } from "react";
 import {
   ShieldCheck,
+  ShieldAlert,
   CheckCircle2,
   Copy,
   Check,
   Download,
+  Printer,
   X,
   FileCheck2,
   Lock,
   UserCheck,
-  ExternalLink,
 } from "lucide-react";
 
 export interface ReleaseCertificate {
@@ -73,6 +74,10 @@ export function ComplianceCertificateModal({
     setTimeout(() => setCopiedField(null), 2500);
   };
 
+  const handlePrint = () => {
+    window.print();
+  };
+
   const handleDownloadJson = () => {
     const dataStr =
       "data:text/json;charset=utf-8," +
@@ -81,7 +86,7 @@ export function ComplianceCertificateModal({
     downloadAnchor.setAttribute("href", dataStr);
     downloadAnchor.setAttribute(
       "download",
-      `compliance-certificate-${certificate.submission.id.slice(0, 8)}.json`
+      `compliance-certificate-${(certificate?.submission?.id || "draft").slice(0, 8)}.json`
     );
     document.body.appendChild(downloadAnchor);
     downloadAnchor.click();
@@ -93,11 +98,11 @@ export function ComplianceCertificateModal({
       role="dialog"
       aria-modal="true"
       aria-labelledby="cert-modal-title"
-      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/75 backdrop-blur-sm animate-in fade-in duration-200 overflow-y-auto"
+      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/75 backdrop-blur-sm animate-in fade-in duration-200 overflow-y-auto print-certificate-container"
       onClick={onClose}
     >
       <div
-        className="relative w-full max-w-3xl my-8 bg-[#F4F0EA] border-3 border-black rounded-2xl shadow-[10px_10px_0px_#000] p-6 sm:p-8 flex flex-col gap-6 text-black"
+        className="relative w-full max-w-3xl my-8 bg-[#F4F0EA] border-3 border-black rounded-2xl shadow-[10px_10px_0px_#000] p-6 sm:p-8 flex flex-col gap-6 text-black print-certificate-card"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Certificate Watermark Header */}
@@ -122,8 +127,10 @@ export function ComplianceCertificateModal({
                 <span>Compliance Release Certificate</span>
               </h2>
               <span className="text-xs font-mono font-bold text-[#333333]">
-                ID: {certificate.certificate_id} • Issued:{" "}
-                {new Date(certificate.issued_at).toLocaleString()}
+                ID: {certificate?.certificate_id || "CERT-ACME-RELEASE"} • Issued:{" "}
+                {certificate?.issued_at
+                  ? new Date(certificate.issued_at).toLocaleString()
+                  : new Date().toLocaleString()}
               </span>
             </div>
           </div>
@@ -131,7 +138,7 @@ export function ComplianceCertificateModal({
           <button
             type="button"
             onClick={onClose}
-            className="self-end sm:self-start p-2 rounded-lg border-2 border-black bg-white hover:bg-[#FF00FF] hover:text-white transition shadow-[2px_2px_0px_#000] cursor-pointer"
+            className="self-end sm:self-start p-2 rounded-lg border-2 border-black bg-white hover:bg-[#FF00FF] hover:text-white transition shadow-[2px_2px_0px_#000] cursor-pointer no-print"
             title="Close certificate"
           >
             <X className="w-5 h-5" />
@@ -300,11 +307,11 @@ export function ComplianceCertificateModal({
               type="button"
               onClick={() =>
                 handleCopy(
-                  certificate.cryptographic_verification.digital_signature,
+                  certificate?.cryptographic_verification?.digital_signature || "",
                   "signature"
                 )
               }
-              className="flex items-center gap-1 text-xs text-[#FFD700] font-black hover:underline cursor-pointer"
+              className="flex items-center gap-1 text-xs text-[#FFD700] font-black hover:underline cursor-pointer no-print"
             >
               {copiedField === "signature" ? (
                 <>
@@ -321,17 +328,30 @@ export function ComplianceCertificateModal({
           </div>
 
           <code className="text-xs font-mono font-bold text-[#00C2CB] break-all select-all bg-black/60 p-2.5 rounded-lg border border-[#333333]">
-            {certificate.cryptographic_verification.digital_signature}
+            {certificate?.cryptographic_verification?.digital_signature || "UNSIGNED"}
           </code>
 
           <div className="flex items-center justify-between text-[10px] font-mono text-[#888888] pt-1">
-            <span>Algorithm: {certificate.cryptographic_verification.signature_algorithm}</span>
-            <span>Standard: {certificate.standard}</span>
+            <span>Algorithm: {certificate?.cryptographic_verification?.signature_algorithm || "HMAC-SHA256"}</span>
+            <span>Standard: {certificate?.standard || "Canon Brand Governance Protocol v1.0"}</span>
           </div>
         </div>
 
-        {/* Action Footer */}
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pt-2">
+        {/* Section 5: Statutory Disclaimer & Enterprise Governance Notice */}
+        <div className="p-3.5 rounded-xl bg-amber-500/10 border border-amber-500/30 text-amber-900 dark:text-amber-200 text-[11px] leading-relaxed flex items-start gap-2.5">
+          <ShieldAlert className="w-4 h-4 text-amber-600 dark:text-amber-400 shrink-0 mt-0.5" />
+          <div className="flex flex-col gap-0.5">
+            <span className="font-bold uppercase tracking-wider text-[10px] text-amber-800 dark:text-amber-300">
+              Enterprise Brand Governance Notice &amp; Legal Disclaimer
+            </span>
+            <p className="text-amber-950/90 dark:text-amber-100/90 font-medium">
+              This certificate attests to algorithmic policy verification and human oversight adherence under Canon&apos;s Double-Receipt Invariant and EU AI Act Article 14 governance workflows. It certifies internal compliance with designated organizational brand rules and does not constitute statutory legal counsel, binding regulatory exemption, or commercial warranty.
+            </p>
+          </div>
+        </div>
+
+        {/* Action Footer (Hidden in Print) */}
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pt-2 no-print">
           <div className="flex items-center gap-2 text-xs font-mono font-bold text-[#444444]">
             <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
             <span>Cryptographically sealed under Zero AI Veto protocol</span>
@@ -340,17 +360,26 @@ export function ComplianceCertificateModal({
           <div className="flex items-center gap-3">
             <button
               type="button"
+              onClick={handlePrint}
+              className="neo-btn neo-btn-teal text-xs py-2 px-4 flex items-center gap-2 cursor-pointer"
+            >
+              <Printer className="w-4 h-4 text-black" />
+              <span>Print / PDF Certificate</span>
+            </button>
+
+            <button
+              type="button"
               onClick={handleDownloadJson}
-              className="neo-btn neo-btn-teal text-xs py-2 px-4"
+              className="neo-btn neo-btn-white text-xs py-2 px-4 flex items-center gap-2 cursor-pointer"
             >
               <Download className="w-4 h-4 text-black" />
-              <span>Download JSON Certificate</span>
+              <span>Download JSON</span>
             </button>
 
             <button
               type="button"
               onClick={onClose}
-              className="neo-btn neo-btn-white text-xs py-2 px-4"
+              className="neo-btn neo-btn-white text-xs py-2 px-4 cursor-pointer"
             >
               Close
             </button>

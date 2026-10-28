@@ -5,6 +5,7 @@ import {
   EUAIActDisclosures,
   TelemetryMetricsGrid,
   RecentInferenceCallsTable,
+  CryptographicAuditHashVerifier,
   type TransparencyData,
 } from "@/features/transparency/TransparencyComponents";
 import { RefreshCw, Activity, ShieldCheck } from "lucide-react";
@@ -91,6 +92,8 @@ function TransparencyContent() {
           <EUAIActDisclosures />
 
           <TelemetryMetricsGrid data={data} />
+
+          <CryptographicAuditHashVerifier />
 
           {data?.recent_calls && (
             <RecentInferenceCallsTable calls={data.recent_calls} />

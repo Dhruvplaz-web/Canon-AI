@@ -9,6 +9,10 @@ import {
   Send,
   ShieldCheck,
   UserCheck,
+  Hash,
+  Bell,
+  Code,
+  Check,
 } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 import { Badge } from "@/components/ui/Badge";
@@ -59,6 +63,7 @@ export function ApproverSignoffView({
   const [sendBackModalOpen, setSendBackModalOpen] = useState(false);
   const [sendBackNotes, setSendBackNotes] = useState("");
   const [isSendingBack, setIsSendingBack] = useState(false);
+  const [showWebhookPayload, setShowWebhookPayload] = useState(false);
 
   const unresolvedCriticals = findings.filter(
     (f) => f.severity === "CRITICAL" && f.status === "PENDING_REVIEW"
@@ -190,6 +195,81 @@ export function ApproverSignoffView({
                     Enterprise governance standards prohibit release approval while critical violations remain pending. The creator must fix the draft or an authorized reviewer must record a reason-coded override.
                   </p>
                 </div>
+              </div>
+            )}
+
+            {/* Function 3.2: Simulated Enterprise Webhook & Slack Notification Dispatcher */}
+            {isApproved && (
+              <div className="p-4 rounded-xl border border-emerald-500/30 bg-emerald-500/5 space-y-3">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                  <div className="flex items-center gap-2">
+                    <div className="w-6 h-6 rounded-md bg-[#4A154B] text-white flex items-center justify-center font-bold text-xs shrink-0">
+                      #
+                    </div>
+                    <div>
+                      <span className="text-xs font-bold text-[var(--color-text-primary)]">
+                        Enterprise Webhook Dispatched &bull; Slack #brand-governance
+                      </span>
+                      <p className="text-[11px] text-[var(--color-text-muted)]">
+                        Payload triggered on release sign-off: broadcast to Slack, MarTech CMS, and webhook subscriber endpoints.
+                      </p>
+                    </div>
+                  </div>
+
+                  <button
+                    type="button"
+                    onClick={() => setShowWebhookPayload((prev) => !prev)}
+                    className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md border border-[var(--color-border-subtle)] bg-[var(--color-surface)] hover:bg-[var(--color-surface-hover)] text-[11px] font-mono font-semibold text-[var(--color-text-secondary)] transition cursor-pointer"
+                  >
+                    <Code className="w-3.5 h-3.5" />
+                    <span>{showWebhookPayload ? "Hide Webhook JSON" : "Inspect Webhook Payload"}</span>
+                  </button>
+                </div>
+
+                {/* Slack Message Mock Preview */}
+                <div className="p-3 rounded-lg bg-[var(--color-surface)] border border-[var(--color-border-subtle)] text-xs space-y-1 font-sans">
+                  <div className="flex items-center gap-2">
+                    <span className="font-bold text-[var(--color-text-primary)]">Canon Bot</span>
+                    <span className="text-[10px] bg-[var(--color-surface-muted)] text-[var(--color-text-muted)] px-1 rounded font-mono">APP</span>
+                    <span className="text-[10px] text-[var(--color-text-muted)]">Just now</span>
+                  </div>
+                  <p className="text-[var(--color-text-secondary)] leading-relaxed">
+                    &bull; <strong>Status:</strong> Approved &amp; Released under Certificate <code className="font-mono text-emerald-600 dark:text-emerald-400 font-bold">#CERT-ACME-{activeSubmission.id.slice(0, 8)}</code>
+                    <br />
+                    &bull; <strong>Campaign:</strong> &ldquo;{activeSubmission.title}&rdquo; ({activeSubmission.channel})
+                    <br />
+                    &bull; <strong>Approver:</strong> Rachel Reviewer (Human Sign-off complete, 0 unresolved blocking violations).
+                  </p>
+                </div>
+
+                {/* Raw Webhook JSON Drawer */}
+                {showWebhookPayload && (
+                  <pre className="p-3 rounded-lg bg-[var(--color-surface-muted)] border border-[var(--color-border-subtle)] font-mono text-[10px] text-[var(--color-text-secondary)] overflow-x-auto">
+                    {JSON.stringify(
+                      {
+                        event: "governance.submission.approved",
+                        timestamp: new Date().toISOString(),
+                        workspace: "Acme Corp (Primary)",
+                        submission_id: activeSubmission.id,
+                        title: activeSubmission.title,
+                        channel: activeSubmission.channel,
+                        approver: {
+                          name: "Rachel Reviewer",
+                          email: "reviewer@acme.corp",
+                          role: "reviewer",
+                        },
+                        certificate: {
+                          id: `CERT-ACME-${activeSubmission.id.slice(0, 8)}`,
+                          algorithm: "HMAC-SHA256",
+                          standard: "Canon Brand Governance Protocol v1.0",
+                          zero_ai_veto_enforced: true,
+                        },
+                      },
+                      null,
+                      2
+                    )}
+                  </pre>
+                )}
               </div>
             )}
 
