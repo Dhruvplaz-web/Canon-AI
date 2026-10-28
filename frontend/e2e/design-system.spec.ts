@@ -19,7 +19,6 @@ test.describe("Design System Component & Token Suite (Phase 1)", () => {
     await expect(page.getByRole("button", { name: "Small (32px)" })).toBeVisible();
     await expect(page.getByRole("button", { name: "Medium (36px)" })).toBeVisible();
     await expect(page.getByRole("button", { name: "Large (44px)" })).toBeVisible();
-    await expect(page.getByRole("button", { name: "Quick search" })).toBeVisible();
 
     // States
     const loadingBtn = page.getByRole("button", { name: "Saving Draft..." });

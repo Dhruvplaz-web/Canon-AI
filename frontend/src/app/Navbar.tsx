@@ -172,7 +172,6 @@ export default function Navbar() {
               onClick={() => setIsCommandPaletteOpen(true)}
               className="hidden sm:inline-flex items-center gap-2 px-2.5 py-1.5 rounded-lg border border-[var(--color-border-subtle)] bg-[var(--color-surface-muted)] text-[var(--color-text-muted)] hover:text-[var(--color-text-primary)] hover:border-[var(--color-border-default)] transition text-xs cursor-pointer"
               title="Open quick command palette (Ctrl+K / Cmd+K)"
-              aria-label="Open command palette"
             >
               <Search className="w-3.5 h-3.5" aria-hidden="true" />
               <span className="text-xs font-medium">Quick search...</span>
