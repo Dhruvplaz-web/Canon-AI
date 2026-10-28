@@ -24,6 +24,10 @@ import {
   ComplianceCertificateModal,
   ReleaseCertificate,
 } from "@/components/ComplianceCertificateModal";
+import {
+  SlackWebhookNotification,
+  WebhookDispatchResult,
+} from "@/components/SlackWebhookNotification";
 
 interface ReasonCode {
   id: string;
@@ -149,6 +153,9 @@ function ReviewQueueContent() {
   const [certificateData, setCertificateData] = useState<ReleaseCertificate | null>(null);
   const [isCertModalOpen, setIsCertModalOpen] = useState(false);
   const [isDownloadingCert, setIsDownloadingCert] = useState(false);
+
+  // Simulated Slack / Webhook Dispatch State (Task 3.2)
+  const [webhookDispatch, setWebhookDispatch] = useState<WebhookDispatchResult | null>(null);
 
   const canApprove = user?.role === "reviewer" || user?.role === "brand_manager";
 
@@ -448,8 +455,46 @@ function ReviewQueueContent() {
 
       showToast("success", `Formal sign-off granted for "${activeSubmission.title}".`);
       setIsSignOffModalOpen(false);
+      const savedSignOffNotes = signOffNotes.trim() || "Brand compliance sign-off granted.";
       setSignOffNotes("");
       setSubmissionRefreshTrigger((c) => c + 1);
+
+      // Fetch / generate genuine certificate reference if available
+      let certId: string | null = null;
+      try {
+        const certRes = await fetch(`/api/v1/submissions/${activeSubmission.id}/certificate`);
+        if (certRes.ok) {
+          const certData = await certRes.json();
+          certId = certData.certificate_id;
+        }
+      } catch {
+        // Non-blocking
+      }
+
+      // Dispatch simulated enterprise Slack / Webhook notification (Task 3.2)
+      try {
+        const hookRes = await fetch("/api/v1/webhooks/dispatch", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            event_type: "submission.approved",
+            submission_id: activeSubmission.id,
+            submission_title: activeSubmission.title,
+            channel: activeSubmission.channel,
+            decision: "APPROVED",
+            reviewer_name: user?.full_name || "Rachel Reviewer",
+            reviewer_email: user?.email || "rachel@acmefinancial.com",
+            notes: savedSignOffNotes,
+            certificate_id: certId,
+          }),
+        });
+        if (hookRes.ok) {
+          const hookData: WebhookDispatchResult = await hookRes.json();
+          setWebhookDispatch(hookData);
+        }
+      } catch {
+        // Webhook failure never blocks review workflow
+      }
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : "Failed to approve.";
       showToast("error", msg);
@@ -478,8 +523,34 @@ function ReviewQueueContent() {
 
       showToast("info", `Draft returned to creator with revision instructions.`);
       setIsSendBackModalOpen(false);
+      const savedSendBackNotes = sendBackNotes.trim();
       setSendBackNotes("");
       setSubmissionRefreshTrigger((c) => c + 1);
+
+      // Dispatch simulated enterprise Slack / Webhook notification (Task 3.2)
+      try {
+        const hookRes = await fetch("/api/v1/webhooks/dispatch", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            event_type: "submission.sent_back",
+            submission_id: activeSubmission.id,
+            submission_title: activeSubmission.title,
+            channel: activeSubmission.channel,
+            decision: "SENT_BACK",
+            reviewer_name: user?.full_name || "Rachel Reviewer",
+            reviewer_email: user?.email || "rachel@acmefinancial.com",
+            notes: savedSendBackNotes,
+            certificate_id: null,
+          }),
+        });
+        if (hookRes.ok) {
+          const hookData: WebhookDispatchResult = await hookRes.json();
+          setWebhookDispatch(hookData);
+        }
+      } catch {
+        // Webhook failure never blocks review workflow
+      }
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : "Failed to return draft.";
       showToast("error", msg);
@@ -1129,6 +1200,7 @@ function ReviewQueueContent() {
 
                   <button
                     type="button"
+                    id="send-back-for-revision-btn"
                     onClick={() => setIsSendBackModalOpen(true)}
                     className="neo-btn neo-btn-yellow text-xs py-2 px-4"
                   >
@@ -1138,6 +1210,7 @@ function ReviewQueueContent() {
 
                   <button
                     type="button"
+                    id="grant-final-sign-off-btn"
                     disabled={hasOpenCritical || isSubmittingApproval || !canApprove}
                     onClick={() => setIsSignOffModalOpen(true)}
                     className="neo-btn neo-btn-teal text-xs py-2 px-4"
@@ -1585,6 +1658,7 @@ function ReviewQueueContent() {
               </button>
               <button
                 type="button"
+                id="confirm-send-back-btn"
                 disabled={isSubmittingSendBack || sendBackNotes.trim().length < 5}
                 onClick={handleSubmitSendBack}
                 className="neo-btn neo-btn-yellow text-xs py-2 px-4"
@@ -1603,6 +1677,14 @@ function ReviewQueueContent() {
         certificate={certificateData}
         isOpen={isCertModalOpen}
         onClose={() => setIsCertModalOpen(false)}
+      />
+
+      {/* ========================================================================= */}
+      {/* SLACK / WEBHOOK NOTIFICATION DISPATCHER (Task 3.2) */}
+      {/* ========================================================================= */}
+      <SlackWebhookNotification
+        dispatchResult={webhookDispatch}
+        onDismiss={() => setWebhookDispatch(null)}
       />
     </div>
   );

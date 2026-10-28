@@ -10,6 +10,7 @@ import {
   Sparkles,
   RefreshCw,
 } from "lucide-react";
+import { ExecutiveGovernanceScorecard } from "@/components/ExecutiveGovernanceScorecard";
 
 interface RuleHealth {
   id: string;
@@ -238,7 +239,12 @@ function GovernanceContent() {
         </div>
       )}
 
-      {/* Section 1: Rule Health Telemetry Grid */}
+      {/* ========================================================================= */}
+      {/* SECTION 1: EXECUTIVE GOVERNANCE ROI SCORECARD & CALCULATOR (Task 3.3) */}
+      {/* ========================================================================= */}
+      <ExecutiveGovernanceScorecard />
+
+      {/* Section 2: Rule Health Telemetry Grid */}
       <section className="flex flex-col gap-4">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
           <div className="flex items-center gap-2">
