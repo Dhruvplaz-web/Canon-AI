@@ -444,7 +444,16 @@ def generate_round2_pdf(output_filename="CANON_ROUND_2_SUBMISSION_PACK.pdf", liv
         ('RIGHTPADDING', (0,0), (-1,-1), 6),
     ]))
     story.append(t_r3)
-    story.append(Spacer(1, 14))
+    story.append(Spacer(1, 10))
+
+    story.append(Paragraph("8. Transparent Disclosure: What Does NOT Work Yet", h1_style))
+    story.append(Paragraph(
+        "In accordance with Round 2 judging criteria of engineering rigor and honesty, the following two modules are intentionally scoped for Round 3 and are not yet active in the live build:<br/>"
+        "• <b>Multi-Modal Creative Asset Parsing:</b> The live platform operates strictly on text marketing submissions. Automated bounding-box overlays on Figma exports, raster banners, and PDF pitch decks are scheduled for Round 3.<br/>"
+        "• <b>Dense Vector Semantic Search (`pgvector`):</b> Because Milestone 1 operates on a compact, highly-curated statutory rule set (&le;20 rules), the system operates in high-performance pass-all mode. Quantized local embedding vector stores will be activated in Round 3.",
+        body_style
+    ))
+    story.append(Spacer(1, 10))
 
     # Sign-off box
     signoff = [
