@@ -53,3 +53,4 @@ export const proposalsStore: ProposalItem[] = [
     status: "PENDING_APPROVAL",
   },
 ];
+

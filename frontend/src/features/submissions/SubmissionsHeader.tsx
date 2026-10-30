@@ -25,6 +25,15 @@ export const SAMPLE_PRESETS = [
       "Bank on us for all your financial operations! We offer super dope yields with instant loan approval in seconds. Acme has been rated #1 banking app with 99.99% uptime across all major benchmarks.",
   },
   {
+    code: "HINGLISH_SURROGATE",
+    name: "🇮🇳 Hinglish Surrogate & Urgency Copy (Round 3)",
+    outcome: "REJECT (Surrogate / Dark Pattern)",
+    channel: "social_media",
+    title: "Diwali Dhamaka Festive Loan & Lifestyle Promotion",
+    content:
+      "Celebrate this Diwali with Royal Select Club Soda and Premium Silver Elaichi! Also get instant pre-approved personal loans with bina kisi document ke sirf 2 minute me chutki me paisa double. Jaldi karo sirf 3 ghante bache hain varna offer hamesha ke liye khatam ho jayega!",
+  },
+  {
     code: "ADVERSARIAL",
     name: "Adversarial Prompt Injection Attack",
     outcome: "SECURITY BLOCK (1.2ms)",

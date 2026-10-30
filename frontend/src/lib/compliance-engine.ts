@@ -4,6 +4,7 @@
  */
 
 import crypto from "crypto";
+import { auditVernacularCopy } from "@/features/submissions/vernacular/vernacularAuditEngine";
 
 export interface Finding {
   id: string;
@@ -215,6 +216,27 @@ export function verifyMarketingCopy(content: string, submissionId: string = "sub
         status: "OPEN",
       });
     }
+  });
+
+  // Run Indic Vernacular & Surrogate Regulatory Engine
+  const vernacularReport = auditVernacularCopy(content);
+  vernacularReport.findings.forEach((vf) => {
+    findings.push({
+      id: `fnd_vern_${crypto.randomUUID().slice(0, 8)}`,
+      rule_code: vf.ruleCode,
+      category: "VERNACULAR_STATUTORY",
+      severity: vf.severity === "CRITICAL" ? "CRITICAL" : "WARNING",
+      title: vf.ruleTitle,
+      matched_text: vf.sourceTextSpan,
+      start_offset: vf.startIndex,
+      end_offset: vf.endIndex,
+      suggested_fix: vf.suggestedCompliantRewrite,
+      receipt_a_draft_span: vf.sourceTextSpan,
+      receipt_b_rule_quote: `${vf.detectedViolationExplanation} (Statutory Citation: ${vf.statutoryCitation})`,
+      source_document_title: "INDIAN-VERNACULAR-STATUTES-2026",
+      source_section: vf.statutoryCitation,
+      status: "OPEN",
+    });
   });
 
   const hasCritical = findings.some((f) => f.severity === "CRITICAL");
