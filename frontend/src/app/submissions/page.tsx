@@ -10,10 +10,13 @@ import { ComplianceCertificateModal } from "@/components/ComplianceCertificateMo
 import { CreativeStudioPreview } from "@/components/CreativeStudioPreview";
 import { CopilotRewriteModal } from "@/components/CopilotRewriteModal";
 import { VisualAuditViewer } from "@/components/VisualAuditViewer";
+import { VernacularAuditStudio } from "@/components/VernacularAuditStudio";
 import { Skeleton } from "@/components/ui/Skeleton";
 
 function SubmissionsStudioContent() {
-  const [auditMode, setAuditMode] = React.useState<"COPY_TEXT" | "VISUAL_BANNER">("COPY_TEXT");
+  const [auditMode, setAuditMode] = React.useState<
+    "COPY_TEXT" | "VISUAL_BANNER" | "VERNACULAR_STUDIO"
+  >("COPY_TEXT");
 
   const {
     selectedPreset,
@@ -74,6 +77,21 @@ function SubmissionsStudioContent() {
               Round 3
             </span>
           </button>
+          <button
+            type="button"
+            onClick={() => setAuditMode("VERNACULAR_STUDIO")}
+            className={`inline-flex items-center gap-2 px-4 py-2 rounded-lg text-xs sm:text-sm font-semibold transition-all ${
+              auditMode === "VERNACULAR_STUDIO"
+                ? "bg-[#111111] text-white dark:bg-white dark:text-black shadow-xs"
+                : "text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)]"
+            }`}
+          >
+            <Sparkles className="w-4 h-4 text-amber-500" />
+            <span>Vernacular & Hinglish NLP Radar</span>
+            <span className="px-1.5 py-0.2 rounded text-[10px] uppercase font-mono font-bold bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20">
+              Round 3
+            </span>
+          </button>
         </div>
 
         <div className="hidden sm:flex items-center gap-2 text-xs font-mono text-[var(--color-text-muted)]">
@@ -84,6 +102,8 @@ function SubmissionsStudioContent() {
 
       {auditMode === "VISUAL_BANNER" ? (
         <VisualAuditViewer />
+      ) : auditMode === "VERNACULAR_STUDIO" ? (
+        <VernacularAuditStudio />
       ) : (
         <>
           <SubmissionsHeader

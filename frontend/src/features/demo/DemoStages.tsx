@@ -186,9 +186,22 @@ export function Stage2Authoring({ onNext }: { onNext: () => void }) {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 text-xs">
         {/* Editor Box */}
         <div className="space-y-2">
-          <span className="font-mono uppercase font-bold text-[var(--color-text-muted)] block">
-            MARKETING DRAFT TEXT
-          </span>
+          <div className="flex items-center justify-between">
+            <span className="font-mono uppercase font-bold text-[var(--color-text-muted)] block">
+              MARKETING DRAFT TEXT
+            </span>
+            <button
+              type="button"
+              onClick={() =>
+                setContent(
+                  "Celebrate this Diwali with Royal Select Club Soda and Premium Silver Elaichi! Also get instant pre-approved personal loans with bina kisi document ke sirf 2 minute me chutki me paisa double. Jaldi karo sirf 3 ghante bache hain varna offer hamesha ke liye khatam ho jayega!"
+                )
+              }
+              className="text-[11px] font-mono text-blue-600 dark:text-blue-400 hover:underline font-semibold"
+            >
+              🇮🇳 Load Round 3 Hinglish Preset
+            </button>
+          </div>
           <textarea
             value={content}
             onChange={(e) => setContent(e.target.value)}

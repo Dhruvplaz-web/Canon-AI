@@ -6,6 +6,7 @@
  * - CCPA Dark Patterns Guidelines 2023 (Schedule 1: False Urgency)
  * - Drugs and Magic Remedies Act 1954 (Section 3: Prohibited Claims)
  * - RBI Digital Lending Guidelines 2022 (Section 3: Regulated Entity Transparency)
+ * - SEBI Advertisement Code 2023 (Prohibition of Guaranteed High Yield Claims)
  */
 
 export interface SurrogateGroup {
@@ -44,6 +45,11 @@ export const SURROGATE_KNOWLEDGE_BASE: SurrogateGroup[] = [
       "signature",
       "johnnie walker",
       "chivas",
+      "bacardi",
+      "100 pipers",
+      "teachers",
+      "magic moments",
+      "seagram",
     ],
     innocuousExtensions: [
       "club soda",
@@ -56,11 +62,16 @@ export const SURROGATE_KNOWLEDGE_BASE: SurrogateGroup[] = [
       "music cds",
       "cassettes",
       "crystal glassware",
+      "playing cards",
+      "superhit nights",
+      "calendar",
+      "crisps",
+      "snacks",
     ],
     explanation:
-      "Indirect promotion of restricted alcoholic beverages disguised under an innocuous brand extension (Club Soda/Water).",
+      "Indirect promotion of restricted alcoholic beverages disguised under an innocuous brand extension (Club Soda, Packaged Drinking Water, or Music CDs).",
     suggestedAction:
-      "Remove alcoholic master brand trademark or furnish independent audited sales certificates proving >₹5 Cr independent turnover.",
+      "Remove alcoholic master brand trademark or furnish independent audited sales certificates proving >₹5 Cr independent turnover and FSSAI statutory product independence.",
   },
   {
     category: "SURROGATE_TOBACCO",
@@ -79,6 +90,11 @@ export const SURROGATE_KNOWLEDGE_BASE: SurrogateGroup[] = [
       "v1",
       "rajshree",
       "chaini khaini",
+      "zubaan kesari",
+      "miraj",
+      "gutkha",
+      "pan parag",
+      "hukum",
     ],
     innocuousExtensions: [
       "silver elaichi",
@@ -87,11 +103,15 @@ export const SURROGATE_KNOWLEDGE_BASE: SurrogateGroup[] = [
       "kesar candy",
       "cardamom seeds",
       "paan flavour",
+      "silver pearls",
+      "scent",
+      "supari",
+      "meetha pan",
     ],
     explanation:
-      "Indirect advertising of restricted tobacco/pan masala products disguised as mouth fresheners or silver elaichi.",
+      "Indirect advertising of restricted tobacco/pan masala products disguised as mouth fresheners, silver pearls, or elaichi using identical trademark architecture.",
     suggestedAction:
-      "Prohibited under COTPA Section 5. Cease advertising master brand trademarks across digital channels.",
+      "Strictly prohibited under COTPA Section 5. Cease advertising master brand trademarks across all digital and print channels.",
   },
   {
     category: "SURROGATE_BETTING",
@@ -111,6 +131,11 @@ export const SURROGATE_KNOWLEDGE_BASE: SurrogateGroup[] = [
       "khelplay",
       "melbet",
       "mostbet",
+      "winbuzz",
+      "mahadev",
+      "dafanews",
+      "bajivn",
+      "cricket bet 9",
     ],
     innocuousExtensions: [
       "news",
@@ -120,11 +145,14 @@ export const SURROGATE_KNOWLEDGE_BASE: SurrogateGroup[] = [
       "prediction league",
       "gaming community",
       "sports updates",
+      "cricket analysis",
+      "live scores app",
+      "sports club",
     ],
     explanation:
-      "Offshore illegal sports betting platform promoted via surrogate 'News' or 'Sports Portal' brand extensions.",
+      "Offshore illegal sports betting platform promoted via surrogate 'News Portal' or 'Sports Analysis' brand extensions in direct defiance of Ministry of Information and Broadcasting (MIB) and MeitY directives.",
     suggestedAction:
-      "Immediate deletion required. Direct statutory violation under MeitY 2023 and Public Gambling Act.",
+      "Immediate campaign takedown required. Direct statutory violation under MeitY 2023 directives and Public Gambling Act.",
   },
 ];
 
@@ -154,14 +182,14 @@ export const VERNACULAR_PATTERN_RULES: VernacularPatternRule[] = [
     severity: "CRITICAL",
     penaltyInr: 1000000,
     regexPatterns: [
-      /(bina|bagair|binaa)\s+(kisi\s+)?(document|kagaz|paper|cibil|salary\s*slip|verification)/i,
+      /(bina|bagair|binaa)\s+(kisi\s+)?(document|kagaz|paper|cibil|salary\s*slip|verification|jhanjhat|magajmari)/i,
       /sirf\s+(aadhaar|aadhar|pan|mobile)\s*(do|pe|par)\s*(instant\s*)?(loan|paisa|credit)/i,
-      /(chutki|jhatpat|palak\s*jhapakte|turant)\s+(me\s+)?(loan|credit|paisa|cash)/i,
+      /(chutki|jhatpat|palak\s*jhapakte|turant|fatafat)\s+(me\s+)?(loan|credit|paisa|cash)/i,
     ],
     explanation:
       "Unsubstantiated promise of unconditional loans without statutory KYC, underwriting, or credit bureau checks.",
     suggestedAction:
-      "State: 'Digital pre-qualification subject to credit bureau assessment and RBI-regulated NBFC verification.'",
+      "Digital pre-qualification subject to credit bureau assessment and RBI-regulated NBFC verification.",
   },
   {
     id: "HNG-FINTECH-02",
@@ -173,13 +201,13 @@ export const VERNACULAR_PATTERN_RULES: VernacularPatternRule[] = [
     penaltyInr: 1000000,
     regexPatterns: [
       /(paisa|paise|pesa|rakam|capital|investment)\s+(double|dugna|3x|triple|pakka\s*double)/i,
-      /(100%\s*pakka|pakka\s*guarantee|shartiya)\s*(munafa|return|profit|kamai)/i,
+      /(100%\s*pakka|pakka\s*guarantee|shartiya|jhakaas)\s*(munafa|return|profit|kamai|yields)/i,
       /(bina\s*risk|zero\s*risk)\s*(me\s+)?(paisa|crorepati|kamaye)/i,
     ],
     explanation:
       "Strict statutory prohibition on promises of guaranteed wealth doubling or risk-free investment returns.",
     suggestedAction:
-      "Disclose investment risk: 'Mutual fund / equity investments are subject to market risks. Read all scheme documents carefully.'",
+      "Mutual fund and market investments are subject to market risks. Read all scheme related documents carefully.",
   },
   {
     id: "HNG-DARK-01",
@@ -194,6 +222,7 @@ export const VERNACULAR_PATTERN_RULES: VernacularPatternRule[] = [
       /(jaldi\s*karo|der\s*mat\s*karo)\s*varna\s*(offer|mauka|chance|deal)\s*(khatam|gaya|hamesha)/i,
       /(aakhri\s*mauka|last\s*chance)\s*(miss\s*mat\s*karna|hath\s*se\s*na\s*jane\s*de)/i,
       /offer\s*hamesha\s*ke\s*liye\s*khatam/i,
+      /(loot\s*lo|mahaloot|dhamaka\s*deal\s*khatam)/i,
     ],
     explanation:
       "Manufacturing artificial countdown timers or psychological panic to force immediate consumer purchasing.",
@@ -212,6 +241,7 @@ export const VERNACULAR_PATTERN_RULES: VernacularPatternRule[] = [
       /(shartiya|100%\s*guaranteed|pakka)\s*(ilaaj|ilaj|upchar|cure|nateeja)/i,
       /(jad\s*se\s*khatam|hamesha\s*ke\s*liye\s*gayab|chamatkari\s*dawa)/i,
       /(sugar|diabetes|cancer|hair\s*fall|arthritis)\s*(hamesha\s*ke\s*liye\s*)?(theek|khatam|cure)/i,
+      /(motapa\s*kam|bal\s*ugaye|pathri\s*nikale)/i,
     ],
     explanation:
       "Criminal offense under Section 3 of DMRA 1954 to claim guaranteed cures or eradication of scheduled lifestyle conditions.",

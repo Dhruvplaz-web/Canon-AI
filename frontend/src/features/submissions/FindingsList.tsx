@@ -342,6 +342,23 @@ export function FindingsList({
                 </div>
               </div>
 
+              {/* Indic Vernacular Diagnostic Trace */}
+              {f.category === "VERNACULAR_STATUTORY" && (
+                <div className="mt-2.5 p-2 rounded-lg bg-blue-500/5 border border-blue-500/20 text-xs flex items-center justify-between flex-wrap gap-1">
+                  <div className="flex items-center gap-1.5 flex-wrap">
+                    <span className="text-[10px] uppercase font-mono font-bold bg-blue-500/10 text-blue-600 dark:text-blue-400 px-1.5 py-0.5 rounded">
+                      Indic NLP Trace
+                    </span>
+                    <span className="text-[var(--color-text-secondary)] font-mono text-[11px]">
+                      Soundex-Indic Matched: &ldquo;{f.matched_text}&rdquo;
+                    </span>
+                  </div>
+                  <span className="text-[10px] font-mono font-bold text-rose-600 dark:text-rose-400">
+                    Statutory Fine: ₹10,00,000 (CPA Sec 21)
+                  </span>
+                </div>
+              )}
+
               {/* Remediation Preview */}
               {f.suggested_fix && (
                 <div className="mt-2 text-xs text-emerald-800 dark:text-emerald-300 bg-emerald-500/5 border border-emerald-500/20 p-2.5 rounded-lg">

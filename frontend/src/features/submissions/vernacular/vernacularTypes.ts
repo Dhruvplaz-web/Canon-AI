@@ -1,3 +1,5 @@
+import { PhoneticTraceStep } from "./indicNormalizer";
+
 export type VernacularCategory =
   | "SURROGATE_ALCOBEV"
   | "SURROGATE_TOBACCO"
@@ -19,6 +21,16 @@ export interface VernacularFinding {
   detectedViolationExplanation: string;
   suggestedCompliantRewrite: string;
   statutoryPenaltyExposureInr: number;
+  phoneticTrace?: {
+    original: string;
+    canonical: string;
+    steps: PhoneticTraceStep[];
+  };
+  bipartiteEntityMatch?: {
+    masterBrand: string;
+    innocuousExtension: string;
+    surrogateCategory: string;
+  };
 }
 
 export interface VernacularAuditReport {
@@ -28,5 +40,6 @@ export interface VernacularAuditReport {
   criticalCount: number;
   totalStatutoryExposureInr: number;
   detectedCategories: VernacularCategory[];
+  remediatedText: string;
   findings: VernacularFinding[];
 }
