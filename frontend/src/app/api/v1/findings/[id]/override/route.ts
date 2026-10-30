@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { reviewQueueStore } from "@/app/api/v1/review/queue/route";
+import { reviewQueueStore } from "@/app/api/v1/review/queue/store";
 
 export async function POST(
   req: NextRequest,

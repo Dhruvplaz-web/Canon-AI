@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { proposalsStore } from "@/app/api/v1/governance/proposals/route";
+import { proposalsStore } from "@/app/api/v1/governance/proposals/store";
 
 export async function POST(
   req: NextRequest,

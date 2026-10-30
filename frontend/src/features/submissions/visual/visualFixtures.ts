@@ -1,0 +1,266 @@
+import { VisualCreativeAsset } from "./visualTypes";
+
+export const VISUAL_BENCHMARK_ASSETS: VisualCreativeAsset[] = [
+  {
+    id: "VIS-FIXTURE-01",
+    title: "🇮🇳 FinTech High-Risk Loan Ad (Microscopic 4.2pt & Pale Grey Disclaimer)",
+    category: "FINTECH_LOAN",
+    channel: "INSTAGRAM_POST",
+    dimensions: { width: 1080, height: 1080 },
+    headlineText: "Instant Loan @ 1% Interest* Disbursed in 5 Mins!",
+    disclaimerText: "*Terms apply. Processing fee 14% upfront. Annual APR 48% p.a. Repayment tenure 60 days. Non-refundable platform convenience fee applies.",
+    backgroundTheme: "from-amber-50 to-orange-100",
+    regions: [
+      {
+        id: "reg-01-logo",
+        label: "LOGO",
+        textExtracted: "RupeeFast Instant Credit",
+        coordinates: { ymin: 0.06, xmin: 0.08, ymax: 0.12, xmax: 0.38 },
+        metrics: {
+          calculatedFontSizePt: 16.0,
+          canvasHeightPercentage: 3.2,
+          contrastRatio: 9.4,
+          textColorHex: "#111111",
+          backgroundColorHex: "#FFFBEB",
+        },
+        violations: [],
+      },
+      {
+        id: "reg-01-headline",
+        label: "HEADLINE",
+        textExtracted: "Instant Loan @ 1% Interest*",
+        coordinates: { ymin: 0.22, xmin: 0.08, ymax: 0.38, xmax: 0.92 },
+        metrics: {
+          calculatedFontSizePt: 38.0,
+          canvasHeightPercentage: 8.5,
+          contrastRatio: 12.1,
+          textColorHex: "#0F172A",
+          backgroundColorHex: "#FFFBEB",
+        },
+        violations: [],
+      },
+      {
+        id: "reg-01-subhead",
+        label: "BODY_CLAIM",
+        textExtracted: "Money credited directly to your bank account within 300 seconds.",
+        coordinates: { ymin: 0.42, xmin: 0.08, ymax: 0.52, xmax: 0.85 },
+        metrics: {
+          calculatedFontSizePt: 18.0,
+          canvasHeightPercentage: 3.8,
+          contrastRatio: 8.2,
+          textColorHex: "#334155",
+          backgroundColorHex: "#FFFBEB",
+        },
+        violations: [],
+      },
+      {
+        id: "reg-01-badge-missing",
+        label: "PARTNER_BADGE",
+        textExtracted: "NBFC Partner unlisted / undisclosed",
+        coordinates: { ymin: 0.78, xmin: 0.08, ymax: 0.84, xmax: 0.45 },
+        metrics: {
+          calculatedFontSizePt: 0,
+          canvasHeightPercentage: 0,
+          contrastRatio: 1.0,
+          textColorHex: "transparent",
+          backgroundColorHex: "#FFFBEB",
+        },
+        violations: [
+          {
+            code: "RBI-DIGITAL-LENDING-2022",
+            severity: "CRITICAL",
+            ruleTitle: "Undisclosed Lending Partner Entity",
+            statutoryCitation: "RBI Digital Lending Guidelines (2022) Section 3.1",
+            detectedValue: "No Regulated Entity (RE) NBFC partner mentioned",
+            requiredThreshold: "Mandatory prominent disclosure of registered NBFC partner",
+            remediationAction: "Include Registered NBFC name & Certificate of Registration (CoR) number.",
+          },
+        ],
+      },
+      {
+        id: "reg-01-disclaimer",
+        label: "DISCLAIMER_LEGAL",
+        textExtracted: "*Terms apply. Processing fee 14% upfront. Annual APR 48% p.a. Repayment tenure 60 days. Non-refundable platform convenience fee applies.",
+        coordinates: { ymin: 0.91, xmin: 0.08, ymax: 0.96, xmax: 0.92 },
+        metrics: {
+          calculatedFontSizePt: 4.2, // ILLEGAL: Below 8pt minimum
+          canvasHeightPercentage: 0.95, // ILLEGAL: < 1.8% of canvas
+          contrastRatio: 2.3, // ILLEGAL: Fails 4.5:1 WCAG AA
+          textColorHex: "#A1A1AA", // Pale grey
+          backgroundColorHex: "#FEF3C7", // Pale amber
+        },
+        violations: [
+          {
+            code: "ASCI-DISC-01",
+            severity: "CRITICAL",
+            ruleTitle: "Microscopic Fine Print Violation",
+            statutoryCitation: "ASCI Guidelines on Disclaimers (2023) Clause 1.4",
+            detectedValue: "4.2pt font height (11% of headline size)",
+            requiredThreshold: "≥ 30% of headline font size (minimum 8pt)",
+            remediationAction: "Increase font size to at least 11.4pt to satisfy the 30% ratio threshold.",
+          },
+          {
+            code: "CCPA-SEC4-2",
+            severity: "CRITICAL",
+            ruleTitle: "Deceptive Disclaimer Obscuration",
+            statutoryCitation: "CCPA Misleading Advertisement Guidelines (2022) Sec 4(2)",
+            detectedValue: "Sub-1.8% canvas height ratio (0.95%) placed in compressed footer",
+            requiredThreshold: "Clear & Conspicuous legible presentation",
+            remediationAction: "Enlarge disclaimer text block and position with adequate vertical padding.",
+          },
+          {
+            code: "WCAG-CONTRAST-AA",
+            severity: "CRITICAL",
+            ruleTitle: "Illegible Pale Grey Foreground Contrast",
+            statutoryCitation: "ISO/IEC 40500:2012 / WCAG 2.1 AA Criterion 1.4.3",
+            detectedValue: "2.3:1 contrast ratio (#A1A1AA on #FEF3C7)",
+            requiredThreshold: "≥ 4.5:1 luminance contrast",
+            remediationAction: "Change text color to high-contrast dark charcoal (#0F172A) to achieve 11.2:1 contrast.",
+          },
+        ],
+      },
+    ],
+  },
+  {
+    id: "VIS-FIXTURE-02",
+    title: "🇮🇳 EdTech Placement Guarantee Ad (Sideways Rotated 90° Obscured Text)",
+    category: "EDTECH_GUARANTEE",
+    channel: "DISPLAY_BANNER_300X250",
+    dimensions: { width: 1200, height: 628 },
+    headlineText: "100% Guaranteed ₹12 LPA Job Placement or Full Refund*",
+    disclaimerText: "*Refund subject to 95% attendance, clearing 6 mock tests, and accepting any offer above ₹3 LPA within 180 days of graduation.",
+    backgroundTheme: "from-blue-50 to-indigo-100",
+    regions: [
+      {
+        id: "reg-02-logo",
+        label: "LOGO",
+        textExtracted: "TechCareer Academy",
+        coordinates: { ymin: 0.08, xmin: 0.06, ymax: 0.16, xmax: 0.35 },
+        metrics: {
+          calculatedFontSizePt: 15.0,
+          canvasHeightPercentage: 3.5,
+          contrastRatio: 10.1,
+          textColorHex: "#0F172A",
+          backgroundColorHex: "#EFF6FF",
+        },
+        violations: [],
+      },
+      {
+        id: "reg-02-headline",
+        label: "HEADLINE",
+        textExtracted: "100% Guaranteed ₹12 LPA Job Placement*",
+        coordinates: { ymin: 0.24, xmin: 0.06, ymax: 0.44, xmax: 0.94 },
+        metrics: {
+          calculatedFontSizePt: 34.0,
+          canvasHeightPercentage: 8.0,
+          contrastRatio: 11.8,
+          textColorHex: "#1E1B4B",
+          backgroundColorHex: "#EFF6FF",
+        },
+        violations: [],
+      },
+      {
+        id: "reg-02-sideways-disclaimer",
+        label: "DISCLAIMER_LEGAL",
+        textExtracted: "*Refund subject to 95% attendance, clearing 6 mock tests, and accepting any offer above ₹3 LPA within 180 days.",
+        coordinates: { ymin: 0.15, xmin: 0.95, ymax: 0.85, xmax: 0.99 },
+        metrics: {
+          calculatedFontSizePt: 5.2,
+          canvasHeightPercentage: 1.1,
+          contrastRatio: 3.2,
+          textColorHex: "#94A3B8",
+          backgroundColorHex: "#EFF6FF",
+          rotationDegrees: 90, // ILLEGAL: Sideways vertical orientation
+        },
+        violations: [
+          {
+            code: "CCPA-ROTATION-OBSCURATION",
+            severity: "CRITICAL",
+            ruleTitle: "Sideways 90-Degree Rotated Disclaimer",
+            statutoryCitation: "CCPA Misleading Ads (2022) Sec 4(2) & ASCI General Rule 1.4",
+            detectedValue: "90° vertical orientation along right margin",
+            requiredThreshold: "Horizontal 0° standard reading orientation",
+            remediationAction: "Re-orient disclaimer horizontally beneath the qualification claim.",
+          },
+          {
+            code: "ASCI-CONTRADICTION",
+            severity: "CRITICAL",
+            ruleTitle: "Disclaimer Contradicts Headline Promise",
+            statutoryCitation: "ASCI Chapter I, Clause 1.4 (No Fine-Print Contradiction)",
+            detectedValue: "Headline promises ₹12 LPA; disclaimer forces acceptance of ₹3 LPA",
+            requiredThreshold: "Disclaimer may only qualify, never contradict, headline",
+            remediationAction: "Remove '100% Guaranteed ₹12 LPA' or align qualifying criteria openly in headline.",
+          },
+        ],
+      },
+    ],
+  },
+  {
+    id: "VIS-FIXTURE-03",
+    title: "🇮🇳 Compliant Institutional Ad (8.5pt Standard, High-Contrast & Visible NBFC)",
+    category: "INSTITUTIONAL_BANK",
+    channel: "INSTAGRAM_POST",
+    dimensions: { width: 1080, height: 1080 },
+    headlineText: "Pre-Approved Car Loans Starting @ 8.65% p.a.",
+    disclaimerText: "Credit at sole discretion of Kotak Prime Ltd (RBI Reg: 14.00028). Standard processing fee of ₹3,500 applies. T&C apply.",
+    backgroundTheme: "from-neutral-50 to-slate-100",
+    regions: [
+      {
+        id: "reg-03-logo",
+        label: "LOGO",
+        textExtracted: "Kotak Prime Ltd",
+        coordinates: { ymin: 0.08, xmin: 0.08, ymax: 0.15, xmax: 0.35 },
+        metrics: {
+          calculatedFontSizePt: 16.0,
+          canvasHeightPercentage: 3.4,
+          contrastRatio: 12.5,
+          textColorHex: "#09090B",
+          backgroundColorHex: "#FAFAFA",
+        },
+        violations: [],
+      },
+      {
+        id: "reg-03-headline",
+        label: "HEADLINE",
+        textExtracted: "Pre-Approved Car Loans Starting @ 8.65% p.a.",
+        coordinates: { ymin: 0.25, xmin: 0.08, ymax: 0.40, xmax: 0.92 },
+        metrics: {
+          calculatedFontSizePt: 28.0,
+          canvasHeightPercentage: 6.8,
+          contrastRatio: 14.1,
+          textColorHex: "#09090B",
+          backgroundColorHex: "#FAFAFA",
+        },
+        violations: [],
+      },
+      {
+        id: "reg-03-badge",
+        label: "PARTNER_BADGE",
+        textExtracted: "Registered with Reserve Bank of India (CoR: 14.00028)",
+        coordinates: { ymin: 0.76, xmin: 0.08, ymax: 0.82, xmax: 0.65 },
+        metrics: {
+          calculatedFontSizePt: 9.5,
+          canvasHeightPercentage: 2.1,
+          contrastRatio: 9.8,
+          textColorHex: "#18181B",
+          backgroundColorHex: "#F4F4F5",
+        },
+        violations: [],
+      },
+      {
+        id: "reg-03-disclaimer",
+        label: "DISCLAIMER_LEGAL",
+        textExtracted: "Credit at sole discretion of Kotak Prime Ltd (RBI Reg: 14.00028). Standard processing fee of ₹3,500 applies. T&C apply.",
+        coordinates: { ymin: 0.88, xmin: 0.08, ymax: 0.95, xmax: 0.92 },
+        metrics: {
+          calculatedFontSizePt: 9.2, // COMPLIANT: Exceeds 8pt minimum
+          canvasHeightPercentage: 2.2, // COMPLIANT: Exceeds 1.8% of canvas
+          contrastRatio: 8.9, // COMPLIANT: Exceeds 4.5:1 WCAG AA
+          textColorHex: "#27272A",
+          backgroundColorHex: "#FAFAFA",
+        },
+        violations: [],
+      },
+    ],
+  },
+];
