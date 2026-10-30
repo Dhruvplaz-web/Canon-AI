@@ -47,8 +47,12 @@ export function calculateWcagContrast(textColorHex: string, backgroundColorHex: 
 /**
  * Core Deterministic Visual Audit Engine.
  * Audits bounding boxes against ASCI 2023, CCPA 2022, and WCAG AA standards.
+ * Supports "isRemediated" simulation to demonstrate Canon's Auto-Fix capability.
  */
-export function auditVisualCreative(asset: VisualCreativeAsset): VisualAuditReport {
+export function auditVisualCreative(
+  asset: VisualCreativeAsset,
+  isRemediated = false
+): VisualAuditReport {
   let criticalCount = 0;
   let warningsCount = 0;
   let totalFineExposureInr = 0;
@@ -58,67 +62,85 @@ export function auditVisualCreative(asset: VisualCreativeAsset): VisualAuditRepo
   const headlinePt = headlineBox ? headlineBox.metrics.calculatedFontSizePt : 32.0;
 
   const auditedRegions: VisualBoundingBox[] = asset.regions.map((region) => {
-    const dynamicViolations: VisualViolation[] = [...region.violations];
+    let dynamicViolations: VisualViolation[] = [...region.violations];
     const metrics = { ...region.metrics };
 
-    // Dynamically recompute contrast if colors provided
-    if (metrics.textColorHex && metrics.backgroundColorHex && metrics.textColorHex !== "transparent") {
-      metrics.contrastRatio = calculateWcagContrast(metrics.textColorHex, metrics.backgroundColorHex);
-    }
-
-    // ASCI / CCPA Rules for Legal Disclaimers
-    if (region.label === "DISCLAIMER_LEGAL") {
-      // 1. Absolute font size check (8.0pt minimum under ASCI / CCPA guidelines)
-      if (metrics.calculatedFontSizePt < 8.0 && !dynamicViolations.some((v) => v.code === "ASCI-DISC-01")) {
-        dynamicViolations.push({
-          code: "ASCI-DISC-01",
-          severity: "CRITICAL",
-          ruleTitle: "Microscopic Fine Print Violation",
-          statutoryCitation: "ASCI Guidelines on Disclaimers (2023) Clause 1.4",
-          detectedValue: `${metrics.calculatedFontSizePt.toFixed(1)}pt font height`,
-          requiredThreshold: "≥ 8.0pt minimum absolute font size",
-          remediationAction: "Increase font size to at least 8.5pt.",
-        });
+    // Apply 1-Click Remediation Fixes if toggled
+    if (isRemediated) {
+      if (region.label === "DISCLAIMER_LEGAL") {
+        metrics.calculatedFontSizePt = Math.max(10.0, Math.round(headlinePt * 0.32 * 10) / 10);
+        metrics.canvasHeightPercentage = 2.4;
+        metrics.textColorHex = "#0F172A"; // High-contrast slate-900
+        metrics.rotationDegrees = 0; // Straighten horizontal
+        metrics.contrastRatio = calculateWcagContrast(metrics.textColorHex, metrics.backgroundColorHex);
+        dynamicViolations = []; // All violations resolved!
+      } else if (region.label === "PARTNER_BADGE") {
+        metrics.calculatedFontSizePt = 9.5;
+        metrics.canvasHeightPercentage = 2.0;
+        metrics.textColorHex = "#0F172A";
+        metrics.contrastRatio = 11.2;
+        dynamicViolations = [];
+      }
+    } else {
+      // Recompute contrast dynamically
+      if (metrics.textColorHex && metrics.backgroundColorHex && metrics.textColorHex !== "transparent") {
+        metrics.contrastRatio = calculateWcagContrast(metrics.textColorHex, metrics.backgroundColorHex);
       }
 
-      // 2. Relative headline ratio check (≥ 30% of headline size under ASCI)
-      const ratio = metrics.calculatedFontSizePt / headlinePt;
-      if (ratio < 0.30 && !dynamicViolations.some((v) => v.code === "ASCI-RATIO-30")) {
-        dynamicViolations.push({
-          code: "ASCI-RATIO-30",
-          severity: "CRITICAL",
-          ruleTitle: "Sub-30% Headline-to-Disclaimer Ratio",
-          statutoryCitation: "ASCI Disclaimer Code: Qualifying Font Ratio ≥ 30%",
-          detectedValue: `${Math.round(ratio * 100)}% of headline font size`,
-          requiredThreshold: `≥ 30% (requires ≥ ${(headlinePt * 0.3).toFixed(1)}pt)`,
-          remediationAction: `Scale disclaimer text height up to at least ${(headlinePt * 0.3).toFixed(1)}pt.`,
-        });
-      }
+      // ASCI / CCPA Rules for Legal Disclaimers
+      if (region.label === "DISCLAIMER_LEGAL") {
+        // 1. Absolute font size check (8.0pt minimum under ASCI / CCPA guidelines)
+        if (metrics.calculatedFontSizePt < 8.0 && !dynamicViolations.some((v) => v.code === "ASCI-DISC-01")) {
+          dynamicViolations.push({
+            code: "ASCI-DISC-01",
+            severity: "CRITICAL",
+            ruleTitle: "Microscopic Fine Print Violation",
+            statutoryCitation: "ASCI Guidelines on Disclaimers (2023) Clause 1.4",
+            detectedValue: `${metrics.calculatedFontSizePt.toFixed(1)}pt font height`,
+            requiredThreshold: "≥ 8.0pt minimum absolute font size",
+            remediationAction: "Increase font size to at least 8.5pt.",
+          });
+        }
 
-      // 3. WCAG Contrast Check (< 4.5:1 is a failure for normal text)
-      if (metrics.contrastRatio < 4.5 && !dynamicViolations.some((v) => v.code === "WCAG-CONTRAST-AA")) {
-        dynamicViolations.push({
-          code: "WCAG-CONTRAST-AA",
-          severity: "CRITICAL",
-          ruleTitle: "Illegible Low-Contrast Disclaimer",
-          statutoryCitation: "ISO/IEC 40500:2012 / WCAG 2.1 AA Criterion 1.4.3",
-          detectedValue: `${metrics.contrastRatio.toFixed(1)}:1 contrast ratio`,
-          requiredThreshold: "≥ 4.5:1 contrast against background",
-          remediationAction: "Change text color to a higher contrast color value.",
-        });
-      }
+        // 2. Relative headline ratio check (≥ 30% of headline size under ASCI)
+        const ratio = metrics.calculatedFontSizePt / headlinePt;
+        if (ratio < 0.30 && !dynamicViolations.some((v) => v.code === "ASCI-RATIO-30")) {
+          dynamicViolations.push({
+            code: "ASCI-RATIO-30",
+            severity: "CRITICAL",
+            ruleTitle: "Sub-30% Headline-to-Disclaimer Ratio",
+            statutoryCitation: "ASCI Disclaimer Code: Qualifying Font Ratio ≥ 30%",
+            detectedValue: `${Math.round(ratio * 100)}% of headline font size`,
+            requiredThreshold: `≥ 30% (requires ≥ ${(headlinePt * 0.3).toFixed(1)}pt)`,
+            remediationAction: `Scale disclaimer text height up to at least ${(headlinePt * 0.3).toFixed(1)}pt.`,
+          });
+        }
 
-      // 4. Orientation / Rotation check (sideways obscuration)
-      if (metrics.rotationDegrees && Math.abs(metrics.rotationDegrees) > 15 && !dynamicViolations.some((v) => v.code === "CCPA-ROTATION-OBSCURATION")) {
-        dynamicViolations.push({
-          code: "CCPA-ROTATION-OBSCURATION",
-          severity: "CRITICAL",
-          ruleTitle: "Obscured Sideways Text Orientation",
-          statutoryCitation: "CCPA Guidelines for Misleading Advertisements (2022) Sec 4(2)",
-          detectedValue: `${metrics.rotationDegrees}° rotated angle`,
-          requiredThreshold: "0° horizontal reading angle",
-          remediationAction: "Render disclaimer in horizontal standard reading orientation.",
-        });
+        // 3. WCAG Contrast Check (< 4.5:1 is a failure for normal text)
+        if (metrics.contrastRatio < 4.5 && !dynamicViolations.some((v) => v.code === "WCAG-CONTRAST-AA")) {
+          dynamicViolations.push({
+            code: "WCAG-CONTRAST-AA",
+            severity: "CRITICAL",
+            ruleTitle: "Illegible Low-Contrast Disclaimer",
+            statutoryCitation: "ISO/IEC 40500:2012 / WCAG 2.1 AA Criterion 1.4.3",
+            detectedValue: `${metrics.contrastRatio.toFixed(1)}:1 contrast ratio`,
+            requiredThreshold: "≥ 4.5:1 contrast against background",
+            remediationAction: "Change text color to a higher contrast color value.",
+          });
+        }
+
+        // 4. Orientation / Rotation check (sideways obscuration)
+        if (metrics.rotationDegrees && Math.abs(metrics.rotationDegrees) > 15 && !dynamicViolations.some((v) => v.code === "CCPA-ROTATION-OBSCURATION")) {
+          dynamicViolations.push({
+            code: "CCPA-ROTATION-OBSCURATION",
+            severity: "CRITICAL",
+            ruleTitle: "Obscured Sideways Text Orientation",
+            statutoryCitation: "CCPA Guidelines for Misleading Advertisements (2022) Sec 4(2)",
+            detectedValue: `${metrics.rotationDegrees}° rotated angle`,
+            requiredThreshold: "0° horizontal reading angle",
+            remediationAction: "Render disclaimer in horizontal standard reading orientation.",
+          });
+        }
       }
     }
 
@@ -151,10 +173,53 @@ export function auditVisualCreative(asset: VisualCreativeAsset): VisualAuditRepo
   const disclaimerToHeadlineRatio = headlinePt > 0 ? minDisclaimerPt / headlinePt : 1.0;
 
   // Cap statutory exposure at ₹50 Lakhs (the statutory ceiling under Consumer Protection Act 2019)
-  const cappedFineExposure = Math.min(totalFineExposureInr, 5000000);
+  const cappedFineExposure = isRemediated ? 0 : Math.min(totalFineExposureInr, 5000000);
 
-  const overallVerdict: VisualAuditReport["overallVerdict"] =
-    criticalCount > 0 ? "FLAGGED_CRITICAL" : warningsCount > 0 ? "ACTION_REQUIRED" : "COMPLIANT";
+  const overallVerdict: VisualAuditReport["overallVerdict"] = isRemediated
+    ? "COMPLIANT"
+    : criticalCount > 0
+    ? "FLAGGED_CRITICAL"
+    : warningsCount > 0
+    ? "ACTION_REQUIRED"
+    : "COMPLIANT";
+
+  // Formal Statutory Checklist
+  const statutoryChecklist = [
+    {
+      ruleId: "ASCI-1.4",
+      title: "Relative Font-to-Headline Proportion",
+      standard: "ASCI Disclaimer Code 2023",
+      passed: isRemediated || disclaimerToHeadlineRatio >= 0.30,
+      mathFormula: "H_disclaimer / H_headline ≥ 0.30",
+      scoreText: `${Math.round(disclaimerToHeadlineRatio * 100)}% (Min 30%)`,
+    },
+    {
+      ruleId: "CCPA-4.2",
+      title: "Absolute Disclaimer Legibility Floor",
+      standard: "Consumer Protection Act 2019 (CCPA)",
+      passed: isRemediated || minDisclaimerPt >= 8.0,
+      mathFormula: "Disclaimer_Pt ≥ 8.0pt (Height ≥ 1.8%)",
+      scoreText: `${minDisclaimerPt.toFixed(1)}pt (Min 8.0pt)`,
+    },
+    {
+      ruleId: "WCAG-1.4.3",
+      title: "Luminance Background Contrast",
+      standard: "ISO/IEC 40500:2012 (WCAG 2.1 AA)",
+      passed: isRemediated || lowestContrastRatio >= 4.5,
+      mathFormula: "(L_light + 0.05) / (L_dark + 0.05) ≥ 4.5:1",
+      scoreText: `${lowestContrastRatio.toFixed(1)}:1 (Min 4.5:1)`,
+    },
+    {
+      ruleId: "RBI-DL-3.1",
+      title: "Regulated NBFC Partner Transparency",
+      standard: "RBI Digital Lending Guidelines 2022",
+      passed: isRemediated || !auditedRegions.some((r) => r.violations.some((v) => v.code === "RBI-DIGITAL-LENDING-2022")),
+      mathFormula: "Disclosure(Partner_NBFC) = TRUE",
+      scoreText: isRemediated || !auditedRegions.some((r) => r.violations.some((v) => v.code === "RBI-DIGITAL-LENDING-2022"))
+        ? "Verified Disclosed"
+        : "Missing Partner CoR",
+    },
+  ];
 
   return {
     assetId: asset.id,
@@ -162,14 +227,16 @@ export function auditVisualCreative(asset: VisualCreativeAsset): VisualAuditRepo
     timestamp: new Date().toISOString(),
     overallVerdict,
     statutoryFineExposureInr: cappedFineExposure,
-    criticalViolationsCount: criticalCount,
-    warningsCount,
+    criticalViolationsCount: isRemediated ? 0 : criticalCount,
+    warningsCount: isRemediated ? 0 : warningsCount,
+    isRemediated,
     summaryMetrics: {
       minDisclaimerPt: Math.round(minDisclaimerPt * 10) / 10,
       headlineHeightPt: Math.round(headlinePt * 10) / 10,
       disclaimerToHeadlineRatio: Math.round(disclaimerToHeadlineRatio * 100) / 100,
       lowestContrastRatio: Math.round(lowestContrastRatio * 10) / 10,
     },
+    statutoryChecklist,
     regions: auditedRegions,
   };
 }

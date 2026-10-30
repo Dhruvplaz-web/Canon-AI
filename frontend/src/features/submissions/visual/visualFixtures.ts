@@ -264,3 +264,4 @@ export const VISUAL_BENCHMARK_ASSETS: VisualCreativeAsset[] = [
     ],
   },
 ];
+

@@ -64,11 +64,21 @@ export interface VisualAuditReport {
   statutoryFineExposureInr: number;
   criticalViolationsCount: number;
   warningsCount: number;
+  isRemediated?: boolean;
   summaryMetrics: {
     minDisclaimerPt: number;
     headlineHeightPt: number;
     disclaimerToHeadlineRatio: number; // target >= 0.30 (30%) under ASCI
     lowestContrastRatio: number; // target >= 4.5:1 under WCAG
   };
+  statutoryChecklist: {
+    ruleId: string;
+    title: string;
+    standard: string;
+    passed: boolean;
+    mathFormula: string;
+    scoreText: string;
+  }[];
   regions: VisualBoundingBox[];
 }
+
