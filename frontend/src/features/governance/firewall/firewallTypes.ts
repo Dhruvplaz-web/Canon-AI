@@ -41,6 +41,7 @@ export interface FirewallCampaign {
   circuitBreakerEventId?: string;
   remediatedCopy?: string;
   protectedSpendInr?: number;
+  isCustomCampaign?: boolean;
 }
 
 export interface CircuitBreakerWebhookPayload {
@@ -49,6 +50,18 @@ export interface CircuitBreakerWebhookPayload {
   violationCode?: string;
   customReason?: string;
   operator?: string;
+}
+
+export interface WebhookLogEntry {
+  id: string;
+  timestamp: string;
+  service: "META_GRAPH_API" | "GOOGLE_ADS_API" | "SLACK_INCIDENT" | "PAGERDUTY";
+  endpoint: string;
+  method: "POST" | "MUTATE";
+  status: number;
+  latencyMs: number;
+  payloadSummary: string;
+  eventSignature: string;
 }
 
 export interface CircuitBreakerResult {
@@ -63,6 +76,7 @@ export interface CircuitBreakerResult {
     responseHash: string;
     timestamp: string;
   };
+  webhookLogs: WebhookLogEntry[];
   protectedSpendInr: number;
   eventId: string;
   auditSignature: string;
@@ -74,5 +88,7 @@ export interface FirewallTelemetrySummary {
   totalPausedCampaigns: number;
   currentLiveHourlySpendInr: number;
   totalProtectedAdSpendInr: number;
+  totalAvoidedStatutoryPenaltiesInr: number;
+  totalCorporateLiabilityAvertedInr: number;
   interceptionLatencyMs: number;
 }

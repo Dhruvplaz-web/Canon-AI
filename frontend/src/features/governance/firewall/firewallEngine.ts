@@ -1,12 +1,13 @@
 import {
   FirewallCampaign,
   CircuitBreakerResult,
-  CampaignStatus,
+  WebhookLogEntry,
 } from "./firewallTypes";
 
 /**
  * Triggers an automated emergency circuit breaker on a campaign,
- * dispatching a simulated programmatic pause to Meta Marketing API or Google Ads API.
+ * dispatching simulated programmatic pause webhooks to Meta Marketing API / Google Ads API,
+ * Slack P1 incident channel, and PagerDuty.
  */
 export function executeCircuitBreaker(
   campaign: FirewallCampaign,
@@ -32,6 +33,43 @@ export function executeCircuitBreaker(
     protectedSpendInr: protectedSpend,
   };
 
+  // Generate realistic webhook logs
+  const webhookLogs: WebhookLogEntry[] = [
+    {
+      id: `log_adnet_${eventId}`,
+      timestamp: now,
+      service: campaign.network === "META_ADS" ? "META_GRAPH_API" : "GOOGLE_ADS_API",
+      endpoint,
+      method: campaign.network === "META_ADS" ? "POST" : "MUTATE",
+      status: 200,
+      latencyMs: +(8 + Math.random() * 4).toFixed(1),
+      payloadSummary: `{"status": "PAUSED", "reason": "PAUSED_BY_CANON_FIREWALL", "rule": "${campaign.detectedInfraction?.ruleCode || "STATUTORY_VIOLATION"}"}`,
+      eventSignature: `SHA256:${eventId.substring(0, 10)}...${campaign.campaignIdExternal.slice(-4)}`,
+    },
+    {
+      id: `log_slack_${eventId}`,
+      timestamp: new Date(Date.now() + 20).toISOString(),
+      service: "SLACK_INCIDENT",
+      endpoint: "https://hooks.slack.com/services/T01/B02/FIREWALL_LEGAL",
+      method: "POST",
+      status: 200,
+      latencyMs: 14.2,
+      payloadSummary: `🚨 P1 LEGAL INTERCEPT: [${campaign.network}] '${campaign.name}' frozen. Protected: ₹${protectedSpend.toLocaleString("en-IN")}.`,
+      eventSignature: `SHA256:slack_${eventId.substring(0, 8)}`,
+    },
+    {
+      id: `log_pd_${eventId}`,
+      timestamp: new Date(Date.now() + 45).toISOString(),
+      service: "PAGERDUTY",
+      endpoint: "https://events.pagerduty.com/v2/enqueue",
+      method: "POST",
+      status: 202,
+      latencyMs: 18.0,
+      payloadSummary: `P1 Incident Triggered: Statutory Brand Safety Breach on ${campaign.network}.`,
+      eventSignature: `SHA256:pd_${eventId.substring(0, 8)}`,
+    },
+  ];
+
   const result: CircuitBreakerResult = {
     success: true,
     campaignId: campaign.id,
@@ -44,6 +82,7 @@ export function executeCircuitBreaker(
       responseHash: `sha256_${eventId.slice(-8)}_ok`,
       timestamp: now,
     },
+    webhookLogs,
     protectedSpendInr: protectedSpend,
     eventId,
     auditSignature: `CANON-FIREWALL-SIG-${eventId.toUpperCase()}`,
@@ -81,6 +120,31 @@ export function resumeRemediatedCampaign(
     circuitBreakerEventId: eventId,
   };
 
+  const webhookLogs: WebhookLogEntry[] = [
+    {
+      id: `log_res_${eventId}`,
+      timestamp: now,
+      service: campaign.network === "META_ADS" ? "META_GRAPH_API" : "GOOGLE_ADS_API",
+      endpoint,
+      method: campaign.network === "META_ADS" ? "POST" : "MUTATE",
+      status: 200,
+      latencyMs: 10.5,
+      payloadSummary: `{"status": "ACTIVE", "statutory_compliance_cert": "CANON_CLEARED_v2"}`,
+      eventSignature: `SHA256:${eventId.substring(0, 10)}...resumed`,
+    },
+    {
+      id: `log_slack_res_${eventId}`,
+      timestamp: new Date(Date.now() + 25).toISOString(),
+      service: "SLACK_INCIDENT",
+      endpoint: "https://hooks.slack.com/services/T01/B02/FIREWALL_LEGAL",
+      method: "POST",
+      status: 200,
+      latencyMs: 12.8,
+      payloadSummary: `✅ CAMPAIGN RESUMED: '${campaign.name}' re-activated with approved statutory disclaimers.`,
+      eventSignature: `SHA256:slack_res_${eventId.substring(0, 8)}`,
+    },
+  ];
+
   const result: CircuitBreakerResult = {
     success: true,
     campaignId: campaign.id,
@@ -93,6 +157,7 @@ export function resumeRemediatedCampaign(
       responseHash: `sha256_${eventId.slice(-8)}_resumed`,
       timestamp: now,
     },
+    webhookLogs,
     protectedSpendInr: 0,
     eventId,
     auditSignature: `CANON-RESUME-SIG-${eventId.toUpperCase()}`,

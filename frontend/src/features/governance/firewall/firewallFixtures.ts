@@ -1,4 +1,8 @@
-import { FirewallCampaign, FirewallTelemetrySummary } from "./firewallTypes";
+import {
+  FirewallCampaign,
+  FirewallTelemetrySummary,
+  WebhookLogEntry,
+} from "./firewallTypes";
 
 export const INITIAL_FIREWALL_CAMPAIGNS: FirewallCampaign[] = [
   {
@@ -126,11 +130,49 @@ export const INITIAL_FIREWALL_CAMPAIGNS: FirewallCampaign[] = [
   },
 ];
 
+export const INITIAL_WEBHOOK_LOGS: WebhookLogEntry[] = [
+  {
+    id: "log_init_01",
+    timestamp: new Date(Date.now() - 1000 * 60 * 14).toISOString(),
+    service: "META_GRAPH_API",
+    endpoint: "https://graph.facebook.com/v19.0/act_9381029410/delivery_status",
+    method: "POST",
+    status: 200,
+    latencyMs: 9.2,
+    payloadSummary: "Telemetry handshake: 2 active ad sets verified.",
+    eventSignature: "SHA256:7f9a2c...881a",
+  },
+  {
+    id: "log_init_02",
+    timestamp: new Date(Date.now() - 1000 * 60 * 11).toISOString(),
+    service: "GOOGLE_ADS_API",
+    endpoint: "https://googleads.googleapis.com/v16/customers/8412910391/campaigns:check",
+    method: "POST",
+    status: 200,
+    latencyMs: 11.5,
+    payloadSummary: "Telemetry handshake: 2 active campaigns monitored.",
+    eventSignature: "SHA256:3d1e8b...902f",
+  },
+  {
+    id: "log_init_03",
+    timestamp: new Date(Date.now() - 1000 * 60 * 5).toISOString(),
+    service: "SLACK_INCIDENT",
+    endpoint: "https://hooks.slack.com/services/T01/B02/FIREWALL_LEGAL",
+    method: "POST",
+    status: 200,
+    latencyMs: 14.1,
+    payloadSummary: "Circuit Breaker Daemon armed on channels: Meta Ads & Google Ads.",
+    eventSignature: "SHA256:a1c43d...55e2",
+  },
+];
+
 export const INITIAL_FIREWALL_TELEMETRY: FirewallTelemetrySummary = {
-  connectedNetworksCount: 2, // Meta Marketing API & Google Ads API
+  connectedNetworksCount: 2,
   totalActiveCampaigns: 3,
   totalPausedCampaigns: 0,
   currentLiveHourlySpendInr: 83333,
   totalProtectedAdSpendInr: 1477084,
+  totalAvoidedStatutoryPenaltiesInr: 3000000, // ₹30 Lakhs (3 infractions @ ₹10L each)
+  totalCorporateLiabilityAvertedInr: 4477084, // ₹14.77L ad spend + ₹30L statutory fine = ₹44.77 Lakhs
   interceptionLatencyMs: 11.4,
 };
