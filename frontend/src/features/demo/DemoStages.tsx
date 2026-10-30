@@ -464,6 +464,26 @@ export function Stage4Governance() {
             </div>
           </div>
         )}
+
+        {/* Round 3 Campaign Firewall Callout */}
+        <div className="mt-4 p-4 rounded-xl border border-rose-500/20 bg-rose-500/5 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+          <div className="space-y-0.5">
+            <div className="flex items-center gap-1.5 font-bold text-rose-700 dark:text-rose-300">
+              <span className="w-2 h-2 rounded-full bg-rose-500 animate-pulse" />
+              <span>Round 3: Programmatic Campaign Firewall &amp; Ad-Spend Risk Radar</span>
+            </div>
+            <p className="text-[11px] text-[var(--color-text-secondary)]">
+              Real-time webhook circuit breakers auto-pause live campaigns on Meta Ads &amp; Google Ads on statutory infractions.
+            </p>
+          </div>
+          <Link
+            href="/governance?tab=firewall"
+            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold bg-[#111111] text-white dark:bg-white dark:text-black shrink-0 hover:opacity-90 shadow-xs"
+          >
+            <span>Open Firewall Radar</span>
+            <ArrowRight className="w-3.5 h-3.5" />
+          </Link>
+        </div>
       </div>
     </div>
   );

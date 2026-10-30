@@ -9,14 +9,23 @@ import {
   type ProposalItem,
   type BacktestRun,
 } from "@/features/governance/ProposalAndBacktestSection";
+import { CampaignFirewallRadar } from "@/features/governance/CampaignFirewallRadar";
 import { Skeleton } from "@/components/ui/Skeleton";
 import { toast } from "@/components/ui/Toast";
-import { Activity, ShieldCheck } from "lucide-react";
+import { Activity, ShieldCheck, Zap, Radio } from "lucide-react";
 import { Badge } from "@/components/ui/Badge";
 
 function GovernanceContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
+
+  const activeTab = searchParams.get("tab") === "firewall" ? "firewall" : "health";
+
+  const handleTabChange = (tab: "health" | "firewall") => {
+    const sp = new URLSearchParams(searchParams.toString());
+    sp.set("tab", tab);
+    router.replace(`?${sp.toString()}`, { scroll: false });
+  };
 
   const [healthItems, setHealthItems] = useState<RuleHealthItem[]>([]);
   const [proposals, setProposals] = useState<ProposalItem[]>([]);
@@ -140,26 +149,59 @@ function GovernanceContent() {
   return (
     <div className="space-y-8">
       {/* Governance Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-[var(--color-border-subtle)]">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-[var(--color-border-subtle)]">
         <div className="space-y-1">
           <div className="flex items-center gap-2 flex-wrap">
             <div className="w-8 h-8 rounded-lg bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 flex items-center justify-center">
               <ShieldCheck className="w-4 h-4" />
             </div>
             <h1 className="text-2xl font-bold tracking-tight text-[var(--color-text-primary)]">
-              Rule Health Telemetry &amp; Evolution
+              Governance &amp; Risk Control
             </h1>
             <Badge variant={isAdopted ? "success" : "secondary"} size="sm">
               {isAdopted ? "Policy v1.1 Active" : "Policy v1.0 Baseline"}
             </Badge>
           </div>
           <p className="text-xs text-[var(--color-text-secondary)]">
-            Analyze reviewer friction signals, simulate historical backtests, and authorize policy revisions.
+            Analyze reviewer friction signals, simulate historical backtests, and manage live programmatic ad-spend campaign firewalls.
           </p>
+        </div>
+
+        {/* View Switcher Tabs */}
+        <div className="inline-flex p-1 bg-[var(--color-surface-elevated)] border border-[var(--color-border-subtle)] rounded-xl gap-1">
+          <button
+            type="button"
+            onClick={() => handleTabChange("health")}
+            className={`inline-flex items-center gap-2 px-3.5 py-1.5 rounded-lg text-xs font-semibold transition-all ${
+              activeTab === "health"
+                ? "bg-[#111111] text-white dark:bg-white dark:text-black shadow-xs"
+                : "text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)]"
+            }`}
+          >
+            <Activity className="w-3.5 h-3.5 text-emerald-500" />
+            <span>Rule Health &amp; Backtests</span>
+          </button>
+          <button
+            type="button"
+            onClick={() => handleTabChange("firewall")}
+            className={`inline-flex items-center gap-2 px-3.5 py-1.5 rounded-lg text-xs font-semibold transition-all ${
+              activeTab === "firewall"
+                ? "bg-[#111111] text-white dark:bg-white dark:text-black shadow-xs"
+                : "text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)]"
+            }`}
+          >
+            <Radio className="w-3.5 h-3.5 text-rose-500 animate-pulse" />
+            <span>Campaign Firewall Radar</span>
+            <span className="px-1.5 py-0.2 rounded text-[10px] uppercase font-mono font-bold bg-rose-500/10 text-rose-600 dark:text-rose-400 border border-rose-500/20">
+              Round 3
+            </span>
+          </button>
         </div>
       </div>
 
-      {isLoading && healthItems.length === 0 ? (
+      {activeTab === "firewall" ? (
+        <CampaignFirewallRadar />
+      ) : isLoading && healthItems.length === 0 ? (
         <div className="space-y-6 animate-pulse">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <Skeleton className="h-32 rounded-xl" />
