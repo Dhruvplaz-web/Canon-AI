@@ -6,18 +6,18 @@ import { usePathname } from "next/navigation";
 import {
   Menu,
   Sparkles,
-  User as UserIcon,
   LogOut,
   LogIn,
   ShieldCheck,
   CheckCircle2,
-  Database,
   Search,
 } from "lucide-react";
 import { useAuth } from "@/lib/auth-context";
 import { getNavItemsForRole } from "@/lib/navigation";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { CommandPalette } from "@/components/CommandPalette";
+import { WorkspaceSwitcherDropdown } from "@/components/WorkspaceSwitcherDropdown";
+import { NotificationCenterDropdown } from "@/components/NotificationCenterDropdown";
 import {
   Button,
   Sheet,
@@ -155,16 +155,15 @@ export default function Navbar() {
             </nav>
           </div>
 
-          {/* Right Header Controls: Demo Workspace Pill, Theme Toggle, User Menu, Mobile Drawer */}
-          <div className="flex items-center gap-2.5 sm:gap-3 text-xs shrink-0">
-            {/* Demo Workspace Active Indicator (Item C16) */}
-            <div
-              className="hidden lg:inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full border border-[var(--color-border-subtle)] bg-[var(--color-surface-muted)] text-[var(--color-text-muted)] font-mono text-[11px]"
-              title="Operating in demonstration workspace mode"
-            >
-              <Database className="w-3 h-3 text-blue-500" aria-hidden="true" />
-              <span>Demo Workspace</span>
+          {/* Right Header Controls: Workspace Switcher, Notification Center, Theme Toggle, User Menu, Mobile Drawer */}
+          <div className="flex items-center gap-2 sm:gap-2.5 text-xs shrink-0">
+            {/* Multi-Tenant Workspace Switcher (Item C16 / Enterprise) */}
+            <div className="hidden lg:block">
+              <WorkspaceSwitcherDropdown />
             </div>
+
+            {/* Global Real-Time Notification Stream Bell */}
+            <NotificationCenterDropdown />
 
             {/* Quick Command Palette Search Button */}
             <button
@@ -293,6 +292,9 @@ export default function Navbar() {
                   </div>
 
                   <div className="pt-4 border-t border-[var(--color-border-subtle)] space-y-3">
+                    <div className="px-1 py-1">
+                      <WorkspaceSwitcherDropdown />
+                    </div>
                     <div className="flex items-center justify-between px-2 text-xs text-[var(--color-text-secondary)]">
                       <span>Appearance</span>
                       <ThemeToggle />
