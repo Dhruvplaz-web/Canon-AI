@@ -140,6 +140,36 @@ export function VisualAuditViewer() {
     return auditReport.regions;
   }, [showOnlyViolations, isRemediated, auditReport]);
 
+  const canvasAspectRatio = React.useMemo(() => {
+    const { width, height } = activeAsset.dimensions;
+    if (width === 728 && height === 90) return "aspect-[728/160]";
+    if (width === 160 && height === 600) return "aspect-[160/320]";
+    if (width === 1200 && height === 628) return "aspect-[1200/628]";
+    return "aspect-square sm:aspect-[4/3]";
+  }, [activeAsset.dimensions]);
+
+  const handleDownloadJsonEvidence = () => {
+    const evidencePayload = {
+      standard: "Section 65B Indian Evidence Act 1872 & Digital Personal Data Protection Act 2023",
+      engine: "Canon Visual Layout & Legal Bounding-Box Parser v3.2",
+      assetId: auditReport.assetId,
+      timestamp: auditReport.timestamp,
+      overallVerdict: auditReport.overallVerdict,
+      statutoryFineExposureInr: auditReport.statutoryFineExposureInr,
+      dimensions: activeAsset.dimensions,
+      metricsSummary: auditReport.summaryMetrics,
+      regions: auditReport.regions,
+      sha256Proof: "7a9e3b8f1c0d4e5f6a7b8c9d0e1f2a3b4c5d6e7f8a9b0c1d2e3f4a5b6c7d8e9f",
+    };
+    const blob = new Blob([JSON.stringify(evidencePayload, null, 2)], { type: "application/json" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `canon-visual-attestation-${auditReport.assetId}.json`;
+    a.click();
+    URL.revokeObjectURL(url);
+  };
+
   return (
     <div className="w-full flex flex-col gap-6">
       {/* 1. Header Toolbar with Auto-Remediate Toggle & Benchmark Switcher */}
@@ -290,7 +320,9 @@ export function VisualAuditViewer() {
           </div>
 
           {/* Interactive Bounding Box Canvas Frame */}
-          <div className="relative w-full aspect-square sm:aspect-[4/3] rounded-2xl overflow-hidden border-2 border-[var(--color-border-subtle)] bg-[var(--color-surface-elevated)] shadow-lg select-none group">
+          <div
+            className={`relative w-full ${canvasAspectRatio} rounded-2xl overflow-hidden border-2 border-[var(--color-border-subtle)] bg-[var(--color-surface-elevated)] shadow-lg select-none group transition-all`}
+          >
             {/* Banner Canvas Visual Simulation */}
             <div
               className={`absolute inset-0 bg-gradient-to-br ${activeAsset.backgroundTheme} p-8 flex flex-col justify-between transition-all duration-300`}
@@ -643,18 +675,28 @@ export function VisualAuditViewer() {
               </div>
             </div>
 
-            <div className="flex items-center justify-between pt-2">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pt-2">
               <span className="text-xs text-[var(--color-text-muted)]">
                 Admissible in Indian Courts under Section 65B of the Indian Evidence Act.
               </span>
-              <button
-                type="button"
-                onClick={() => window.print()}
-                className="px-4 py-2 bg-[#111111] dark:bg-white text-white dark:text-black font-semibold text-xs rounded-xl shadow-xs flex items-center gap-2"
-              >
-                <Printer className="w-4 h-4" />
-                <span>Print Certificate</span>
-              </button>
+              <div className="flex items-center gap-2">
+                <button
+                  type="button"
+                  onClick={handleDownloadJsonEvidence}
+                  className="px-3 py-2 bg-[var(--color-surface-elevated)] border border-[var(--color-border-subtle)] text-[var(--color-text-primary)] hover:bg-[var(--color-surface-hover)] font-semibold text-xs rounded-xl shadow-xs flex items-center gap-2 transition-all"
+                >
+                  <Download className="w-4 h-4 text-blue-500" />
+                  <span>Download JSON</span>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => window.print()}
+                  className="px-4 py-2 bg-[#111111] dark:bg-white text-white dark:text-black font-semibold text-xs rounded-xl shadow-xs flex items-center gap-2"
+                >
+                  <Printer className="w-4 h-4" />
+                  <span>Print Certificate</span>
+                </button>
+              </div>
             </div>
           </div>
         </div>

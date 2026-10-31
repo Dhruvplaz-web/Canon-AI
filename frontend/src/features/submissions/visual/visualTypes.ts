@@ -44,8 +44,13 @@ export interface VisualBoundingBox {
 export interface VisualCreativeAsset {
   id: string;
   title: string;
-  category: "FINTECH_LOAN" | "EDTECH_GUARANTEE" | "INSTITUTIONAL_BANK";
-  channel: "INSTAGRAM_POST" | "DISPLAY_BANNER_300X250" | "STORY_9_16";
+  category: "FINTECH_LOAN" | "EDTECH_GUARANTEE" | "INSTITUTIONAL_BANK" | "FMCG_SURROGATE";
+  channel:
+    | "INSTAGRAM_POST"
+    | "DISPLAY_BANNER_300X250"
+    | "DISPLAY_BANNER_728X90"
+    | "DISPLAY_BANNER_160X600"
+    | "STORY_9_16";
   dimensions: {
     width: number;
     height: number;
