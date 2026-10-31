@@ -27,6 +27,7 @@ import {
   DollarSign,
   TrendingDown,
   Building2,
+  Download,
 } from "lucide-react";
 import {
   FirewallCampaign,
@@ -192,6 +193,40 @@ export function CampaignFirewallRadar() {
     setRemediationDrafts({});
   };
 
+  const handleExportTelemetryJson = () => {
+    const exportPayload = {
+      standard: "RBI Master Direction / ASCI Guidelines / CCPA Misleading Ads Act",
+      engine: "Canon Ad-Spend Risk Radar & Programmatic Campaign Firewall v3.2",
+      generatedAt: new Date().toISOString(),
+      telemetrySummary: telemetry,
+      interceptionMetrics: {
+        interceptionLatencyMs: telemetry.interceptionLatencyMs,
+        totalAvoidedStatutoryPenaltiesInr: telemetry.totalAvoidedStatutoryPenaltiesInr,
+        totalCorporateLiabilityAvertedInr: telemetry.totalCorporateLiabilityAvertedInr,
+        protectedMediaSpendInr: telemetry.totalProtectedAdSpendInr,
+      },
+      activeIncidents: campaigns.map((c) => ({
+        campaignId: c.id,
+        name: c.name,
+        network: c.network,
+        status: c.status,
+        hourlySpendInr: c.hourlySpendInr,
+        burnedSpendInr: c.burnedSpendInr,
+        protectedSpendInr: c.protectedSpendInr,
+        statutoryFineExposureInr: c.detectedInfraction?.penaltyExposureInr || 0,
+        infraction: c.detectedInfraction,
+      })),
+      auditLogs: webhookLogs,
+    };
+    const blob = new Blob([JSON.stringify(exportPayload, null, 2)], { type: "application/json" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `canon-firewall-telemetry-${new Date().toISOString().slice(0, 10)}.json`;
+    a.click();
+    URL.revokeObjectURL(url);
+  };
+
   // Add Custom Campaign Handler
   const handleAddCustomCampaign = (e: React.FormEvent) => {
     e.preventDefault();
@@ -327,6 +362,14 @@ export function CampaignFirewallRadar() {
             >
               <Activity className="w-3.5 h-3.5" />
               <span>{isLiveStreamActive ? "Live Stream: Active" : "Stream: Paused"}</span>
+            </button>
+            <button
+              type="button"
+              onClick={handleExportTelemetryJson}
+              className="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-semibold bg-[var(--color-surface)] border border-[var(--color-border-subtle)] text-[var(--color-text-primary)] hover:border-blue-500 transition-all shadow-2xs"
+            >
+              <Download className="w-3.5 h-3.5 text-blue-500" />
+              <span>Export Telemetry (JSON)</span>
             </button>
             <button
               type="button"
