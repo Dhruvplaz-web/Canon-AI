@@ -89,6 +89,20 @@ export const VERNACULAR_PRESETS: VernacularPreset[] = [
     copy: "रॉयल चैलेंज सोडा के साथ शाम को पार्टी शुरू करो! सिर्फ आधार कार्ड दो और चुटki me लोन पाओ! जल्दी करो सिर्फ १० मिनट बचे हैं!",
   },
   {
+    id: "TANGLISH_FINTECH",
+    title: "Tanglish (Tamil + English) Instant Loan",
+    subtitle: "Predatory credit ad targeting Tamil Nadu borrowers",
+    categoryBadge: "RBI-VERN-TANGLISH",
+    copy: "Nanba! No cibil score, no salary slip vendam! Instant 2 lakh loan unga bank account-la 5 minutes-la vandhudum! Guaranteed double return, 100% no risk!",
+  },
+  {
+    id: "BANGLISH_BETTING",
+    title: "Banglish (Bengali + English) Sports Club",
+    subtitle: "Offshore sports betting surrogate targeting Kolkata youth",
+    categoryBadge: "MEITY-BETTING-BANGLISH",
+    copy: "Bhai shobai shono! Aajker match-e double taka labh koro! 1xBet sports news app-e register koro ar 100% sure win khao bina kono loss chhara!",
+  },
+  {
     id: "COMPLIANT_VERNACULAR",
     title: "Compliant Indian Ad with Statutory Disclaimers",
     subtitle: "Fully cleared ad copy meeting ASCI, RBI & CCPA mandates",
@@ -115,6 +129,14 @@ export function VernacularAuditStudio() {
   const sandboxTrace = useMemo(() => {
     return getPhoneticTransformationTrace(sandboxWord);
   }, [sandboxWord]);
+
+  const handleBridgeToCopywriter = () => {
+    const textToBridge = showRemediation ? report.remediatedText : inputText;
+    if (typeof window !== "undefined") {
+      sessionStorage.setItem("canon_bridged_copy", textToBridge);
+      window.location.href = "/submissions?tab=copy&bridged=1";
+    }
+  };
 
   const handleSelectPreset = (preset: VernacularPreset) => {
     setSelectedPresetId(preset.id);
@@ -162,6 +184,14 @@ export function VernacularAuditStudio() {
           </div>
 
           <div className="flex items-center gap-2 flex-wrap">
+            <button
+              type="button"
+              onClick={handleBridgeToCopywriter}
+              className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-semibold bg-blue-600 hover:bg-blue-700 text-white transition-all shadow-2xs"
+            >
+              <ArrowRight className="w-3.5 h-3.5" />
+              <span>Bridge to Copywriter Studio</span>
+            </button>
             <button
               type="button"
               onClick={() => setIsAttestationOpen(true)}
