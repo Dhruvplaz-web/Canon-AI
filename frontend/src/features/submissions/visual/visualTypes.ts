@@ -25,6 +25,13 @@ export interface NormalizedCoordinates {
   xmax: number;
 }
 
+export interface LogoDetectionMetadata {
+  brandName: string;
+  confidenceScore: number; // 0.0 to 1.0
+  isAuthorizedPartner: boolean;
+  trademarkStatus: "VERIFIED_REGULATED" | "AUTHORIZED_COMMERCIAL" | "UNREGISTERED_OR_SURROGATE";
+}
+
 export interface VisualBoundingBox {
   id: string;
   label: VisualRegionLabel;
@@ -39,6 +46,7 @@ export interface VisualBoundingBox {
     rotationDegrees?: number;
   };
   violations: VisualViolation[];
+  logoMetadata?: LogoDetectionMetadata;
 }
 
 export interface VisualCreativeAsset {
@@ -59,6 +67,16 @@ export interface VisualCreativeAsset {
   disclaimerText: string;
   backgroundTheme: string;
   regions: VisualBoundingBox[];
+  imageUrl?: string;
+  sha256Proof?: string;
+  tier2EnrichmentStatus?: "ENRICHED" | "FALLBACK_OFFLINE" | "NOT_TRIGGERED";
+}
+
+export interface OcrProcessingState {
+  isProcessing: boolean;
+  statusText: string;
+  progressPercent: number;
+  error?: string | null;
 }
 
 export interface VisualAuditReport {
@@ -85,5 +103,5 @@ export interface VisualAuditReport {
     scoreText: string;
   }[];
   regions: VisualBoundingBox[];
+  tier2EnrichmentStatus?: "ENRICHED" | "FALLBACK_OFFLINE" | "NOT_TRIGGERED";
 }
-
