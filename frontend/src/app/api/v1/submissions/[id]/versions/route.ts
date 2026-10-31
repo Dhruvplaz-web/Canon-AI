@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { submissionsStore } from "@/app/api/v1/submissions/route";
+import { submissionsStore } from "@/app/api/v1/submissions/store";
 
 export async function POST(
   req: NextRequest,

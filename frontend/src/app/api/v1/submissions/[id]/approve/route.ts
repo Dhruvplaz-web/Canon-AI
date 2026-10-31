@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { submissionsStore } from "@/app/api/v1/submissions/route";
-import { approvalsStore } from "@/app/api/v1/submissions/[id]/approvals/route";
+import { submissionsStore, approvalsStore } from "@/app/api/v1/submissions/store";
 import crypto from "crypto";
 
 export async function POST(
