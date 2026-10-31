@@ -47,6 +47,7 @@ import {
   generateEmergencyAttestation,
 } from "./firewall/firewallEngine";
 import { auditVernacularCopy } from "@/features/submissions/vernacular/vernacularAuditEngine";
+import { RiskRadarGauge } from "./firewall/RiskRadarGauge";
 
 export function CampaignFirewallRadar() {
   const [campaigns, setCampaigns] = useState<FirewallCampaign[]>(INITIAL_FIREWALL_CAMPAIGNS);
@@ -104,6 +105,27 @@ export function CampaignFirewallRadar() {
     };
   }, [campaigns]);
 
+  // Statutory Risk Radar calculations derived from live unmitigated exposure
+  const { activeBreachesCount, unmitigatedLiability, riskScore } = useMemo(() => {
+    const breaches = campaigns.filter(
+      (c) => c.status === "ACTIVE_RUNNING" && !!c.detectedInfraction
+    );
+    const unmitigated = breaches.reduce(
+      (sum, c) => sum + (c.detectedInfraction?.penaltyExposureInr || 0),
+      0
+    );
+    const activeHourlyBurn = telemetry.currentLiveHourlySpendInr;
+    const breachWeight = breaches.length * 30;
+    const spendWeight = Math.min(25, Math.round((activeHourlyBurn / 100000) * 15));
+    const score = breaches.length === 0 ? 12 : Math.min(98, 25 + breachWeight + spendWeight);
+
+    return {
+      activeBreachesCount: breaches.length,
+      unmitigatedLiability: unmitigated,
+      riskScore: score,
+    };
+  }, [campaigns, telemetry]);
+
   // Real-time spend ticker effect (ticking every 1.5 seconds)
   useEffect(() => {
     if (!isLiveStreamActive) return;
@@ -128,42 +150,86 @@ export function CampaignFirewallRadar() {
     return () => clearInterval(interval);
   }, [isLiveStreamActive]);
 
-  const handleTripCircuitBreaker = (campaignId: string) => {
+  const handleTripCircuitBreaker = async (campaignId: string) => {
     setIsProcessingId(campaignId);
-    setTimeout(() => {
+    try {
+      const res = await fetch("/api/v1/firewall/circuit-breaker", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          campaignId,
+          action: "PAUSE",
+          customReason: "CRITICAL_STATUTORY_VIOLATION_INTERCEPT",
+        }),
+      });
+      if (res.ok) {
+        const data = await res.json();
+        if (data.circuitBreakerResult?.webhookLogs) {
+          setWebhookLogs((logs) => [...data.circuitBreakerResult.webhookLogs, ...logs]);
+        }
+      }
+    } catch (err) {
+      console.warn("Circuit breaker API dispatch fallback to local engine:", err);
+    } finally {
       setCampaigns((prev) =>
         prev.map((c) => {
           if (c.id === campaignId) {
             const { updatedCampaign, result } = executeCircuitBreaker(c);
-            setWebhookLogs((logs) => [...result.webhookLogs, ...logs]);
+            setWebhookLogs((logs) => {
+              const alreadyLogged = logs.some((l) =>
+                result.webhookLogs.some((rl) => rl.id === l.id)
+              );
+              return alreadyLogged ? logs : [...result.webhookLogs, ...logs];
+            });
             return updatedCampaign;
           }
           return c;
         })
       );
       setIsProcessingId(null);
-    }, 200);
+    }
   };
 
-  const handleResumeCampaign = (campaignId: string) => {
+  const handleResumeCampaign = async (campaignId: string) => {
     setIsProcessingId(campaignId);
-    setTimeout(() => {
+    const customDraft = remediationDrafts[campaignId];
+    try {
+      const res = await fetch("/api/v1/firewall/circuit-breaker", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          campaignId,
+          action: "RESUME",
+          remediatedCopy: customDraft,
+        }),
+      });
+      if (res.ok) {
+        const data = await res.json();
+        if (data.circuitBreakerResult?.webhookLogs) {
+          setWebhookLogs((logs) => [...data.circuitBreakerResult.webhookLogs, ...logs]);
+        }
+      }
+    } catch (err) {
+      console.warn("Resume campaign API dispatch fallback to local engine:", err);
+    } finally {
       setCampaigns((prev) =>
         prev.map((c) => {
           if (c.id === campaignId) {
-            const customDraft = remediationDrafts[campaignId];
-            const campaignToResume = customDraft
-              ? { ...c, remediatedCopy: customDraft }
-              : c;
+            const campaignToResume = customDraft ? { ...c, remediatedCopy: customDraft } : c;
             const { updatedCampaign, result } = resumeRemediatedCampaign(campaignToResume);
-            setWebhookLogs((logs) => [...result.webhookLogs, ...logs]);
+            setWebhookLogs((logs) => {
+              const alreadyLogged = logs.some((l) =>
+                result.webhookLogs.some((rl) => rl.id === l.id)
+              );
+              return alreadyLogged ? logs : [...result.webhookLogs, ...logs];
+            });
             return updatedCampaign;
           }
           return c;
         })
       );
       setIsProcessingId(null);
-    }, 200);
+    }
   };
 
   const handleSimulateSurrogateLaunch = () => {
@@ -187,7 +253,12 @@ export function CampaignFirewallRadar() {
     );
   };
 
-  const handleResetBaseline = () => {
+  const handleResetBaseline = async () => {
+    try {
+      await fetch("/api/v1/firewall/circuit-breaker", { method: "DELETE" });
+    } catch (e) {
+      // offline fallback
+    }
     setCampaigns(INITIAL_FIREWALL_CAMPAIGNS);
     setWebhookLogs(INITIAL_WEBHOOK_LOGS);
     setRemediationDrafts({});
@@ -425,61 +496,82 @@ export function CampaignFirewallRadar() {
         </div>
       </div>
 
-      {/* CMO Financial Risk Radar Matrix (4 High-Impact Pillars) */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-        {/* Total Liability Averted */}
-        <div className="p-4 rounded-2xl bg-emerald-500/10 border border-emerald-500/30 space-y-1">
-          <div className="text-[10px] uppercase font-mono font-semibold text-emerald-700 dark:text-emerald-300 flex items-center justify-between">
-            <span>Corporate Liability Averted</span>
-            <Sparkles className="w-3 h-3 text-emerald-600" />
-          </div>
-          <div className="text-xl sm:text-2xl font-bold font-mono text-emerald-700 dark:text-emerald-300">
-            {formatInr(telemetry.totalCorporateLiabilityAvertedInr)}
-          </div>
-          <div className="text-[10px] text-emerald-600/80 dark:text-emerald-400/80">
-            {formatInr(telemetry.totalProtectedAdSpendInr)} media + {formatInr(telemetry.totalAvoidedStatutoryPenaltiesInr)} fines
-          </div>
+      {/* CMO Financial Risk Radar & Speedometer Gauge Grid */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+        {/* Visual Statutory Risk Speedometer Gauge */}
+        <div className="lg:col-span-1 flex flex-col">
+          <RiskRadarGauge
+            score={riskScore}
+            totalViolationsCount={activeBreachesCount}
+            unmitigatedLiabilityInr={unmitigatedLiability}
+            onFilterViolations={() => setNetworkFilter("PAUSED")}
+          />
         </div>
 
-        {/* Live Hourly Burn Rate */}
-        <div className="p-4 rounded-2xl bg-[var(--color-surface-elevated)] border border-[var(--color-border-subtle)] space-y-1">
-          <div className="text-[10px] uppercase font-mono font-semibold text-[var(--color-text-secondary)] flex items-center justify-between">
-            <span>Live Hourly Spend Pacing</span>
-            <Flame className="w-3 h-3 text-amber-500" />
+        {/* 4 Telemetry Metric Pillars in a 2x2 grid */}
+        <div className="lg:col-span-2 grid grid-cols-1 sm:grid-cols-2 gap-4">
+          {/* Total Liability Averted */}
+          <div className="p-4 rounded-2xl bg-emerald-500/10 border border-emerald-500/30 space-y-1 flex flex-col justify-between">
+            <div>
+              <div className="text-[10px] uppercase font-mono font-semibold text-emerald-700 dark:text-emerald-300 flex items-center justify-between">
+                <span>Corporate Liability Averted</span>
+                <Sparkles className="w-3 h-3 text-emerald-600" />
+              </div>
+              <div className="text-xl sm:text-2xl font-bold font-mono text-emerald-700 dark:text-emerald-300 mt-1">
+                {formatInr(telemetry.totalCorporateLiabilityAvertedInr)}
+              </div>
+            </div>
+            <div className="text-[10px] text-emerald-600/80 dark:text-emerald-400/80">
+              {formatInr(telemetry.totalProtectedAdSpendInr)} media + {formatInr(telemetry.totalAvoidedStatutoryPenaltiesInr)} fines
+            </div>
           </div>
-          <div className="text-xl sm:text-2xl font-bold font-mono text-[var(--color-text-primary)]">
-            {formatInr(telemetry.currentLiveHourlySpendInr)}/hr
-          </div>
-          <div className="text-[10px] text-[var(--color-text-muted)]">
-            Active burn across {telemetry.totalActiveCampaigns} ad sets
-          </div>
-        </div>
 
-        {/* Circuit Breakers Tripped */}
-        <div className="p-4 rounded-2xl bg-rose-500/10 border border-rose-500/30 space-y-1">
-          <div className="text-[10px] uppercase font-mono font-semibold text-rose-700 dark:text-rose-300 flex items-center justify-between">
-            <span>Circuit Breakers Tripped</span>
-            <Zap className="w-3 h-3 text-rose-500" />
+          {/* Live Hourly Burn Rate */}
+          <div className="p-4 rounded-2xl bg-[var(--color-surface-elevated)] border border-[var(--color-border-subtle)] space-y-1 flex flex-col justify-between">
+            <div>
+              <div className="text-[10px] uppercase font-mono font-semibold text-[var(--color-text-secondary)] flex items-center justify-between">
+                <span>Live Hourly Spend Pacing</span>
+                <Flame className="w-3 h-3 text-amber-500" />
+              </div>
+              <div className="text-xl sm:text-2xl font-bold font-mono text-[var(--color-text-primary)] mt-1">
+                {formatInr(telemetry.currentLiveHourlySpendInr)}/hr
+              </div>
+            </div>
+            <div className="text-[10px] text-[var(--color-text-muted)]">
+              Active burn across {telemetry.totalActiveCampaigns} ad sets
+            </div>
           </div>
-          <div className="text-xl sm:text-2xl font-bold font-mono text-rose-700 dark:text-rose-300">
-            {telemetry.totalPausedCampaigns} Paused
-          </div>
-          <div className="text-[10px] text-rose-600/80 dark:text-rose-400/80">
-            Sub-12ms programmatic halt
-          </div>
-        </div>
 
-        {/* Interception Speed SLA */}
-        <div className="p-4 rounded-2xl bg-[var(--color-surface-elevated)] border border-[var(--color-border-subtle)] space-y-1">
-          <div className="text-[10px] uppercase font-mono font-semibold text-[var(--color-text-secondary)] flex items-center justify-between">
-            <span>Programmatic Latency</span>
-            <Radio className="w-3 h-3 text-blue-500" />
+          {/* Circuit Breakers Tripped */}
+          <div className="p-4 rounded-2xl bg-rose-500/10 border border-rose-500/30 space-y-1 flex flex-col justify-between">
+            <div>
+              <div className="text-[10px] uppercase font-mono font-semibold text-rose-700 dark:text-rose-300 flex items-center justify-between">
+                <span>Circuit Breakers Tripped</span>
+                <Zap className="w-3 h-3 text-rose-500" />
+              </div>
+              <div className="text-xl sm:text-2xl font-bold font-mono text-rose-700 dark:text-rose-300 mt-1">
+                {telemetry.totalPausedCampaigns} Paused
+              </div>
+            </div>
+            <div className="text-[10px] text-rose-600/80 dark:text-rose-400/80">
+              Sub-12ms programmatic halt
+            </div>
           </div>
-          <div className="text-xl sm:text-2xl font-bold font-mono text-blue-600 dark:text-blue-400">
-            {telemetry.interceptionLatencyMs} ms
-          </div>
-          <div className="text-[10px] text-[var(--color-text-muted)]">
-            Edge webhook SLA &lt;50ms
+
+          {/* Interception Speed SLA */}
+          <div className="p-4 rounded-2xl bg-[var(--color-surface-elevated)] border border-[var(--color-border-subtle)] space-y-1 flex flex-col justify-between">
+            <div>
+              <div className="text-[10px] uppercase font-mono font-semibold text-[var(--color-text-secondary)] flex items-center justify-between">
+                <span>Programmatic Latency</span>
+                <Radio className="w-3 h-3 text-blue-500" />
+              </div>
+              <div className="text-xl sm:text-2xl font-bold font-mono text-blue-600 dark:text-blue-400 mt-1">
+                {telemetry.interceptionLatencyMs} ms
+              </div>
+            </div>
+            <div className="text-[10px] text-[var(--color-text-muted)]">
+              Edge webhook SLA &lt;50ms
+            </div>
           </div>
         </div>
       </div>
