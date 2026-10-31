@@ -72,8 +72,8 @@ export function GuidelineIngesterModal({
       if (onIngestComplete) {
         onIngestComplete(data.rules || []);
       }
-    } catch (err: any) {
-      setError(err?.message || "Extraction failed.");
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : "Extraction failed.");
     } finally {
       setIsLoading(false);
     }

@@ -114,6 +114,16 @@ export function CommandPalette({ isOpen, onClose }: CommandPaletteProps) {
         action: () => router.push("/transparency"),
       },
       {
+        id: "nav-audit",
+        title: "Cryptographic Audit Ledger",
+        description: "Inspect immutable SHA-256 release certificates and regulatory audit trails",
+        category: "Navigation",
+        keywords: ["audit", "ledger", "certificate", "sha256", "hash", "cryptographic", "immutable"],
+        icon: ShieldAlert,
+        badge: "/audit",
+        action: () => router.push("/audit"),
+      },
+      {
         id: "nav-demo",
         title: "Evaluator Demo Tour",
         description: "Step-by-step evaluator walkthrough of Canon's Double-Receipt Invariant",

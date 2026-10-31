@@ -63,10 +63,19 @@ function DemoTourContent() {
     [router, searchParams]
   );
 
+  const handleToggleAutoPilot = () => {
+    setIsAutoPilot((prev) => {
+      const next = !prev;
+      if (!next) {
+        setAutoPilotProgress(0);
+      }
+      return next;
+    });
+  };
+
   // Auto-Pilot timer effect
   useEffect(() => {
     if (!isAutoPilot) {
-      setAutoPilotProgress(0);
       return;
     }
 
@@ -116,7 +125,7 @@ function DemoTourContent() {
             type="button"
             variant={isAutoPilot ? "destructive" : "primary"}
             size="sm"
-            onClick={() => setIsAutoPilot(!isAutoPilot)}
+            onClick={handleToggleAutoPilot}
             className="gap-2 cursor-pointer shadow-xs"
           >
             {isAutoPilot ? (

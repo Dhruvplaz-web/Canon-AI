@@ -52,6 +52,12 @@ export const ALL_NAV_ITEMS: NavItem[] = [
     roles: ["creator", "reviewer", "brand_manager", "anonymous"],
   },
   {
+    href: "/audit",
+    label: "Audit Ledger",
+    description: "Inspect immutable SHA-256 release certificates and regulatory audit trails.",
+    roles: ["creator", "reviewer", "brand_manager", "anonymous"],
+  },
+  {
     href: "/demo",
     label: "Demo Tour",
     description: "Guided 4-stage walkthrough of Canon's pre-publication governance pipeline.",
@@ -94,6 +100,7 @@ export function isRouteAllowed(path: string, role: string | null | undefined): b
     "/demo",
     "/policy",
     "/transparency",
+    "/audit",
     "/dev/components",
     "/api",
   ];

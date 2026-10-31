@@ -76,8 +76,8 @@ export function CopilotRewriteModal({
       setRewrittenContent(data.rewritten_content);
       setChangesSummary(data.changes_summary || []);
       setTonePreserved(data.tone_preserved || "Professional & Compliant");
-    } catch (err: any) {
-      setError(err?.message || "Failed to generate rewrite.");
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : "Failed to generate rewrite.");
     } finally {
       setIsLoading(false);
     }

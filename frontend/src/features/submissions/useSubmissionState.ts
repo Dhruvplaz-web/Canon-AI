@@ -1,18 +1,33 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { useSearchParams } from "next/navigation";
 import { type Finding } from "./FindingsList";
-import { type SAMPLE_PRESETS } from "./SubmissionsHeader";
+import { SAMPLE_PRESETS } from "./SubmissionsHeader";
 import { type ReleaseCertificate } from "@/components/ComplianceCertificateModal";
 import { toast } from "@/components/ui/Toast";
 
 export function useSubmissionState() {
-  const [selectedPreset, setSelectedPreset] = useState<string>("VIOLATIONS");
-  const [channel, setChannel] = useState("email_blast");
-  const [title, setTitle] = useState("UPI & Digital Lending Campaign (Bengaluru Launch)");
-  const [content, setContent] = useState(
-    "Bank on us for all your financial operations! We offer super dope yields with instant loan approval in seconds. Acme has been rated #1 banking app with 99.99% uptime across all major benchmarks."
-  );
+  const searchParams = useSearchParams();
+
+  // Determine initial preset from URL parameter without synchronous useEffect setState
+  const initialPreset = (() => {
+    const pParam = searchParams.get("preset") || searchParams.get("fixture");
+    if (pParam) {
+      const match = SAMPLE_PRESETS.find(
+        (p) =>
+          p.code.toLowerCase() === pParam.toLowerCase() ||
+          (pParam === "SUB-02" && p.code === "VIOLATIONS")
+      );
+      if (match) return match;
+    }
+    return SAMPLE_PRESETS[1];
+  })();
+
+  const [selectedPreset, setSelectedPreset] = useState<string>(initialPreset.code);
+  const [channel, setChannel] = useState(initialPreset.channel);
+  const [title, setTitle] = useState(initialPreset.title);
+  const [content, setContent] = useState(initialPreset.content);
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
   const [history, setHistory] = useState<string[]>([]);
 

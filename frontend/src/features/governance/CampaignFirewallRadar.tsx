@@ -49,7 +49,6 @@ import { auditVernacularCopy } from "@/features/submissions/vernacular/vernacula
 
 export function CampaignFirewallRadar() {
   const [campaigns, setCampaigns] = useState<FirewallCampaign[]>(INITIAL_FIREWALL_CAMPAIGNS);
-  const [telemetry, setTelemetry] = useState<FirewallTelemetrySummary>(INITIAL_FIREWALL_TELEMETRY);
   const [webhookLogs, setWebhookLogs] = useState<WebhookLogEntry[]>(INITIAL_WEBHOOK_LOGS);
   const [selectedAttestationCampaign, setSelectedAttestationCampaign] =
     useState<FirewallCampaign | null>(null);
@@ -78,6 +77,32 @@ export function CampaignFirewallRadar() {
   const [remediationDrafts, setRemediationDrafts] = useState<Record<string, string>>({});
   const [isProcessingId, setIsProcessingId] = useState<string | null>(null);
 
+  // Derive telemetry metrics directly from campaigns via useMemo
+  const telemetry: FirewallTelemetrySummary = useMemo(() => {
+    const active = campaigns.filter((c) => c.status === "ACTIVE_RUNNING").length;
+    const paused = campaigns.filter((c) => c.status === "PAUSED_BY_CANON_FIREWALL").length;
+    const liveHourly = campaigns
+      .filter((c) => c.status === "ACTIVE_RUNNING")
+      .reduce((sum, c) => sum + c.hourlySpendInr, 0);
+    const protectedMedia = campaigns.reduce(
+      (sum, c) => sum + (c.protectedSpendInr || 0),
+      0
+    );
+    const avoidedPenalties = paused * 1000000; // ₹10 Lakhs statutory fine per paused ad
+    const totalAverted = protectedMedia + avoidedPenalties;
+
+    return {
+      connectedNetworksCount: 2,
+      totalActiveCampaigns: active,
+      totalPausedCampaigns: paused,
+      currentLiveHourlySpendInr: liveHourly,
+      totalProtectedAdSpendInr: protectedMedia,
+      totalAvoidedStatutoryPenaltiesInr: avoidedPenalties,
+      totalCorporateLiabilityAvertedInr: totalAverted,
+      interceptionLatencyMs: 11.4,
+    };
+  }, [campaigns]);
+
   // Real-time spend ticker effect (ticking every 1.5 seconds)
   useEffect(() => {
     if (!isLiveStreamActive) return;
@@ -101,31 +126,6 @@ export function CampaignFirewallRadar() {
 
     return () => clearInterval(interval);
   }, [isLiveStreamActive]);
-
-  // Recalculate summary metrics whenever campaigns update
-  useEffect(() => {
-    const active = campaigns.filter((c) => c.status === "ACTIVE_RUNNING").length;
-    const paused = campaigns.filter((c) => c.status === "PAUSED_BY_CANON_FIREWALL").length;
-    const liveHourly = campaigns
-      .filter((c) => c.status === "ACTIVE_RUNNING")
-      .reduce((sum, c) => sum + c.hourlySpendInr, 0);
-    const protectedMedia = campaigns.reduce(
-      (sum, c) => sum + (c.protectedSpendInr || 0),
-      0
-    );
-    const avoidedPenalties = paused * 1000000; // ₹10 Lakhs statutory fine per paused ad
-    const totalAverted = protectedMedia + avoidedPenalties;
-
-    setTelemetry((prev) => ({
-      ...prev,
-      totalActiveCampaigns: active,
-      totalPausedCampaigns: paused,
-      currentLiveHourlySpendInr: liveHourly,
-      totalProtectedAdSpendInr: protectedMedia,
-      totalAvoidedStatutoryPenaltiesInr: avoidedPenalties,
-      totalCorporateLiabilityAvertedInr: totalAverted,
-    }));
-  }, [campaigns]);
 
   const handleTripCircuitBreaker = (campaignId: string) => {
     setIsProcessingId(campaignId);
@@ -867,8 +867,9 @@ export function CampaignFirewallRadar() {
 
             <form onSubmit={handleAddCustomCampaign} className="space-y-4 text-xs">
               <div className="space-y-1">
-                <label className="font-semibold text-[var(--color-text-secondary)]">Campaign Name</label>
+                <label htmlFor="custom-camp-name" className="font-semibold text-[var(--color-text-secondary)]">Campaign Name</label>
                 <input
+                  id="custom-camp-name"
                   type="text"
                   value={customName}
                   onChange={(e) => setCustomName(e.target.value)}
@@ -879,8 +880,9 @@ export function CampaignFirewallRadar() {
 
               <div className="grid grid-cols-2 gap-3">
                 <div className="space-y-1">
-                  <label className="font-semibold text-[var(--color-text-secondary)]">Ad Network</label>
+                  <label htmlFor="custom-ad-network" className="font-semibold text-[var(--color-text-secondary)]">Ad Network</label>
                   <select
+                    id="custom-ad-network"
                     value={customNetwork}
                     onChange={(e) => setCustomNetwork(e.target.value as AdNetwork)}
                     className="w-full px-3 py-2 rounded-xl bg-[var(--color-surface)] border border-[var(--color-border-subtle)] text-[var(--color-text-primary)] text-xs focus:outline-none focus:ring-1 focus:ring-blue-500"
@@ -891,8 +893,9 @@ export function CampaignFirewallRadar() {
                 </div>
 
                 <div className="space-y-1">
-                  <label className="font-semibold text-[var(--color-text-secondary)]">Daily Budget (₹ INR)</label>
+                  <label htmlFor="custom-daily-budget" className="font-semibold text-[var(--color-text-secondary)]">Daily Budget (₹ INR)</label>
                   <input
+                    id="custom-daily-budget"
                     type="number"
                     value={customBudget}
                     onChange={(e) => setCustomBudget(Number(e.target.value))}
@@ -903,8 +906,9 @@ export function CampaignFirewallRadar() {
               </div>
 
               <div className="space-y-1">
-                <label className="font-semibold text-[var(--color-text-secondary)]">Ad Headline</label>
+                <label htmlFor="custom-ad-headline" className="font-semibold text-[var(--color-text-secondary)]">Ad Headline</label>
                 <input
+                  id="custom-ad-headline"
                   type="text"
                   value={customHeadline}
                   onChange={(e) => setCustomHeadline(e.target.value)}
@@ -914,10 +918,11 @@ export function CampaignFirewallRadar() {
               </div>
 
               <div className="space-y-1">
-                <label className="font-semibold text-[var(--color-text-secondary)]">
+                <label htmlFor="custom-ad-body" className="font-semibold text-[var(--color-text-secondary)]">
                   Ad Body Copy (Hinglish or English)
                 </label>
                 <textarea
+                  id="custom-ad-body"
                   value={customBody}
                   onChange={(e) => setCustomBody(e.target.value)}
                   rows={3}

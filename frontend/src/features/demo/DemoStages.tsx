@@ -18,12 +18,44 @@ import { Badge } from "@/components/ui/Badge";
 import { StatusBadge } from "@/components/ui/StatusBadge";
 import { formatDate } from "@/lib/formatters";
 
+export interface DemoRule {
+  rule_code: string;
+  title: string;
+  severity: string;
+  pattern_or_term: string;
+}
+
+export interface DemoClaim {
+  claim_code: string;
+  claim_text: string;
+  valid_from: string;
+  valid_until: string;
+}
+
+export interface DemoFinding {
+  id?: string;
+  rule_code: string;
+  title?: string;
+  severity: string;
+  explanation?: string;
+  matched_text?: string;
+  receipt_a_draft_substring?: string;
+  receipt_b_rule_quote?: string;
+}
+
+export interface DemoBacktestRun {
+  historical_submissions_analyzed: number;
+  prior_pass_rate: number;
+  simulated_pass_rate: number;
+  false_positives_eliminated: number;
+}
+
 // =========================================================================
 // STAGE 1: Policy Inspection
 // =========================================================================
 export function Stage1Policy({ onNext }: { onNext: () => void }) {
-  const [rules, setRules] = useState<any[]>([]);
-  const [claims, setClaims] = useState<any[]>([]);
+  const [rules, setRules] = useState<DemoRule[]>([]);
+  const [claims, setClaims] = useState<DemoClaim[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
@@ -127,7 +159,7 @@ export function Stage2Authoring({ onNext }: { onNext: () => void }) {
     "Bank on us for all your financial operations! We offer super dope yields with instant loan approval in seconds. Acme has been rated #1 banking app with 99.99% uptime across all major benchmarks."
   );
   const [isChecking, setIsChecking] = useState(false);
-  const [findings, setFindings] = useState<any[]>([]);
+  const [findings, setFindings] = useState<DemoFinding[]>([]);
 
   const handleRunCheck = async () => {
     setIsChecking(true);
@@ -361,7 +393,7 @@ export function Stage3Review({ onNext }: { onNext: () => void }) {
 // STAGE 4: Governance, Backtest & Policy v1.1
 // =========================================================================
 export function Stage4Governance() {
-  const [backtestRun, setBacktestRun] = useState<any>(null);
+  const [backtestRun, setBacktestRun] = useState<DemoBacktestRun | null>(null);
   const [isBacktesting, setIsBacktesting] = useState(false);
   const [adopted, setAdopted] = useState(false);
 

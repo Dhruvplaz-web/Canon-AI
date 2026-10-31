@@ -623,7 +623,7 @@ function EvaluationContent() {
                           {/* Action Button */}
                           <div className="pt-2 flex justify-end">
                             <Link
-                              href={`/submissions?fixture=SUB-02`}
+                              href="/submissions?preset=VIOLATIONS"
                               className="neo-btn neo-btn-teal text-xs py-1.5 px-3"
                             >
                               <span>Test in Interactive Draft Editor</span>

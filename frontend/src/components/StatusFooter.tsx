@@ -123,6 +123,9 @@ export function StatusFooter() {
             <Link href="/transparency" className="hover:text-[var(--color-primary)] transition">
               AI Service Telemetry
             </Link>
+            <Link href="/audit" className="hover:text-[var(--color-primary)] transition">
+              Audit &amp; Verification Ledger
+            </Link>
             <Link
               href="/demo"
               className="hover:text-[var(--color-primary)] transition font-semibold text-[var(--color-primary)]"

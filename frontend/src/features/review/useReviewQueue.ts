@@ -59,7 +59,20 @@ export function useReviewQueue() {
   }, [activeSubmission]);
 
   useEffect(() => {
-    loadData();
+    let isMounted = true;
+    const initQueue = async () => {
+      try {
+        if (isMounted) {
+          await loadData();
+        }
+      } catch {
+        // Handled within loadData
+      }
+    };
+    initQueue();
+    return () => {
+      isMounted = false;
+    };
   }, [loadData]);
 
   const handleConfirmSingleOverride = async (

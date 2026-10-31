@@ -19,7 +19,8 @@ function ReviewContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
 
-  const viewMode = (searchParams.get("view") === "signoff" ? "signoff" : "queue") as
+  const rawParam = searchParams.get("view") || searchParams.get("tab");
+  const viewMode = (rawParam === "signoff" ? "signoff" : "queue") as
     | "queue"
     | "signoff";
 
