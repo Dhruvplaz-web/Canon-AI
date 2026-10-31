@@ -19,6 +19,8 @@ import {
   Layers,
   FileCode,
   ShieldAlert,
+  Zap,
+  Radio,
 } from "lucide-react";
 import { useAuth } from "@/lib/auth-context";
 
@@ -26,7 +28,7 @@ export interface CommandItem {
   id: string;
   title: string;
   description: string;
-  category: "Navigation" | "Test Fixtures" | "Personas" | "Session";
+  category: "Navigation" | "Test Fixtures" | "Personas" | "Session" | "Round 3 Breakthroughs";
   keywords: string[];
   icon: React.ComponentType<{ className?: string }>;
   badge?: string;
@@ -52,6 +54,38 @@ export function CommandPalette({ isOpen, onClose }: CommandPaletteProps) {
   // Command Definitions
   const commands: CommandItem[] = useMemo(
     () => [
+      // Round 3 Breakthrough Features (Top Priority)
+      {
+        id: "feat-visual-banner",
+        title: "Visual Banner & Legal Bounding-Box Parser (Round 3)",
+        description: "Audit display banners for 8pt disclaimers, contrast, and ASCI compliance",
+        category: "Round 3 Breakthroughs",
+        keywords: ["visual", "banner", "layout", "bounding box", "image", "creative", "contrast", "asci", "round 3", "parser"],
+        icon: Layers,
+        badge: "FEATURE 1",
+        action: () => router.push("/submissions?tab=visual"),
+      },
+      {
+        id: "feat-vernacular-radar",
+        title: "Vernacular & Hinglish NLP Radar (Round 3)",
+        description: "Detect Indic surrogates, predatory credit, and dark patterns across Hinglish & regional copy",
+        category: "Round 3 Breakthroughs",
+        keywords: ["vernacular", "hinglish", "indic", "devanagari", "hindi", "surrogate", "predatory", "radar", "round 3", "tanglish"],
+        icon: Radio,
+        badge: "FEATURE 2",
+        action: () => router.push("/submissions?tab=vernacular"),
+      },
+      {
+        id: "feat-firewall-adspend",
+        title: "Programmatic Ad-Spend Risk Radar & Campaign Firewall (Round 3)",
+        description: "Real-time circuit breaker halting non-compliant ad spend across Google Ads & Meta DSPs",
+        category: "Round 3 Breakthroughs",
+        keywords: ["firewall", "ad-spend", "adspend", "budget", "circuit breaker", "dsp", "google ads", "meta", "pause", "round 3"],
+        icon: Zap,
+        badge: "FEATURE 3",
+        action: () => router.push("/governance?tab=firewall"),
+      },
+
       // Navigation Targets
       {
         id: "nav-submissions",

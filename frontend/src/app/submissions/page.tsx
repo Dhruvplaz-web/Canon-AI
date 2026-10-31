@@ -1,6 +1,7 @@
 "use client";
 
-import React, { Suspense } from "react";
+import React, { Suspense, useMemo, useEffect } from "react";
+import { useSearchParams } from "next/navigation";
 import { FileText, Layers, Sparkles } from "lucide-react";
 import { SubmissionsHeader } from "@/features/submissions/SubmissionsHeader";
 import { CopyEditor } from "@/features/submissions/CopyEditor";
@@ -14,9 +15,40 @@ import { VernacularAuditStudio } from "@/components/VernacularAuditStudio";
 import { Skeleton } from "@/components/ui/Skeleton";
 
 function SubmissionsStudioContent() {
+  const searchParams = useSearchParams();
+
+  const initialMode = useMemo<"COPY_TEXT" | "VISUAL_BANNER" | "VERNACULAR_STUDIO">(() => {
+    const tab = (searchParams.get("tab") || searchParams.get("mode") || "").toLowerCase();
+    if (tab.includes("visual") || tab.includes("banner")) return "VISUAL_BANNER";
+    if (tab.includes("vernacular") || tab.includes("hinglish")) return "VERNACULAR_STUDIO";
+    return "COPY_TEXT";
+  }, [searchParams]);
+
   const [auditMode, setAuditMode] = React.useState<
     "COPY_TEXT" | "VISUAL_BANNER" | "VERNACULAR_STUDIO"
-  >("COPY_TEXT");
+  >(initialMode);
+
+  useEffect(() => {
+    setAuditMode(initialMode);
+  }, [initialMode]);
+
+  const handleSwitchMode = (newMode: "COPY_TEXT" | "VISUAL_BANNER" | "VERNACULAR_STUDIO") => {
+    setAuditMode(newMode);
+    if (typeof window !== "undefined") {
+      const current = new URLSearchParams(window.location.search);
+      if (newMode === "VISUAL_BANNER") {
+        current.set("tab", "visual");
+      } else if (newMode === "VERNACULAR_STUDIO") {
+        current.set("tab", "vernacular");
+      } else {
+        current.delete("tab");
+        current.delete("mode");
+      }
+      const qs = current.toString();
+      const newUrl = `${window.location.pathname}${qs ? `?${qs}` : ""}`;
+      window.history.replaceState(null, "", newUrl);
+    }
+  };
 
   const {
     selectedPreset,
@@ -52,7 +84,7 @@ function SubmissionsStudioContent() {
         <div className="inline-flex p-1 bg-[var(--color-surface-elevated)] border border-[var(--color-border-subtle)] rounded-xl gap-1">
           <button
             type="button"
-            onClick={() => setAuditMode("COPY_TEXT")}
+            onClick={() => handleSwitchMode("COPY_TEXT")}
             className={`inline-flex items-center gap-2 px-4 py-2 rounded-lg text-xs sm:text-sm font-semibold transition-all ${
               auditMode === "COPY_TEXT"
                 ? "bg-[#111111] text-white dark:bg-white dark:text-black shadow-xs"
@@ -64,7 +96,7 @@ function SubmissionsStudioContent() {
           </button>
           <button
             type="button"
-            onClick={() => setAuditMode("VISUAL_BANNER")}
+            onClick={() => handleSwitchMode("VISUAL_BANNER")}
             className={`inline-flex items-center gap-2 px-4 py-2 rounded-lg text-xs sm:text-sm font-semibold transition-all ${
               auditMode === "VISUAL_BANNER"
                 ? "bg-[#111111] text-white dark:bg-white dark:text-black shadow-xs"
@@ -79,7 +111,7 @@ function SubmissionsStudioContent() {
           </button>
           <button
             type="button"
-            onClick={() => setAuditMode("VERNACULAR_STUDIO")}
+            onClick={() => handleSwitchMode("VERNACULAR_STUDIO")}
             className={`inline-flex items-center gap-2 px-4 py-2 rounded-lg text-xs sm:text-sm font-semibold transition-all ${
               auditMode === "VERNACULAR_STUDIO"
                 ? "bg-[#111111] text-white dark:bg-white dark:text-black shadow-xs"
