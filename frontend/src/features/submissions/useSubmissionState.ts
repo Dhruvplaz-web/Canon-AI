@@ -24,10 +24,28 @@ export function useSubmissionState() {
     return SAMPLE_PRESETS[1];
   })();
 
+  const initialContent = (() => {
+    if (typeof window !== "undefined" && searchParams.get("bridged") === "1") {
+      const bridged = sessionStorage.getItem("canon_bridged_copy");
+      if (bridged) {
+        sessionStorage.removeItem("canon_bridged_copy");
+        return bridged;
+      }
+    }
+    return initialPreset.content;
+  })();
+
+  const initialTitle = (() => {
+    if (typeof window !== "undefined" && searchParams.get("bridged") === "1") {
+      return "Vernacular Remediated Campaign (Bridged from Radar)";
+    }
+    return initialPreset.title;
+  })();
+
   const [selectedPreset, setSelectedPreset] = useState<string>(initialPreset.code);
   const [channel, setChannel] = useState(initialPreset.channel);
-  const [title, setTitle] = useState(initialPreset.title);
-  const [content, setContent] = useState(initialPreset.content);
+  const [title, setTitle] = useState(initialTitle);
+  const [content, setContent] = useState(initialContent);
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
   const [history, setHistory] = useState<string[]>([]);
 
