@@ -371,3 +371,4 @@ export function generateIabLeaderboardSvg(options: CreativeSvgOptions = {}): str
 
   return `data:image/svg+xml;utf8,${encodeURIComponent(svg)}`;
 }
+

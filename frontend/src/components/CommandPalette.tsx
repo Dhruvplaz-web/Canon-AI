@@ -76,6 +76,16 @@ export function CommandPalette({ isOpen, onClose }: CommandPaletteProps) {
         action: () => router.push("/submissions?tab=vernacular"),
       },
       {
+        id: "feat-audio-cadence-radar",
+        title: "ASCI Vernacular Audio Speed and Syllable Radar (Round 3)",
+        description: "Synthesize spoken voiceover disclaimers and detect chipmunk speed obscuration (>2.5 SPS)",
+        category: "Round 3 Breakthroughs",
+        keywords: ["audio", "speech", "disclaimer", "voiceover", "asci", "syllable", "speed", "cadence", "radio", "tvc", "sound", "synthesizer"],
+        icon: Radio,
+        badge: "AUDIO 2.5 SPS",
+        action: () => router.push("/submissions?tab=vernacular"),
+      },
+      {
         id: "feat-firewall-adspend",
         title: "Programmatic Ad-Spend Risk Radar & Campaign Firewall (Round 3)",
         description: "Real-time circuit breaker halting non-compliant ad spend across Google Ads & Meta DSPs",

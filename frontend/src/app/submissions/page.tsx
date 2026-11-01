@@ -1,6 +1,6 @@
 "use client";
 
-import React, { Suspense, useMemo, useEffect } from "react";
+import React, { Suspense, useMemo } from "react";
 import { useSearchParams } from "next/navigation";
 import { FileText, Layers, Sparkles } from "lucide-react";
 import { SubmissionsHeader } from "@/features/submissions/SubmissionsHeader";
@@ -20,20 +20,18 @@ function SubmissionsStudioContent() {
   const initialMode = useMemo<"COPY_TEXT" | "VISUAL_BANNER" | "VERNACULAR_STUDIO">(() => {
     const tab = (searchParams.get("tab") || searchParams.get("mode") || "").toLowerCase();
     if (tab.includes("visual") || tab.includes("banner")) return "VISUAL_BANNER";
-    if (tab.includes("vernacular") || tab.includes("hinglish")) return "VERNACULAR_STUDIO";
+    if (tab.includes("vernacular") || tab.includes("hinglish") || tab.includes("audio") || tab.includes("speech")) return "VERNACULAR_STUDIO";
     return "COPY_TEXT";
   }, [searchParams]);
 
-  const [auditMode, setAuditMode] = React.useState<
-    "COPY_TEXT" | "VISUAL_BANNER" | "VERNACULAR_STUDIO"
-  >(initialMode);
+  const [selectedModeOverride, setSelectedModeOverride] = React.useState<
+    "COPY_TEXT" | "VISUAL_BANNER" | "VERNACULAR_STUDIO" | null
+  >(null);
 
-  useEffect(() => {
-    setAuditMode(initialMode);
-  }, [initialMode]);
+  const auditMode = selectedModeOverride ?? initialMode;
 
   const handleSwitchMode = (newMode: "COPY_TEXT" | "VISUAL_BANNER" | "VERNACULAR_STUDIO") => {
-    setAuditMode(newMode);
+    setSelectedModeOverride(newMode);
     if (typeof window !== "undefined") {
       const current = new URLSearchParams(window.location.search);
       if (newMode === "VISUAL_BANNER") {
