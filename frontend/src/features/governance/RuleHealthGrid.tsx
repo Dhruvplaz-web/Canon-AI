@@ -1,9 +1,8 @@
 "use client";
 
 import React, { useState, useMemo } from "react";
-import { Activity, AlertTriangle, ShieldCheck, TrendingUp, DollarSign, Clock, CheckCircle2, Calculator } from "lucide-react";
+import { Activity, ShieldCheck, TrendingUp, DollarSign, Clock, Calculator } from "lucide-react";
 import { Badge } from "@/components/ui/Badge";
-import { StatusBadge } from "@/components/ui/StatusBadge";
 import { formatPercent, formatNumber } from "@/lib/formatters";
 
 export interface RuleHealthItem {

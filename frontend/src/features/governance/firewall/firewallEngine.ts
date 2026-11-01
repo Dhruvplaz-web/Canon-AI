@@ -43,7 +43,7 @@ export function executeCircuitBreaker(
       method: campaign.network === "META_ADS" ? "POST" : "MUTATE",
       status: 200,
       latencyMs: +(8 + Math.random() * 4).toFixed(1),
-      payloadSummary: `{"status": "PAUSED", "reason": "PAUSED_BY_CANON_FIREWALL", "rule": "${campaign.detectedInfraction?.ruleCode || "STATUTORY_VIOLATION"}"}`,
+      payloadSummary: `{"status": "PAUSED", "reason": "${reason}", "rule": "${campaign.detectedInfraction?.ruleCode || "STATUTORY_VIOLATION"}"}`,
       eventSignature: `SHA256:${eventId.substring(0, 10)}...${campaign.campaignIdExternal.slice(-4)}`,
     },
     {

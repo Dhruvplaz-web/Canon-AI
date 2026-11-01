@@ -1,10 +1,9 @@
 "use client";
 
-import React, { useState } from "react";
-import { GitBranch, Play, CheckCircle2, ShieldCheck, ArrowRight, AlertTriangle } from "lucide-react";
+import React from "react";
+import { Play, ShieldCheck } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 import { Badge } from "@/components/ui/Badge";
-import { StatusBadge } from "@/components/ui/StatusBadge";
 import { formatPercent } from "@/lib/formatters";
 
 export interface ProposalItem {

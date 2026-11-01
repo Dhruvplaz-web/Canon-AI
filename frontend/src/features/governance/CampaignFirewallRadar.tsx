@@ -1,46 +1,36 @@
 "use client";
 
-import React, { useState, useEffect, useMemo, useId } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import {
   ShieldAlert,
-  ShieldCheck,
-  AlertTriangle,
   Zap,
   RotateCcw,
   Printer,
   CheckCircle2,
-  ExternalLink,
   Flame,
-  ArrowRight,
   Sparkles,
-  Layers,
   Radio,
-  FileText,
   X,
-  Play,
   Pause,
   Terminal,
   Activity,
   Plus,
-  Send,
-  Sliders,
-  DollarSign,
-  TrendingDown,
-  Building2,
+  Eye,
+  Code,
   Download,
 } from "lucide-react";
 import {
   FirewallCampaign,
   FirewallTelemetrySummary,
-  CircuitBreakerResult,
   WebhookLogEntry,
   AdNetwork,
 } from "./firewall/firewallTypes";
 import {
   INITIAL_FIREWALL_CAMPAIGNS,
-  INITIAL_FIREWALL_TELEMETRY,
   INITIAL_WEBHOOK_LOGS,
 } from "./firewall/firewallFixtures";
+import { WebhookPayloadModal } from "./firewall/WebhookPayloadModal";
+import { CampaignAdFeedPreview } from "./firewall/CampaignAdFeedPreview";
 import {
   executeCircuitBreaker,
   resumeRemediatedCampaign,
@@ -54,6 +44,8 @@ export function CampaignFirewallRadar() {
   const [webhookLogs, setWebhookLogs] = useState<WebhookLogEntry[]>(INITIAL_WEBHOOK_LOGS);
   const [selectedAttestationCampaign, setSelectedAttestationCampaign] =
     useState<FirewallCampaign | null>(null);
+  const [inspectingWebhookLog, setInspectingWebhookLog] = useState<WebhookLogEntry | null>(null);
+  const [previewCampaignId, setPreviewCampaignId] = useState<string | null>(null);
   const [networkFilter, setNetworkFilter] = useState<"ALL" | AdNetwork | "PAUSED">("ALL");
 
   // Real-time ticking stream state
@@ -256,7 +248,7 @@ export function CampaignFirewallRadar() {
   const handleResetBaseline = async () => {
     try {
       await fetch("/api/v1/firewall/circuit-breaker", { method: "DELETE" });
-    } catch (e) {
+    } catch {
       // offline fallback
     }
     setCampaigns(INITIAL_FIREWALL_CAMPAIGNS);
@@ -665,7 +657,9 @@ export function CampaignFirewallRadar() {
             {filteredLogs.map((log) => (
               <div
                 key={log.id}
-                className="p-2 rounded-lg bg-slate-900/80 border border-slate-800/80 flex flex-col sm:flex-row sm:items-center justify-between gap-2"
+                onClick={() => setInspectingWebhookLog(log)}
+                className="p-2 rounded-lg bg-slate-900/80 hover:bg-slate-800/90 cursor-pointer border border-slate-800/80 transition-colors flex flex-col sm:flex-row sm:items-center justify-between gap-2 group"
+                title="Click to view cURL command and API mutate payload"
               >
                 <div className="space-y-0.5 flex-1 min-w-0">
                   <div className="flex items-center gap-2 flex-wrap">
@@ -691,7 +685,18 @@ export function CampaignFirewallRadar() {
 
                 <div className="flex items-center gap-3 shrink-0 text-[10px]">
                   <span className="text-emerald-400 font-bold">{log.latencyMs}ms</span>
-                  <span className="text-slate-500">{log.eventSignature}</span>
+                  <span className="text-slate-500 font-mono hidden md:inline">{log.eventSignature}</span>
+                  <button
+                    type="button"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setInspectingWebhookLog(log);
+                    }}
+                    className="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-slate-800 group-hover:bg-emerald-500/20 group-hover:text-emerald-300 text-slate-300 text-[10px] font-mono border border-slate-700/60 transition"
+                  >
+                    <Code className="w-3 h-3" />
+                    <span>Payload</span>
+                  </button>
                 </div>
               </div>
             ))}
@@ -868,6 +873,24 @@ export function CampaignFirewallRadar() {
                   {camp.creative.bodyCopy}
                 </p>
               </div>
+
+              {/* Live Ad Feed Simulator Toggle */}
+              <div className="flex items-center justify-between">
+                <button
+                  type="button"
+                  onClick={() => setPreviewCampaignId(previewCampaignId === camp.id ? null : camp.id)}
+                  className="inline-flex items-center gap-1.5 text-[11px] font-semibold text-blue-600 dark:text-blue-400 hover:underline"
+                >
+                  <Eye className="w-3.5 h-3.5" />
+                  <span>{previewCampaignId === camp.id ? "Hide Feed Mockup" : "View Live Ad Feed Mockup"}</span>
+                </button>
+              </div>
+
+              {previewCampaignId === camp.id && (
+                <div className="p-3 rounded-xl bg-[var(--color-surface)] border border-[var(--color-border-subtle)] animate-in fade-in duration-150">
+                  <CampaignAdFeedPreview campaign={camp} />
+                </div>
+              )}
 
               {/* Statutory Infraction Box if Flagged */}
               {camp.detectedInfraction && (
@@ -1143,6 +1166,11 @@ export function CampaignFirewallRadar() {
           </div>
         </div>
       )}
+      {/* Interactive Webhook cURL & Payload Inspector Modal */}
+      <WebhookPayloadModal
+        log={inspectingWebhookLog}
+        onClose={() => setInspectingWebhookLog(null)}
+      />
     </div>
   );
 }
