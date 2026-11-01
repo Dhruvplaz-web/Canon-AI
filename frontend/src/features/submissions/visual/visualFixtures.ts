@@ -1,4 +1,10 @@
 import { VisualCreativeAsset } from "./visualTypes";
+import {
+  generateFintechLoanSvg,
+  generateSurrogateSodaSvg,
+  generateEdtechGuaranteeSvg,
+  generateIabLeaderboardSvg,
+} from "./visualSvgCreatives";
 
 export const VISUAL_BENCHMARK_ASSETS: VisualCreativeAsset[] = [
   {
@@ -10,12 +16,15 @@ export const VISUAL_BENCHMARK_ASSETS: VisualCreativeAsset[] = [
     headlineText: "Instant Loan @ 1% Interest* Disbursed in 5 Mins!",
     disclaimerText: "*Terms apply. Processing fee 14% upfront. Annual APR 48% p.a. Repayment tenure 60 days. Non-refundable platform convenience fee applies.",
     backgroundTheme: "from-amber-50 to-orange-100",
+    imageUrl: generateFintechLoanSvg({ remediated: false }),
+    remediatedImageUrl: generateFintechLoanSvg({ remediated: true }),
+    sha256Proof: "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
     regions: [
       {
         id: "reg-01-logo",
         label: "LOGO",
         textExtracted: "RupeeFast Instant Credit",
-        coordinates: { ymin: 0.06, xmin: 0.08, ymax: 0.12, xmax: 0.38 },
+        coordinates: { ymin: 0.06, xmin: 0.08, ymax: 0.14, xmax: 0.42 },
         metrics: {
           calculatedFontSizePt: 16.0,
           canvasHeightPercentage: 3.2,
@@ -29,7 +38,7 @@ export const VISUAL_BENCHMARK_ASSETS: VisualCreativeAsset[] = [
         id: "reg-01-headline",
         label: "HEADLINE",
         textExtracted: "Instant Loan @ 1% Interest*",
-        coordinates: { ymin: 0.22, xmin: 0.08, ymax: 0.38, xmax: 0.92 },
+        coordinates: { ymin: 0.24, xmin: 0.08, ymax: 0.48, xmax: 0.92 },
         metrics: {
           calculatedFontSizePt: 38.0,
           canvasHeightPercentage: 8.5,
@@ -43,7 +52,7 @@ export const VISUAL_BENCHMARK_ASSETS: VisualCreativeAsset[] = [
         id: "reg-01-subhead",
         label: "BODY_CLAIM",
         textExtracted: "Money credited directly to your bank account within 300 seconds.",
-        coordinates: { ymin: 0.42, xmin: 0.08, ymax: 0.52, xmax: 0.85 },
+        coordinates: { ymin: 0.52, xmin: 0.08, ymax: 0.66, xmax: 0.92 },
         metrics: {
           calculatedFontSizePt: 18.0,
           canvasHeightPercentage: 3.8,
@@ -57,7 +66,7 @@ export const VISUAL_BENCHMARK_ASSETS: VisualCreativeAsset[] = [
         id: "reg-01-badge-missing",
         label: "PARTNER_BADGE",
         textExtracted: "NBFC Partner unlisted / undisclosed",
-        coordinates: { ymin: 0.78, xmin: 0.08, ymax: 0.84, xmax: 0.45 },
+        coordinates: { ymin: 0.77, xmin: 0.08, ymax: 0.84, xmax: 0.92 },
         metrics: {
           calculatedFontSizePt: 0,
           canvasHeightPercentage: 0,
@@ -81,12 +90,12 @@ export const VISUAL_BENCHMARK_ASSETS: VisualCreativeAsset[] = [
         id: "reg-01-disclaimer",
         label: "DISCLAIMER_LEGAL",
         textExtracted: "*Terms apply. Processing fee 14% upfront. Annual APR 48% p.a. Repayment tenure 60 days. Non-refundable platform convenience fee applies.",
-        coordinates: { ymin: 0.91, xmin: 0.08, ymax: 0.96, xmax: 0.92 },
+        coordinates: { ymin: 0.85, xmin: 0.08, ymax: 0.96, xmax: 0.92 },
         metrics: {
           calculatedFontSizePt: 4.2, // ILLEGAL: Below 8pt minimum
           canvasHeightPercentage: 0.95, // ILLEGAL: < 1.8% of canvas
           contrastRatio: 2.3, // ILLEGAL: Fails 4.5:1 WCAG AA
-          textColorHex: "#A1A1AA", // Pale grey
+          textColorHex: "#B45309", // Low-contrast amber
           backgroundColorHex: "#FEF3C7", // Pale amber
         },
         violations: [
@@ -111,11 +120,118 @@ export const VISUAL_BENCHMARK_ASSETS: VisualCreativeAsset[] = [
           {
             code: "WCAG-CONTRAST-AA",
             severity: "CRITICAL",
-            ruleTitle: "Illegible Pale Grey Foreground Contrast",
+            ruleTitle: "Illegible Low-Contrast Disclaimer",
             statutoryCitation: "ISO/IEC 40500:2012 / WCAG 2.1 AA Criterion 1.4.3",
-            detectedValue: "2.3:1 contrast ratio (#A1A1AA on #FEF3C7)",
+            detectedValue: "2.3:1 contrast ratio (#B45309 on #FEF3C7)",
             requiredThreshold: "≥ 4.5:1 luminance contrast",
-            remediationAction: "Change text color to high-contrast dark charcoal (#0F172A) to achieve 11.2:1 contrast.",
+            remediationAction: "Change text color to high-contrast dark charcoal (#0F172A) to achieve 14.8:1 contrast.",
+          },
+        ],
+      },
+    ],
+  },
+  {
+    id: "VIS-FIXTURE-SURROGATE",
+    title: "🇮🇳 Alcobev Surrogate Club Soda (Direct Brand Extension & Trademark Breach)",
+    category: "FMCG_SURROGATE",
+    channel: "DISPLAY_BANNER_300X250",
+    dimensions: { width: 1200, height: 628 },
+    headlineText: "Live Bold, Play Large! Royal Challenge Club Soda",
+    disclaimerText: "*Order your celebratory party crate for tonight's big game. Packaged drinking club soda.",
+    backgroundTheme: "from-slate-900 to-indigo-950",
+    imageUrl: generateSurrogateSodaSvg({ remediated: false }),
+    remediatedImageUrl: generateSurrogateSodaSvg({ remediated: true }),
+    sha256Proof: "9b8e2c4d7f1a3b5c6e8d0f2a4b6c8e0d2f4a6b8c0d2e4f6a8b0c2d4e6f8a0b2c",
+    regions: [
+      {
+        id: "reg-surr-logo",
+        label: "LOGO",
+        textExtracted: "Royal Challenge Club Soda",
+        coordinates: { ymin: 0.08, xmin: 0.06, ymax: 0.18, xmax: 0.42 },
+        metrics: {
+          calculatedFontSizePt: 22.0,
+          canvasHeightPercentage: 4.8,
+          contrastRatio: 9.8,
+          textColorHex: "#FDE047",
+          backgroundColorHex: "#0F172A",
+        },
+        violations: [
+          {
+            code: "ASCI-SURR-01",
+            severity: "CRITICAL",
+            ruleTitle: "Direct Brand Extension Color & Trademark Parity",
+            statutoryCitation: "ASCI Brand Extension Code & CPA 2019 Sec 21",
+            detectedValue: "Color scheme, font, and crest match restricted whiskey trademark",
+            requiredThreshold: "Distinct independent visual branding for genuine brand extension",
+            remediationAction: "Differentiate color scheme and typography from parent alcohol trademark.",
+          },
+        ],
+        logoMetadata: {
+          brandName: "Royal Challenge (United Spirits)",
+          confidenceScore: 0.96,
+          isAuthorizedPartner: false,
+          trademarkStatus: "UNREGISTERED_OR_SURROGATE",
+        },
+      },
+      {
+        id: "reg-surr-headline",
+        label: "HEADLINE",
+        textExtracted: "Live Bold, Play Large! Royal Challenge Club Soda",
+        coordinates: { ymin: 0.28, xmin: 0.06, ymax: 0.52, xmax: 0.72 },
+        metrics: {
+          calculatedFontSizePt: 36.0,
+          canvasHeightPercentage: 8.2,
+          contrastRatio: 12.4,
+          textColorHex: "#FFFFFF",
+          backgroundColorHex: "#0F172A",
+        },
+        violations: [],
+      },
+      {
+        id: "reg-surr-silhouette",
+        label: "BODY_CLAIM",
+        textExtracted: "Silhouette liquor bottle graphic with celebratory nightlife cues",
+        coordinates: { ymin: 0.16, xmin: 0.72, ymax: 0.72, xmax: 0.96 },
+        metrics: {
+          calculatedFontSizePt: 12.0,
+          canvasHeightPercentage: 2.5,
+          contrastRatio: 6.2,
+          textColorHex: "#FDE047",
+          backgroundColorHex: "#1E1B4B",
+        },
+        violations: [
+          {
+            code: "CCPA-SURROGATE-VISUAL",
+            severity: "CRITICAL",
+            ruleTitle: "Direct Product Silhouette Mimicry",
+            statutoryCitation: "CCPA Guidelines for Prevention of Misleading Ads (2022) Guideline 9",
+            detectedValue: "Bottle contour replicates commercial spirits packaging",
+            requiredThreshold: "Zero visual cues that promote restricted substance consumption",
+            remediationAction: "Replace liquor bottle silhouette with genuine beverage packaging graphics.",
+          },
+        ],
+      },
+      {
+        id: "reg-surr-disclaimer",
+        label: "DISCLAIMER_LEGAL",
+        textExtracted: "*Order your celebratory party crate for tonight's big game. Packaged drinking club soda.",
+        coordinates: { ymin: 0.76, xmin: 0.06, ymax: 0.92, xmax: 0.94 },
+        metrics: {
+          calculatedFontSizePt: 10.5,
+          canvasHeightPercentage: 2.4,
+          contrastRatio: 5.4,
+          textColorHex: "#E2E8F0",
+          backgroundColorHex: "#1E293B",
+        },
+        violations: [
+          {
+            code: "FSSAI-BEV-DISCLOSURE",
+            severity: "HIGH",
+            ruleTitle: "Missing Statutory Non-Alcoholic License Number",
+            statutoryCitation: "Food Safety and Standards (Packaging and Labelling) Regulations 2011",
+            detectedValue: "No verified FSSAI License Number or Non-Alcoholic certification",
+            requiredThreshold: "Mandatory display of FSSAI License No. and non-alcoholic certification",
+            remediationAction: "Display genuine FSSAI registration number and batch tracking code.",
           },
         ],
       },
@@ -125,23 +241,26 @@ export const VISUAL_BENCHMARK_ASSETS: VisualCreativeAsset[] = [
     id: "VIS-FIXTURE-02",
     title: "🇮🇳 EdTech Placement Guarantee Ad (Sideways Rotated 90° Obscured Text)",
     category: "EDTECH_GUARANTEE",
-    channel: "DISPLAY_BANNER_300X250",
-    dimensions: { width: 1200, height: 628 },
+    channel: "INSTAGRAM_POST",
+    dimensions: { width: 1080, height: 1080 },
     headlineText: "100% Guaranteed ₹12 LPA Job Placement or Full Refund*",
     disclaimerText: "*Refund subject to 95% attendance, clearing 6 mock tests, and accepting any offer above ₹3 LPA within 180 days of graduation.",
-    backgroundTheme: "from-blue-50 to-indigo-100",
+    backgroundTheme: "from-blue-900 to-indigo-950",
+    imageUrl: generateEdtechGuaranteeSvg({ remediated: false }),
+    remediatedImageUrl: generateEdtechGuaranteeSvg({ remediated: true }),
+    sha256Proof: "4f2a6b8c0d2e4f6a8b0c2d4e6f8a0b2c4f2a6b8c0d2e4f6a8b0c2d4e6f8a0b2c",
     regions: [
       {
         id: "reg-02-logo",
         label: "LOGO",
         textExtracted: "TechCareer Academy",
-        coordinates: { ymin: 0.08, xmin: 0.06, ymax: 0.16, xmax: 0.35 },
+        coordinates: { ymin: 0.07, xmin: 0.08, ymax: 0.14, xmax: 0.36 },
         metrics: {
-          calculatedFontSizePt: 15.0,
+          calculatedFontSizePt: 16.0,
           canvasHeightPercentage: 3.5,
           contrastRatio: 10.1,
-          textColorHex: "#0F172A",
-          backgroundColorHex: "#EFF6FF",
+          textColorHex: "#FFFFFF",
+          backgroundColorHex: "#1E1B4B",
         },
         violations: [],
       },
@@ -149,27 +268,37 @@ export const VISUAL_BENCHMARK_ASSETS: VisualCreativeAsset[] = [
         id: "reg-02-headline",
         label: "HEADLINE",
         textExtracted: "100% Guaranteed ₹12 LPA Job Placement*",
-        coordinates: { ymin: 0.24, xmin: 0.06, ymax: 0.44, xmax: 0.94 },
+        coordinates: { ymin: 0.25, xmin: 0.08, ymax: 0.52, xmax: 0.92 },
         metrics: {
           calculatedFontSizePt: 34.0,
           canvasHeightPercentage: 8.0,
           contrastRatio: 11.8,
-          textColorHex: "#1E1B4B",
-          backgroundColorHex: "#EFF6FF",
+          textColorHex: "#F97316",
+          backgroundColorHex: "#1E1B4B",
         },
-        violations: [],
+        violations: [
+          {
+            code: "ASCI-EDTECH-JOB-01",
+            severity: "CRITICAL",
+            ruleTitle: "Prohibited 100% Placement Guarantee Claim",
+            statutoryCitation: "ASCI Guidelines for Advertising of Educational Institutions Clause 2.1",
+            detectedValue: "'100% Guaranteed Job Placement' promise",
+            requiredThreshold: "Educational institutions shall not guarantee employment",
+            remediationAction: "Replace absolute guarantee with verified placement assistance metrics.",
+          },
+        ],
       },
       {
         id: "reg-02-sideways-disclaimer",
         label: "DISCLAIMER_LEGAL",
-        textExtracted: "*Refund subject to 95% attendance, clearing 6 mock tests, and accepting any offer above ₹3 LPA within 180 days.",
-        coordinates: { ymin: 0.15, xmin: 0.95, ymax: 0.85, xmax: 0.99 },
+        textExtracted: "*Refund subject to 95% attendance, clearing 6 mock tests, and accepting any offer above ₹3 LPA.",
+        coordinates: { ymin: 0.18, xmin: 0.94, ymax: 0.88, xmax: 0.99 },
         metrics: {
-          calculatedFontSizePt: 5.2,
+          calculatedFontSizePt: 4.8,
           canvasHeightPercentage: 1.1,
           contrastRatio: 3.2,
-          textColorHex: "#94A3B8",
-          backgroundColorHex: "#EFF6FF",
+          textColorHex: "#64748B",
+          backgroundColorHex: "#1E1B4B",
           rotationDegrees: 90, // ILLEGAL: Sideways vertical orientation
         },
         violations: [
@@ -204,6 +333,9 @@ export const VISUAL_BENCHMARK_ASSETS: VisualCreativeAsset[] = [
     headlineText: "Pre-Approved Car Loans Starting @ 8.65% p.a.",
     disclaimerText: "Credit at sole discretion of Kotak Prime Ltd (RBI Reg: 14.00028). Standard processing fee of ₹3,500 applies. T&C apply.",
     backgroundTheme: "from-neutral-50 to-slate-100",
+    imageUrl: generateFintechLoanSvg({ remediated: true }),
+    remediatedImageUrl: generateFintechLoanSvg({ remediated: true }),
+    sha256Proof: "1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d7e8f9a0b1c2d3e4f5a6b7c8d9e0f1a2b",
     regions: [
       {
         id: "reg-03-logo",
@@ -272,46 +404,49 @@ export const VISUAL_BENCHMARK_ASSETS: VisualCreativeAsset[] = [
     headlineText: "Fast Wealth 15% Yield Fixed Deposits* Open Free Account",
     disclaimerText: "*Subject to corporate market risks. Not insured by DICGC. Minimum lock-in 36 months.",
     backgroundTheme: "from-emerald-50 to-teal-100",
+    imageUrl: generateIabLeaderboardSvg({ remediated: false }),
+    remediatedImageUrl: generateIabLeaderboardSvg({ remediated: true }),
+    sha256Proof: "3e4f5a6b7c8d9e0f1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d7e8f9a0b1c2d3e4f",
     regions: [
       {
         id: "reg-04-logo",
         label: "LOGO",
-        textExtracted: "FastWealth Digital",
+        textExtracted: "Alpha Wealth Digital",
         coordinates: { ymin: 0.15, xmin: 0.02, ymax: 0.85, xmax: 0.18 },
         metrics: {
           calculatedFontSizePt: 14.0,
           canvasHeightPercentage: 4.2,
           contrastRatio: 9.1,
-          textColorHex: "#064E3B",
-          backgroundColorHex: "#ECFDF5",
+          textColorHex: "#FFFFFF",
+          backgroundColorHex: "#0F172A",
         },
         violations: [],
       },
       {
         id: "reg-04-headline",
         label: "HEADLINE",
-        textExtracted: "Fast Wealth 15% Yield Fixed Deposits*",
+        textExtracted: "Invest ₹500/mo in Top US Equities",
         coordinates: { ymin: 0.18, xmin: 0.22, ymax: 0.62, xmax: 0.72 },
         metrics: {
           calculatedFontSizePt: 18.0,
           canvasHeightPercentage: 6.8,
           contrastRatio: 11.4,
-          textColorHex: "#064E3B",
-          backgroundColorHex: "#ECFDF5",
+          textColorHex: "#FBBF24",
+          backgroundColorHex: "#0F172A",
         },
         violations: [],
       },
       {
         id: "reg-04-disclaimer",
         label: "DISCLAIMER_LEGAL",
-        textExtracted: "*Not DICGC insured. 36 month lock-in.",
+        textExtracted: "*Investments subject to market risks. Past returns don't assure future. Brokerage T&C apply.",
         coordinates: { ymin: 0.72, xmin: 0.22, ymax: 0.92, xmax: 0.72 },
         metrics: {
           calculatedFontSizePt: 4.9,
           canvasHeightPercentage: 1.2,
           contrastRatio: 2.8,
-          textColorHex: "#6EE7B7",
-          backgroundColorHex: "#ECFDF5",
+          textColorHex: "#64748B",
+          backgroundColorHex: "#0F172A",
         },
         violations: [
           {
@@ -327,55 +462,4 @@ export const VISUAL_BENCHMARK_ASSETS: VisualCreativeAsset[] = [
       },
     ],
   },
-  {
-    id: "VIS-FIXTURE-05",
-    title: "🇮🇳 IAB Wide Skyscraper (160×600 Sidebar Ad — Margin Clipping)",
-    category: "FMCG_SURROGATE",
-    channel: "DISPLAY_BANNER_160X600",
-    dimensions: { width: 160, height: 600 },
-    headlineText: "Party Hard Club Soda Live The Grand Life",
-    disclaimerText: "*Packaged drinking water. Contains added minerals.",
-    backgroundTheme: "from-purple-50 to-pink-100",
-    regions: [
-      {
-        id: "reg-05-headline",
-        label: "HEADLINE",
-        textExtracted: "Party Hard Club Soda*",
-        coordinates: { ymin: 0.12, xmin: 0.08, ymax: 0.28, xmax: 0.92 },
-        metrics: {
-          calculatedFontSizePt: 22.0,
-          canvasHeightPercentage: 7.2,
-          contrastRatio: 10.5,
-          textColorHex: "#581C87",
-          backgroundColorHex: "#FAF5FF",
-        },
-        violations: [],
-      },
-      {
-        id: "reg-05-disclaimer",
-        label: "DISCLAIMER_LEGAL",
-        textExtracted: "*Surrogate branding for restricted spirit line.",
-        coordinates: { ymin: 0.92, xmin: 0.05, ymax: 0.98, xmax: 0.95 },
-        metrics: {
-          calculatedFontSizePt: 4.5,
-          canvasHeightPercentage: 0.9,
-          contrastRatio: 2.1,
-          textColorHex: "#D8B4FE",
-          backgroundColorHex: "#FAF5FF",
-        },
-        violations: [
-          {
-            code: "ASCI-SURROGATE-ALCOBEV",
-            severity: "CRITICAL",
-            ruleTitle: "Surrogate Beverage Fine-Print Concealment",
-            statutoryCitation: "ASCI Brand Extension Guidelines Clause 3.2",
-            detectedValue: "4.5pt text with 2.1:1 contrast on vertical sidebar",
-            requiredThreshold: "Equal prominence to parent brand mark; min 8.0pt",
-            remediationAction: "Increase disclaimer to 9.0pt and ensure horizontal orientation.",
-          },
-        ],
-      },
-    ],
-  },
 ];
-

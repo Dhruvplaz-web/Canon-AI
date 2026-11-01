@@ -1,4 +1,4 @@
-import { NormalizedCoordinates, LogoDetectionMetadata, VisualBoundingBox } from "./visualTypes";
+import { NormalizedCoordinates, LogoDetectionMetadata } from "./visualTypes";
 
 export interface GoogleVisionLogoResult {
   brandName: string;

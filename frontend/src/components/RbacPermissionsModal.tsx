@@ -251,3 +251,4 @@ export function RbacPermissionsModal({ isOpen, onClose }: RbacPermissionsModalPr
     </div>
   );
 }
+

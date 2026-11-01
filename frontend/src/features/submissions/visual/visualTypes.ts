@@ -68,6 +68,7 @@ export interface VisualCreativeAsset {
   backgroundTheme: string;
   regions: VisualBoundingBox[];
   imageUrl?: string;
+  remediatedImageUrl?: string;
   sha256Proof?: string;
   tier2EnrichmentStatus?: "ENRICHED" | "FALLBACK_OFFLINE" | "NOT_TRIGGERED";
 }
