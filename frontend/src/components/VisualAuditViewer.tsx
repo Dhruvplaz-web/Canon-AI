@@ -41,6 +41,7 @@ import {
 } from "@/features/submissions/visual/visualEvidenceExporter";
 import { VisualMagnifierLoupe } from "@/features/submissions/visual/VisualMagnifierLoupe";
 import { VisualCompareSlider } from "@/features/submissions/visual/VisualCompareSlider";
+import { VisualBoxEditorDrawer } from "@/features/submissions/visual/VisualBoxEditorDrawer";
 
 type RegionFilterType = "ALL" | "VIOLATIONS_ONLY" | "HEADLINES" | "DISCLAIMERS" | "LOGOS";
 type StudioViewMode = "INSPECT_BOXES" | "SPLIT_COMPARE";
@@ -53,6 +54,8 @@ export function VisualAuditViewer() {
   const [viewMode, setViewMode] = React.useState<StudioViewMode>("INSPECT_BOXES");
   const [sliderPos, setSliderPos] = React.useState<number>(50);
   const [isLoupeEnabled, setIsLoupeEnabled] = React.useState<boolean>(false);
+  const [isEditorDrawerOpen, setIsEditorDrawerOpen] = React.useState<boolean>(false);
+  const [isDraggingFile, setIsDraggingFile] = React.useState<boolean>(false);
   const [regionFilter, setRegionFilter] = React.useState<RegionFilterType>("ALL");
   const [zoomScale, setZoomScale] = React.useState<number>(1);
   const [customAsset, setCustomAsset] = React.useState<VisualCreativeAsset | null>(null);
@@ -103,10 +106,7 @@ export function VisualAuditViewer() {
   }, []);
 
   // Multi-Modal File Upload (Images & PDFs) - Two-Tier Dual-OCR Architecture
-  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-
+  const processUploadedFile = async (file: File) => {
     setIsOcrProcessing(true);
     setOcrProgress(10);
     setOcrError(null);
@@ -243,10 +243,38 @@ export function VisualAuditViewer() {
       setIsOcrProcessing(false);
       setOcrProgress(0);
       setOcrStatusText("");
-      if (e.target) e.target.value = "";
     }
   };
 
+  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      processUploadedFile(file);
+    }
+    if (e.target) e.target.value = "";
+  };
+
+  const handleDragOver = (e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (!isDraggingFile) setIsDraggingFile(true);
+  };
+
+  const handleDragLeave = (e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDraggingFile(false);
+  };
+
+  const handleDrop = (e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDraggingFile(false);
+    const files = e.dataTransfer.files;
+    if (files && files.length > 0) {
+      processUploadedFile(files[0]);
+    }
+  };
   const activeBox = React.useMemo<VisualBoundingBox | undefined>(() => {
     if (hoveredBoxId) {
       const hovered = auditReport.regions.find((r) => r.id === hoveredBoxId);
@@ -481,6 +509,16 @@ export function VisualAuditViewer() {
             <span>{isExportingComposite ? "Baking..." : "Export Composite"}</span>
           </button>
 
+          {/* Interactive Inpaint & Remediate Button */}
+          <button
+            type="button"
+            onClick={() => setIsEditorDrawerOpen(true)}
+            className="px-3.5 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold shadow-xs transition-all flex items-center gap-1.5"
+          >
+            <Wand2 className="w-3.5 h-3.5" />
+            <span>Inpaint & Remediate</span>
+          </button>
+
           {/* Export Section 65B Attestation Button */}
           <button
             type="button"
@@ -668,9 +706,30 @@ export function VisualAuditViewer() {
                 ref={canvasContainerRef}
                 tabIndex={0}
                 onKeyDown={handleCanvasKeyDown}
+                onDragOver={handleDragOver}
+                onDragLeave={handleDragLeave}
+                onDrop={handleDrop}
                 aria-label="Creative inspection canvas. Use arrow keys to step between bounding boxes."
-                className="relative overflow-auto max-h-[640px] rounded-2xl border-2 border-[var(--color-border-subtle)] bg-[var(--color-surface-elevated)] shadow-lg transition-all scrollbar-thin focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500"
+                className={`relative overflow-auto max-h-[640px] rounded-2xl border-2 transition-all scrollbar-thin focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 ${
+                  isDraggingFile
+                    ? "border-blue-500 ring-4 ring-blue-500/20 bg-blue-500/5 shadow-2xl"
+                    : "border-[var(--color-border-subtle)] bg-[var(--color-surface-elevated)] shadow-lg"
+                }`}
               >
+                {/* Drag-and-Drop Cyber Overlay */}
+                {isDraggingFile && (
+                  <div className="absolute inset-0 z-40 bg-blue-950/85 backdrop-blur-xs flex flex-col items-center justify-center p-6 text-center text-white border-4 border-dashed border-blue-400 rounded-2xl animate-in fade-in duration-100">
+                    <div className="w-16 h-16 rounded-2xl bg-blue-500/20 border border-blue-400 text-blue-300 flex items-center justify-center mb-4 animate-bounce">
+                      <UploadCloud className="w-8 h-8" />
+                    </div>
+                    <h3 className="text-lg font-bold tracking-tight text-white">
+                      Drop Visual Creative Here to Audit
+                    </h3>
+                    <p className="text-xs text-blue-200 mt-1 max-w-sm">
+                      Supports PNG, JPG, WEBP, and PDF. Runs client-side WASM OCR, 8.0pt typographic calculation, and Section 65B SHA-256 evidence hashing.
+                    </p>
+                  </div>
+                )}
                 <div
                   style={{
                     transform: `scale(${zoomScale})`,
@@ -1018,6 +1077,18 @@ export function VisualAuditViewer() {
                   <span>Complies with ASCI 2023, CCPA 2022, and WCAG AA guidelines.</span>
                 </div>
               )}
+
+              {/* Action Button: Inpaint & Remediate Region */}
+              <div className="mt-3 pt-3 border-t border-[var(--color-border-subtle)]">
+                <button
+                  type="button"
+                  onClick={() => setIsEditorDrawerOpen(true)}
+                  className="w-full py-2 px-3 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold flex items-center justify-center gap-1.5 shadow-2xs transition"
+                >
+                  <Wand2 className="w-3.5 h-3.5" />
+                  <span>Interactive Inpaint & Remediate</span>
+                </button>
+              </div>
             </div>
           ) : (
             <div className="p-8 text-center text-xs text-[var(--color-text-muted)] border border-dashed rounded-xl border-[var(--color-border-subtle)]">
@@ -1159,6 +1230,18 @@ export function VisualAuditViewer() {
           </div>
         </div>
       )}
+          {/* 5. Interactive Inpaint & Remediation Drawer */}
+      <VisualBoxEditorDrawer
+        isOpen={isEditorDrawerOpen}
+        onClose={() => setIsEditorDrawerOpen(false)}
+        activeAsset={activeAsset}
+        selectedBox={activeBox}
+        onAssetPatched={(patched) => {
+          setCustomAsset(patched);
+          setSelectedAssetId(patched.id);
+          setIsRemediated(true);
+        }}
+      />
     </div>
   );
 }
