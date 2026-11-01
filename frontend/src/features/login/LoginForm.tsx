@@ -16,6 +16,7 @@ import {
   Sparkles,
   Fingerprint,
   RefreshCw,
+  Zap,
 } from "lucide-react";
 import { useAuth } from "@/lib/auth-context";
 import { validateReturnUrl } from "@/lib/navigation";
@@ -160,6 +161,18 @@ export function LoginForm() {
     }
   };
 
+  const handleInstantJudgeAccess = async () => {
+    setIsSubmitting(true);
+    setErrorMessage(null);
+    const success = await login("legal_counsel@acme.corp", "DemoSessionActive2026!");
+    setIsSubmitting(false);
+    if (success) {
+      router.push(returnUrl === "/submissions" ? "/submissions?tab=visual" : returnUrl);
+    } else {
+      setErrorMessage("Instant access initialization failed.");
+    }
+  };
+
   const handleSelectPersona = (personaEmail: string) => {
     setEmail(personaEmail);
     setPassword("DemoSessionActive2026!");
@@ -181,6 +194,32 @@ export function LoginForm() {
           <p className="text-xs text-[var(--color-text-secondary)]">
             Enterprise Pre-Publication Governance &amp; Regulatory Gatekeeper
           </p>
+        </div>
+
+        {/* 1-Click Instant Judge / Evaluator Access */}
+        <div className="p-4 rounded-xl border border-emerald-500/40 bg-emerald-500/5 dark:bg-emerald-500/10 space-y-2.5">
+          <div className="flex items-center justify-between">
+            <span className="text-[11px] font-mono font-bold text-emerald-700 dark:text-emerald-400 flex items-center gap-1.5">
+              <Sparkles className="w-3.5 h-3.5 text-emerald-500 animate-pulse" />
+              ROUND 3 JUDGE / EVALUATOR ACCESS
+            </span>
+            <span className="text-[10px] font-mono font-semibold px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-700 dark:text-emerald-300 border border-emerald-500/30">
+              Zero Friction
+            </span>
+          </div>
+          <p className="text-[11px] text-[var(--color-text-secondary)] leading-relaxed">
+            Instant executive sign-in for evaluators. Pre-loaded with full Legal Counsel, Section 65B Audit, Canvas Inpainter, and Firewall privileges.
+          </p>
+          <button
+            type="button"
+            disabled={isSubmitting}
+            onClick={handleInstantJudgeAccess}
+            className="w-full py-2.5 px-4 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-semibold text-xs transition-all shadow-md hover:shadow-lg flex items-center justify-center gap-2 group cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500"
+          >
+            <Zap className="w-4 h-4 fill-white text-white group-hover:scale-110 transition-transform" />
+            <span>Launch Live Product (1-Click Judge Access)</span>
+            <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform ml-auto" />
+          </button>
         </div>
 
         {/* SSO Quick Launchers */}
