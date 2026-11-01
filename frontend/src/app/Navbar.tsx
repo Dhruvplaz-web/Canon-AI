@@ -91,6 +91,11 @@ export default function Navbar() {
           label: "Creator",
           className: "bg-blue-50 text-blue-700 border-blue-200 dark:bg-blue-950 dark:text-blue-300 dark:border-blue-800",
         };
+      case "legal_counsel":
+        return {
+          label: "Legal Counsel (Judge Mode)",
+          className: "bg-emerald-50 text-emerald-800 border-emerald-300 dark:bg-emerald-950/70 dark:text-emerald-300 dark:border-emerald-700 font-bold",
+        };
       default:
         return {
           label: role.replace("_", " "),

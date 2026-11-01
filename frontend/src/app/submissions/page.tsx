@@ -2,7 +2,8 @@
 
 import React, { Suspense, useMemo } from "react";
 import { useSearchParams } from "next/navigation";
-import { FileText, Layers, Sparkles } from "lucide-react";
+import Link from "next/link";
+import { FileText, Layers, Sparkles, ShieldAlert } from "lucide-react";
 import { SubmissionsHeader } from "@/features/submissions/SubmissionsHeader";
 import { CopyEditor } from "@/features/submissions/CopyEditor";
 import { FindingsList } from "@/features/submissions/FindingsList";
@@ -77,6 +78,24 @@ function SubmissionsStudioContent() {
 
   return (
     <div className="space-y-6">
+      {/* Round 3 Evaluator HUD Walkthrough Banner */}
+      <div className="p-3.5 rounded-xl border border-blue-500/30 bg-blue-500/5 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs">
+        <div className="flex items-center gap-2.5">
+          <span className="w-2 h-2 rounded-full bg-blue-500 animate-ping shrink-0" />
+          <span className="font-bold text-[var(--color-text-primary)]">
+            Round 3 Evaluator Quick-Start:
+          </span>
+          <span className="text-[var(--color-text-secondary)]">
+            Switch tabs below to test all 3 delivered breakthroughs: (1) Visual Canvas Inpainter, (2) ASCI Audio 2.5 SPS Radar, and (3) Programmatic Campaign Firewall.
+          </span>
+        </div>
+        <div className="flex items-center gap-2 shrink-0">
+          <span className="font-mono text-[10px] text-emerald-600 dark:text-emerald-400 font-bold bg-emerald-500/10 px-2 py-0.5 rounded border border-emerald-500/20">
+            Pre-Loaded Fixtures
+          </span>
+        </div>
+      </div>
+
       {/* Round 3 Multi-Modal Studio Switcher */}
       <div className="flex items-center justify-between border-b border-[var(--color-border-subtle)] pb-4">
         <div className="inline-flex p-1 bg-[var(--color-surface-elevated)] border border-[var(--color-border-subtle)] rounded-xl gap-1">
@@ -117,11 +136,22 @@ function SubmissionsStudioContent() {
             }`}
           >
             <Sparkles className="w-4 h-4 text-amber-500" />
-            <span>Vernacular & Hinglish NLP Radar</span>
+            <span>Vernacular & Hinglish Audio/NLP Radar</span>
             <span className="px-1.5 py-0.2 rounded text-[10px] uppercase font-mono font-bold bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20">
               Round 3
             </span>
           </button>
+          <Link
+            href="/governance?tab=firewall"
+            className="inline-flex items-center gap-2 px-4 py-2 rounded-lg text-xs sm:text-sm font-semibold transition-all text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] hover:bg-[var(--color-surface)]"
+            title="Jump to Programmatic Campaign Firewall Radar"
+          >
+            <ShieldAlert className="w-4 h-4 text-rose-500" />
+            <span>Campaign Firewall</span>
+            <span className="px-1.5 py-0.2 rounded text-[10px] uppercase font-mono font-bold bg-rose-500/10 text-rose-600 dark:text-rose-400 border border-rose-500/20">
+              Round 3
+            </span>
+          </Link>
         </div>
 
         <div className="hidden sm:flex items-center gap-2 text-xs font-mono text-[var(--color-text-muted)]">
