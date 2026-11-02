@@ -60,9 +60,9 @@ const getJurisdictionBadge = (code: string) => {
     case "COTPA-SURR-TOB":
       return { label: "🇮🇳 COTPA Sec 5 (Surrogate Tobacco)", color: "bg-rose-500/10 text-rose-700 dark:text-rose-400 border-rose-500/30" };
     case "MEITY-BETTING-01":
-      return { label: "🇮🇳 MeitY '23 (Illegal Betting Surrogate)", color: "bg-purple-500/10 text-purple-700 dark:text-purple-400 border-purple-500/30" };
+      return { label: "🇮🇳 Online Gaming Act 2025 (Betting Surrogate)", color: "bg-purple-500/10 text-purple-700 dark:text-purple-400 border-purple-500/30" };
     case "RBI-VERN-01":
-      return { label: "🇮🇳 RBI '22 (Bina Document Credit)", color: "bg-orange-500/10 text-orange-700 dark:text-orange-400 border-orange-500/30" };
+      return { label: "🇮🇳 RBI 2025 Directions (Bina Document Credit)", color: "bg-orange-500/10 text-orange-700 dark:text-orange-400 border-orange-500/30" };
     case "SEBI-VERN-02":
       return { label: "🇮🇳 SEBI '23 (Paisa Double Guarantee)", color: "bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 border-emerald-500/30" };
     case "CCPA-DARK-URGENCY":

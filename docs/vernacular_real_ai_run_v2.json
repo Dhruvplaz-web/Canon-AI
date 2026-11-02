@@ -1,0 +1,1668 @@
+{
+  "executed_on": "2026-11-01T13:07:01.591Z",
+  "model": "gemini-3.1-flash-lite",
+  "total_calls": 60,
+  "mode1_zero_shot": [
+    {
+      "id": "ST-001",
+      "text": "Seedha double karo apna paisa iss naya wealth platform pe",
+      "expected": "violation",
+      "target_category": "PREDATORY_FINTECH_PROMISE",
+      "raw_count": 1,
+      "raw_findings": [
+        {
+          "span_text": "Seedha double karo apna paisa",
+          "category": "PREDATORY_FINTECH_PROMISE",
+          "reason": "The copy makes an explicit promise of doubling money, which is a hallmark of predatory financial schemes and violates advertising standards regarding guaranteed returns.",
+          "confidence": 1
+        }
+      ],
+      "kept_findings": [
+        {
+          "span_text": "Seedha double karo apna paisa",
+          "category": "PREDATORY_FINTECH_PROMISE",
+          "reason": "The copy makes an explicit promise of doubling money, which is a hallmark of predatory financial schemes and violates advertising standards regarding guaranteed returns.",
+          "confidence": 1,
+          "status": "review"
+        }
+      ],
+      "dropped_findings": [],
+      "flagged": true,
+      "correct_category_matched": true,
+      "status": "review"
+    },
+    {
+      "id": "ST-002",
+      "text": "Ek lakh lagao, teen lakh wapas leke jao — koi jhanjhat nahi",
+      "expected": "violation",
+      "target_category": "PREDATORY_FINTECH_PROMISE",
+      "raw_count": 1,
+      "raw_findings": [
+        {
+          "span_text": "Ek lakh lagao, teen lakh wapas leke jao",
+          "category": "PREDATORY_FINTECH_PROMISE",
+          "reason": "The copy promises a guaranteed 3x return on investment, which is characteristic of unregulated and predatory financial schemes.",
+          "confidence": 1
+        }
+      ],
+      "kept_findings": [
+        {
+          "span_text": "Ek lakh lagao, teen lakh wapas leke jao",
+          "category": "PREDATORY_FINTECH_PROMISE",
+          "reason": "The copy promises a guaranteed 3x return on investment, which is characteristic of unregulated and predatory financial schemes.",
+          "confidence": 1,
+          "status": "review"
+        }
+      ],
+      "dropped_findings": [],
+      "flagged": true,
+      "correct_category_matched": true,
+      "status": "review"
+    },
+    {
+      "id": "ST-003",
+      "text": "Betting sirf knowledge walo ka game — aaj hi join karo aur unlimited earning shuru karo",
+      "expected": "violation",
+      "target_category": "SURROGATE_BETTING",
+      "raw_count": 2,
+      "raw_findings": [
+        {
+          "span_text": "Betting sirf knowledge walo ka game",
+          "category": "SURROGATE_BETTING",
+          "reason": "Direct promotion of betting activities which is prohibited under Indian advertising standards.",
+          "confidence": 1
+        },
+        {
+          "span_text": "unlimited earning shuru karo",
+          "category": "PREDATORY_FINTECH_PROMISE",
+          "reason": "Promising unlimited earnings through a betting platform constitutes a predatory financial claim.",
+          "confidence": 0.9
+        }
+      ],
+      "kept_findings": [
+        {
+          "span_text": "Betting sirf knowledge walo ka game",
+          "category": "SURROGATE_BETTING",
+          "reason": "Direct promotion of betting activities which is prohibited under Indian advertising standards.",
+          "confidence": 1,
+          "status": "review"
+        },
+        {
+          "span_text": "unlimited earning shuru karo",
+          "category": "PREDATORY_FINTECH_PROMISE",
+          "reason": "Promising unlimited earnings through a betting platform constitutes a predatory financial claim.",
+          "confidence": 0.9,
+          "status": "review"
+        }
+      ],
+      "dropped_findings": [],
+      "flagged": true,
+      "correct_category_matched": true,
+      "status": "review"
+    },
+    {
+      "id": "ST-004",
+      "text": "Sirf aaj raat tak ka mauka — kal price badh jaayega, toh abhi book karo",
+      "expected": "violation",
+      "target_category": "FALSE_URGENCY_DARK_PATTERN",
+      "raw_count": 1,
+      "raw_findings": [
+        {
+          "span_text": "Sirf aaj raat tak ka mauka — kal price badh jaayega, toh abhi book karo",
+          "category": "FALSE_URGENCY_DARK_PATTERN",
+          "reason": "Uses artificial scarcity and time-bound pressure to coerce the consumer into an immediate purchase.",
+          "confidence": 0.95
+        }
+      ],
+      "kept_findings": [
+        {
+          "span_text": "Sirf aaj raat tak ka mauka — kal price badh jaayega, toh abhi book karo",
+          "category": "FALSE_URGENCY_DARK_PATTERN",
+          "reason": "Uses artificial scarcity and time-bound pressure to coerce the consumer into an immediate purchase.",
+          "confidence": 0.95,
+          "status": "review"
+        }
+      ],
+      "dropped_findings": [],
+      "flagged": true,
+      "correct_category_matched": true,
+      "status": "review"
+    },
+    {
+      "id": "ST-005",
+      "text": "Yeh dawa sirf 7 din mein aapka sugar level bilkul normal kar degi — guaranteed",
+      "expected": "violation",
+      "target_category": "PROHIBITED_MAGIC_REMEDY",
+      "raw_count": 0,
+      "raw_findings": [],
+      "kept_findings": [],
+      "dropped_findings": [],
+      "flagged": false,
+      "correct_category_matched": false,
+      "status": "clean"
+    },
+    {
+      "id": "ST-006",
+      "text": "Soda Water CD — cool refreshing taste, music ki tarah smooth",
+      "expected": "violation",
+      "target_category": "SURROGATE_ALCOBEV",
+      "raw_count": 1,
+      "raw_findings": [
+        {
+          "span_text": "Soda Water CD",
+          "category": "SURROGATE_ALCOBEV",
+          "reason": "The use of 'Soda Water' combined with 'CD' is a classic surrogate advertising technique used to promote liquor brands under the guise of non-alcoholic products.",
+          "confidence": 0.95
+        }
+      ],
+      "kept_findings": [
+        {
+          "span_text": "Soda Water CD",
+          "category": "SURROGATE_ALCOBEV",
+          "reason": "The use of 'Soda Water' combined with 'CD' is a classic surrogate advertising technique used to promote liquor brands under the guise of non-alcoholic products.",
+          "confidence": 0.95,
+          "status": "review"
+        }
+      ],
+      "dropped_findings": [],
+      "flagged": true,
+      "correct_category_matched": true,
+      "status": "review"
+    },
+    {
+      "id": "ST-007",
+      "text": "Yeh pan masala nahi, yeh toh success ka flavour hai — bade log chhaap lete hain",
+      "expected": "violation",
+      "target_category": "SURROGATE_TOBACCO",
+      "raw_count": 1,
+      "raw_findings": [
+        {
+          "span_text": "pan masala",
+          "category": "SURROGATE_TOBACCO",
+          "reason": "The copy explicitly references pan masala, which is a common surrogate product used to advertise tobacco/gutkha brands in violation of ASCI and COTPA guidelines.",
+          "confidence": 0.95
+        }
+      ],
+      "kept_findings": [
+        {
+          "span_text": "pan masala",
+          "category": "SURROGATE_TOBACCO",
+          "reason": "The copy explicitly references pan masala, which is a common surrogate product used to advertise tobacco/gutkha brands in violation of ASCI and COTPA guidelines.",
+          "confidence": 0.95,
+          "status": "review"
+        }
+      ],
+      "dropped_findings": [],
+      "flagged": true,
+      "correct_category_matched": true,
+      "status": "review"
+    },
+    {
+      "id": "ST-008",
+      "text": "Stock market se 10x returns pao bina kisi risk ke — humare experts manage karte hain sab",
+      "expected": "violation",
+      "target_category": "PREDATORY_FINTECH_PROMISE",
+      "raw_count": 1,
+      "raw_findings": [
+        {
+          "span_text": "10x returns pao bina kisi risk ke",
+          "category": "PREDATORY_FINTECH_PROMISE",
+          "reason": "Promising 10x returns without any risk is a classic predatory financial claim that violates SEBI and ASCI guidelines regarding misleading investment promises.",
+          "confidence": 1
+        }
+      ],
+      "kept_findings": [
+        {
+          "span_text": "10x returns pao bina kisi risk ke",
+          "category": "PREDATORY_FINTECH_PROMISE",
+          "reason": "Promising 10x returns without any risk is a classic predatory financial claim that violates SEBI and ASCI guidelines regarding misleading investment promises.",
+          "confidence": 1,
+          "status": "review"
+        }
+      ],
+      "dropped_findings": [],
+      "flagged": true,
+      "correct_category_matched": true,
+      "status": "review"
+    },
+    {
+      "id": "ST-009",
+      "text": "हर्बल काढ़ा पियो और बीमारी को जड़ से मिटाओ — आयुर्वेद की शक्ति",
+      "expected": "violation",
+      "target_category": "PROHIBITED_MAGIC_REMEDY",
+      "raw_count": 1,
+      "raw_findings": [
+        {
+          "span_text": "बीमारी को जड़ से मिटाओ",
+          "category": "PROHIBITED_MAGIC_REMEDY",
+          "reason": "The claim of curing diseases from the root (जड़ से मिटाओ) violates ASCI and AYUSH guidelines regarding misleading medical claims for herbal products.",
+          "confidence": 0.95
+        }
+      ],
+      "kept_findings": [
+        {
+          "span_text": "बीमारी को जड़ से मिटाओ",
+          "category": "PROHIBITED_MAGIC_REMEDY",
+          "reason": "The claim of curing diseases from the root (जड़ से मिटाओ) violates ASCI and AYUSH guidelines regarding misleading medical claims for herbal products.",
+          "confidence": 0.95,
+          "status": "review"
+        }
+      ],
+      "dropped_findings": [],
+      "flagged": true,
+      "correct_category_matched": true,
+      "status": "review"
+    },
+    {
+      "id": "ST-010",
+      "text": "தினமும் இந்த மாத்திரை சாப்பிட்டால் உடல் வலி முழுவதும் மறைந்துவிடும்",
+      "expected": "violation",
+      "target_category": "PROHIBITED_MAGIC_REMEDY",
+      "raw_count": 1,
+      "raw_findings": [
+        {
+          "span_text": "தினமும் இந்த மாத்திரை சாப்பிட்டால் உடல் வலி முழுவதும் மறைந்துவிடும்",
+          "category": "PROHIBITED_MAGIC_REMEDY",
+          "reason": "The copy makes a definitive medical claim that a pill can completely cure body pain, which violates regulations against misleading health and medicinal claims.",
+          "confidence": 0.95
+        }
+      ],
+      "kept_findings": [
+        {
+          "span_text": "தினமும் இந்த மாத்திரை சாப்பிட்டால் உடல் வலி முழுவதும் மறைந்துவிடும்",
+          "category": "PROHIBITED_MAGIC_REMEDY",
+          "reason": "The copy makes a definitive medical claim that a pill can completely cure body pain, which violates regulations against misleading health and medicinal claims.",
+          "confidence": 0.95,
+          "status": "review"
+        }
+      ],
+      "dropped_findings": [],
+      "flagged": true,
+      "correct_category_matched": true,
+      "status": "review"
+    },
+    {
+      "id": "ST-011",
+      "text": "G00aranteed 3x reterns on yur inve$tment — j0in AbhiWealth app now",
+      "expected": "violation",
+      "target_category": "PREDATORY_FINTECH_PROMISE",
+      "raw_count": 1,
+      "raw_findings": [
+        {
+          "span_text": "G00aranteed 3x reterns on yur inve$tment",
+          "category": "PREDATORY_FINTECH_PROMISE",
+          "reason": "The copy promises guaranteed high returns (3x) on investments, which is a hallmark of predatory or fraudulent financial schemes.",
+          "confidence": 1
+        }
+      ],
+      "kept_findings": [
+        {
+          "span_text": "G00aranteed 3x reterns on yur inve$tment",
+          "category": "PREDATORY_FINTECH_PROMISE",
+          "reason": "The copy promises guaranteed high returns (3x) on investments, which is a hallmark of predatory or fraudulent financial schemes.",
+          "confidence": 1,
+          "status": "review"
+        }
+      ],
+      "dropped_findings": [],
+      "flagged": true,
+      "correct_category_matched": true,
+      "status": "review"
+    },
+    {
+      "id": "ST-012",
+      "text": "Sharab nahi yaar, sirf pani hai — magar uss paani mein scene hai boss",
+      "expected": "violation",
+      "target_category": "SURROGATE_ALCOBEV",
+      "raw_count": 1,
+      "raw_findings": [
+        {
+          "span_text": "Sharab nahi yaar, sirf pani hai — magar uss paani mein scene hai boss",
+          "category": "SURROGATE_ALCOBEV",
+          "reason": "The copy explicitly references 'Sharab' (liquor) while claiming it is 'pani' (water), a classic surrogate advertising tactic to promote alcohol brands under the guise of water.",
+          "confidence": 0.95
+        }
+      ],
+      "kept_findings": [
+        {
+          "span_text": "Sharab nahi yaar, sirf pani hai — magar uss paani mein scene hai boss",
+          "category": "SURROGATE_ALCOBEV",
+          "reason": "The copy explicitly references 'Sharab' (liquor) while claiming it is 'pani' (water), a classic surrogate advertising tactic to promote alcohol brands under the guise of water.",
+          "confidence": 0.95,
+          "status": "review"
+        }
+      ],
+      "dropped_findings": [],
+      "flagged": true,
+      "correct_category_matched": true,
+      "status": "review"
+    },
+    {
+      "id": "ST-013",
+      "text": "Bettting pe jeet lo har baaar — expertts ka formula",
+      "expected": "violation",
+      "target_category": "SURROGATE_BETTING",
+      "raw_count": 1,
+      "raw_findings": [
+        {
+          "span_text": "Bettting pe jeet lo har baaar",
+          "category": "SURROGATE_BETTING",
+          "reason": "The text explicitly promotes betting and guarantees winning, which violates advertising standards regarding gambling promotion.",
+          "confidence": 1
+        }
+      ],
+      "kept_findings": [
+        {
+          "span_text": "Bettting pe jeet lo har baaar",
+          "category": "SURROGATE_BETTING",
+          "reason": "The text explicitly promotes betting and guarantees winning, which violates advertising standards regarding gambling promotion.",
+          "confidence": 1,
+          "status": "review"
+        }
+      ],
+      "dropped_findings": [],
+      "flagged": true,
+      "correct_category_matched": true,
+      "status": "review"
+    },
+    {
+      "id": "ST-014",
+      "text": "Abhi download karo aur पैसे कमाओ — zero risk guaranteed returns",
+      "expected": "violation",
+      "target_category": "PREDATORY_FINTECH_PROMISE",
+      "raw_count": 1,
+      "raw_findings": [
+        {
+          "span_text": "zero risk guaranteed returns",
+          "category": "PREDATORY_FINTECH_PROMISE",
+          "reason": "The claim of 'zero risk' and 'guaranteed returns' is a hallmark of predatory financial schemes and violates advertising standards regarding misleading investment promises.",
+          "confidence": 1
+        }
+      ],
+      "kept_findings": [
+        {
+          "span_text": "zero risk guaranteed returns",
+          "category": "PREDATORY_FINTECH_PROMISE",
+          "reason": "The claim of 'zero risk' and 'guaranteed returns' is a hallmark of predatory financial schemes and violates advertising standards regarding misleading investment promises.",
+          "confidence": 1,
+          "status": "review"
+        }
+      ],
+      "dropped_findings": [],
+      "flagged": true,
+      "correct_category_matched": true,
+      "status": "review"
+    },
+    {
+      "id": "ST-015",
+      "text": "Sports खेलो, points जीतो और real cash निकालो — skill game hai gambling nahi",
+      "expected": "violation",
+      "target_category": "SURROGATE_BETTING",
+      "raw_count": 2,
+      "raw_findings": [
+        {
+          "span_text": "Sports खेलो, points जीतो और real cash निकालो",
+          "category": "SURROGATE_BETTING",
+          "reason": "Promotes a real-money gaming platform that functions as a betting/gambling service under the guise of a skill game.",
+          "confidence": 0.95
+        },
+        {
+          "span_text": "skill game hai gambling nahi",
+          "category": "SURROGATE_BETTING",
+          "reason": "Common industry disclaimer used to mask gambling activities as skill-based games to bypass regulatory scrutiny.",
+          "confidence": 0.9
+        }
+      ],
+      "kept_findings": [
+        {
+          "span_text": "Sports खेलो, points जीतो और real cash निकालो",
+          "category": "SURROGATE_BETTING",
+          "reason": "Promotes a real-money gaming platform that functions as a betting/gambling service under the guise of a skill game.",
+          "confidence": 0.95,
+          "status": "review"
+        },
+        {
+          "span_text": "skill game hai gambling nahi",
+          "category": "SURROGATE_BETTING",
+          "reason": "Common industry disclaimer used to mask gambling activities as skill-based games to bypass regulatory scrutiny.",
+          "confidence": 0.9,
+          "status": "review"
+        }
+      ],
+      "dropped_findings": [],
+      "flagged": true,
+      "correct_category_matched": true,
+      "status": "review"
+    },
+    {
+      "id": "ST-016",
+      "text": "इस soda को पियो और feel karo woh legendary vibe",
+      "expected": "violation",
+      "target_category": "SURROGATE_ALCOBEV",
+      "raw_count": 1,
+      "raw_findings": [
+        {
+          "span_text": "इस soda को पियो और feel karo woh legendary vibe",
+          "category": "SURROGATE_ALCOBEV",
+          "reason": "The use of 'soda' in conjunction with 'legendary vibe' is a common surrogate advertising tactic used to promote liquor brands under the guise of soda products.",
+          "confidence": 0.85
+        }
+      ],
+      "kept_findings": [
+        {
+          "span_text": "इस soda को पियो और feel karo woh legendary vibe",
+          "category": "SURROGATE_ALCOBEV",
+          "reason": "The use of 'soda' in conjunction with 'legendary vibe' is a common surrogate advertising tactic used to promote liquor brands under the guise of soda products.",
+          "confidence": 0.85,
+          "status": "review"
+        }
+      ],
+      "dropped_findings": [],
+      "flagged": true,
+      "correct_category_matched": true,
+      "status": "review"
+    },
+    {
+      "id": "ST-017",
+      "text": "Yeh toh sirf ek cricket news app hai — daily match analysis aur expert tips for free",
+      "expected": "violation",
+      "target_category": "SURROGATE_BETTING",
+      "raw_count": 1,
+      "raw_findings": [
+        {
+          "span_text": "cricket news app",
+          "category": "SURROGATE_BETTING",
+          "reason": "Commonly used as a surrogate platform for online betting and gambling services in India, often masking real-money gaming or betting activities under the guise of news or analysis.",
+          "confidence": 0.85
+        }
+      ],
+      "kept_findings": [
+        {
+          "span_text": "cricket news app",
+          "category": "SURROGATE_BETTING",
+          "reason": "Commonly used as a surrogate platform for online betting and gambling services in India, often masking real-money gaming or betting activities under the guise of news or analysis.",
+          "confidence": 0.85,
+          "status": "review"
+        }
+      ],
+      "dropped_findings": [],
+      "flagged": true,
+      "correct_category_matched": true,
+      "status": "review"
+    },
+    {
+      "id": "ST-018",
+      "text": "Invest in our scheme: last 5 years average return was 18% — market-linked, risks apply",
+      "expected": "violation",
+      "target_category": "PREDATORY_FINTECH_PROMISE",
+      "raw_count": 0,
+      "raw_findings": [],
+      "kept_findings": [],
+      "dropped_findings": [],
+      "flagged": false,
+      "correct_category_matched": false,
+      "status": "clean"
+    },
+    {
+      "id": "ST-019",
+      "text": "Aaj se limited stock — yeh product sab le rahe hain magar hamara stock genuine hai",
+      "expected": "violation",
+      "target_category": "FALSE_URGENCY_DARK_PATTERN",
+      "raw_count": 2,
+      "raw_findings": [
+        {
+          "span_text": "limited stock",
+          "category": "FALSE_URGENCY_DARK_PATTERN",
+          "reason": "Uses artificial scarcity to pressure the consumer into an immediate purchase.",
+          "confidence": 0.95
+        },
+        {
+          "span_text": "yeh product sab le rahe hain",
+          "category": "FALSE_URGENCY_DARK_PATTERN",
+          "reason": "Uses social proof/bandwagon effect to create artificial urgency and pressure.",
+          "confidence": 0.85
+        }
+      ],
+      "kept_findings": [
+        {
+          "span_text": "limited stock",
+          "category": "FALSE_URGENCY_DARK_PATTERN",
+          "reason": "Uses artificial scarcity to pressure the consumer into an immediate purchase.",
+          "confidence": 0.95,
+          "status": "review"
+        },
+        {
+          "span_text": "yeh product sab le rahe hain",
+          "category": "FALSE_URGENCY_DARK_PATTERN",
+          "reason": "Uses social proof/bandwagon effect to create artificial urgency and pressure.",
+          "confidence": 0.85,
+          "status": "review"
+        }
+      ],
+      "dropped_findings": [],
+      "flagged": true,
+      "correct_category_matched": true,
+      "status": "review"
+    },
+    {
+      "id": "ST-020",
+      "text": "Yeh juice peene se aapka immunity thoda better ho sakti hai — results vary",
+      "expected": "violation",
+      "target_category": "PROHIBITED_MAGIC_REMEDY",
+      "raw_count": 0,
+      "raw_findings": [],
+      "kept_findings": [],
+      "dropped_findings": [],
+      "flagged": false,
+      "correct_category_matched": false,
+      "status": "clean"
+    },
+    {
+      "id": "ST-021",
+      "text": "Royal Refresh Soda — India's favourite sparkling water since 1987, available at all supermarkets",
+      "expected": "safe",
+      "target_category": null,
+      "raw_count": 1,
+      "raw_findings": [
+        {
+          "span_text": "Royal Refresh Soda",
+          "category": "SURROGATE_ALCOBEV",
+          "reason": "The brand name 'Royal' is strongly associated with the Indian liquor industry, and 'Soda' is a common surrogate product used to advertise alcohol brands in compliance with ASCI guidelines.",
+          "confidence": 0.85
+        }
+      ],
+      "kept_findings": [
+        {
+          "span_text": "Royal Refresh Soda",
+          "category": "SURROGATE_ALCOBEV",
+          "reason": "The brand name 'Royal' is strongly associated with the Indian liquor industry, and 'Soda' is a common surrogate product used to advertise alcohol brands in compliance with ASCI guidelines.",
+          "confidence": 0.85,
+          "status": "review"
+        }
+      ],
+      "dropped_findings": [],
+      "flagged": true,
+      "correct_category_matched": false,
+      "status": "review"
+    },
+    {
+      "id": "ST-022",
+      "text": "ClearPath Home Loan — interest rate 8.9% p.a., IRDAI-registered, full KYC required, T&C apply",
+      "expected": "safe",
+      "target_category": null,
+      "raw_count": 0,
+      "raw_findings": [],
+      "kept_findings": [],
+      "dropped_findings": [],
+      "flagged": false,
+      "correct_category_matched": false,
+      "status": "clean"
+    },
+    {
+      "id": "ST-023",
+      "text": "Flat 30% off on all electronics — sale ends 15 November, while stocks last",
+      "expected": "safe",
+      "target_category": null,
+      "raw_count": 0,
+      "raw_findings": [],
+      "kept_findings": [],
+      "dropped_findings": [],
+      "flagged": false,
+      "correct_category_matched": false,
+      "status": "clean"
+    },
+    {
+      "id": "ST-024",
+      "text": "Doctor ki salah se shuru karo yeh vitamin supplement — results individual ke hisaab se alag ho sakte hain",
+      "expected": "safe",
+      "target_category": null,
+      "raw_count": 0,
+      "raw_findings": [],
+      "kept_findings": [],
+      "dropped_findings": [],
+      "flagged": false,
+      "correct_category_matched": false,
+      "status": "clean"
+    },
+    {
+      "id": "ST-025",
+      "text": "MySportsZone fantasy cricket — play for free, cash prizes subject to TDS deduction, 18+ only",
+      "expected": "safe",
+      "target_category": null,
+      "raw_count": 0,
+      "raw_findings": [],
+      "kept_findings": [],
+      "dropped_findings": [],
+      "flagged": false,
+      "correct_category_matched": false,
+      "status": "clean"
+    },
+    {
+      "id": "ST-026",
+      "text": "सूरज ग्रुप का नया म्यूजिक CD — दमदार बीट्स, ताज़ा आवाज़, अभी ऑर्डर करें",
+      "expected": "safe",
+      "target_category": null,
+      "raw_count": 0,
+      "raw_findings": [],
+      "kept_findings": [],
+      "dropped_findings": [],
+      "flagged": false,
+      "correct_category_matched": false,
+      "status": "clean"
+    },
+    {
+      "id": "ST-027",
+      "text": "Invest in diversified mutual funds — market risks apply, past performance is not a guarantee of future returns",
+      "expected": "safe",
+      "target_category": null,
+      "raw_count": 0,
+      "raw_findings": [],
+      "kept_findings": [],
+      "dropped_findings": [],
+      "flagged": false,
+      "correct_category_matched": false,
+      "status": "clean"
+    },
+    {
+      "id": "ST-028",
+      "text": "VitaCare Chyawanprash — traditional Ayurvedic formulation, supports general wellness, consult your physician",
+      "expected": "safe",
+      "target_category": null,
+      "raw_count": 0,
+      "raw_findings": [],
+      "kept_findings": [],
+      "dropped_findings": [],
+      "flagged": false,
+      "correct_category_matched": false,
+      "status": "clean"
+    },
+    {
+      "id": "ST-029",
+      "text": "Greenleaf pan — elaichi aur saunf ka meetha swaad, refreshing after meals",
+      "expected": "safe",
+      "target_category": null,
+      "raw_count": 0,
+      "raw_findings": [],
+      "kept_findings": [],
+      "dropped_findings": [],
+      "flagged": false,
+      "correct_category_matched": false,
+      "status": "clean"
+    },
+    {
+      "id": "ST-030",
+      "text": "আজই আমাদের অ্যাপ ডাউনলোড করুন এবং বিশেষ উপহার পান — সীমিত সময়ের অফার",
+      "expected": "safe",
+      "target_category": null,
+      "raw_count": 0,
+      "raw_findings": [],
+      "kept_findings": [],
+      "dropped_findings": [],
+      "flagged": false,
+      "correct_category_matched": false,
+      "status": "clean"
+    }
+  ],
+  "mode2_few_shot": [
+    {
+      "id": "ST-001",
+      "text": "Seedha double karo apna paisa iss naya wealth platform pe",
+      "expected": "violation",
+      "target_category": "PREDATORY_FINTECH_PROMISE",
+      "top3_exemplars": [
+        {
+          "id": "VERN-051",
+          "label": "violation",
+          "category": "PREDATORY_FINTECH_PROMISE"
+        },
+        {
+          "id": "VERN-037",
+          "label": "violation",
+          "category": "SURROGATE_BETTING"
+        },
+        {
+          "id": "VERN-050",
+          "label": "violation",
+          "category": "PREDATORY_FINTECH_PROMISE"
+        }
+      ],
+      "raw_count": 0,
+      "raw_findings": [],
+      "kept_findings": [],
+      "dropped_findings": [],
+      "flagged": false,
+      "correct_category_matched": false,
+      "status": "clean"
+    },
+    {
+      "id": "ST-002",
+      "text": "Ek lakh lagao, teen lakh wapas leke jao — koi jhanjhat nahi",
+      "expected": "violation",
+      "target_category": "PREDATORY_FINTECH_PROMISE",
+      "top3_exemplars": [
+        {
+          "id": "VERN-050",
+          "label": "violation",
+          "category": "PREDATORY_FINTECH_PROMISE"
+        },
+        {
+          "id": "VERN-037",
+          "label": "violation",
+          "category": "SURROGATE_BETTING"
+        },
+        {
+          "id": "VERN-051",
+          "label": "violation",
+          "category": "PREDATORY_FINTECH_PROMISE"
+        }
+      ],
+      "raw_count": 0,
+      "raw_findings": [],
+      "kept_findings": [],
+      "dropped_findings": [],
+      "flagged": false,
+      "correct_category_matched": false,
+      "status": "clean"
+    },
+    {
+      "id": "ST-003",
+      "text": "Betting sirf knowledge walo ka game — aaj hi join karo aur unlimited earning shuru karo",
+      "expected": "violation",
+      "target_category": "SURROGATE_BETTING",
+      "top3_exemplars": [
+        {
+          "id": "VERN-037",
+          "label": "violation",
+          "category": "SURROGATE_BETTING"
+        },
+        {
+          "id": "VERN-030",
+          "label": "violation",
+          "category": "SURROGATE_BETTING"
+        },
+        {
+          "id": "VERN-051",
+          "label": "violation",
+          "category": "PREDATORY_FINTECH_PROMISE"
+        }
+      ],
+      "raw_count": 0,
+      "raw_findings": [],
+      "kept_findings": [],
+      "dropped_findings": [],
+      "flagged": false,
+      "correct_category_matched": false,
+      "status": "clean"
+    },
+    {
+      "id": "ST-004",
+      "text": "Sirf aaj raat tak ka mauka — kal price badh jaayega, toh abhi book karo",
+      "expected": "violation",
+      "target_category": "FALSE_URGENCY_DARK_PATTERN",
+      "top3_exemplars": [
+        {
+          "id": "VERN-062",
+          "label": "violation",
+          "category": "FALSE_URGENCY_DARK_PATTERN"
+        },
+        {
+          "id": "VERN-065",
+          "label": "violation",
+          "category": "FALSE_URGENCY_DARK_PATTERN"
+        },
+        {
+          "id": "VERN-064",
+          "label": "violation",
+          "category": "FALSE_URGENCY_DARK_PATTERN"
+        }
+      ],
+      "raw_count": 0,
+      "raw_findings": [],
+      "kept_findings": [],
+      "dropped_findings": [],
+      "flagged": false,
+      "correct_category_matched": false,
+      "status": "clean"
+    },
+    {
+      "id": "ST-005",
+      "text": "Yeh dawa sirf 7 din mein aapka sugar level bilkul normal kar degi — guaranteed",
+      "expected": "violation",
+      "target_category": "PROHIBITED_MAGIC_REMEDY",
+      "top3_exemplars": [
+        {
+          "id": "VERN-074",
+          "label": "violation",
+          "category": "PROHIBITED_MAGIC_REMEDY"
+        },
+        {
+          "id": "VERN-071",
+          "label": "violation",
+          "category": "PROHIBITED_MAGIC_REMEDY"
+        },
+        {
+          "id": "VERN-072",
+          "label": "violation",
+          "category": "PROHIBITED_MAGIC_REMEDY"
+        }
+      ],
+      "raw_count": 0,
+      "raw_findings": [],
+      "kept_findings": [],
+      "dropped_findings": [],
+      "flagged": false,
+      "correct_category_matched": false,
+      "status": "clean"
+    },
+    {
+      "id": "ST-006",
+      "text": "Soda Water CD — cool refreshing taste, music ki tarah smooth",
+      "expected": "violation",
+      "target_category": "SURROGATE_ALCOBEV",
+      "top3_exemplars": [
+        {
+          "id": "VERN-009",
+          "label": "violation",
+          "category": "SURROGATE_ALCOBEV"
+        },
+        {
+          "id": "VERN-001",
+          "label": "violation",
+          "category": "SURROGATE_ALCOBEV"
+        },
+        {
+          "id": "VERN-004",
+          "label": "violation",
+          "category": "SURROGATE_ALCOBEV"
+        }
+      ],
+      "raw_count": 0,
+      "raw_findings": [],
+      "kept_findings": [],
+      "dropped_findings": [],
+      "flagged": false,
+      "correct_category_matched": false,
+      "status": "clean"
+    },
+    {
+      "id": "ST-007",
+      "text": "Yeh pan masala nahi, yeh toh success ka flavour hai — bade log chhaap lete hain",
+      "expected": "violation",
+      "target_category": "SURROGATE_TOBACCO",
+      "top3_exemplars": [
+        {
+          "id": "VERN-021",
+          "label": "violation",
+          "category": "SURROGATE_TOBACCO"
+        },
+        {
+          "id": "VERN-023",
+          "label": "violation",
+          "category": "SURROGATE_TOBACCO"
+        },
+        {
+          "id": "VERN-020",
+          "label": "violation",
+          "category": "SURROGATE_TOBACCO"
+        }
+      ],
+      "raw_count": 0,
+      "raw_findings": [],
+      "kept_findings": [],
+      "dropped_findings": [],
+      "flagged": false,
+      "correct_category_matched": false,
+      "status": "clean"
+    },
+    {
+      "id": "ST-008",
+      "text": "Stock market se 10x returns pao bina kisi risk ke — humare experts manage karte hain sab",
+      "expected": "violation",
+      "target_category": "PREDATORY_FINTECH_PROMISE",
+      "top3_exemplars": [
+        {
+          "id": "VERN-051",
+          "label": "violation",
+          "category": "PREDATORY_FINTECH_PROMISE"
+        },
+        {
+          "id": "VERN-049",
+          "label": "violation",
+          "category": "PREDATORY_FINTECH_PROMISE"
+        },
+        {
+          "id": "VERN-050",
+          "label": "violation",
+          "category": "PREDATORY_FINTECH_PROMISE"
+        }
+      ],
+      "raw_count": 0,
+      "raw_findings": [],
+      "kept_findings": [],
+      "dropped_findings": [],
+      "flagged": false,
+      "correct_category_matched": false,
+      "status": "clean"
+    },
+    {
+      "id": "ST-009",
+      "text": "हर्बल काढ़ा पियो और बीमारी को जड़ से मिटाओ — आयुर्वेद की शक्ति",
+      "expected": "violation",
+      "target_category": "PROHIBITED_MAGIC_REMEDY",
+      "top3_exemplars": [
+        {
+          "id": "VERN-078",
+          "label": "violation",
+          "category": "PROHIBITED_MAGIC_REMEDY"
+        },
+        {
+          "id": "VERN-027",
+          "label": "safe",
+          "category": "SURROGATE_TOBACCO"
+        },
+        {
+          "id": "VERN-074",
+          "label": "violation",
+          "category": "PROHIBITED_MAGIC_REMEDY"
+        }
+      ],
+      "raw_count": 0,
+      "raw_findings": [],
+      "kept_findings": [],
+      "dropped_findings": [],
+      "flagged": false,
+      "correct_category_matched": false,
+      "status": "clean"
+    },
+    {
+      "id": "ST-010",
+      "text": "தினமும் இந்த மாத்திரை சாப்பிட்டால் உடல் வலி முழுவதும் மறைந்துவிடும்",
+      "expected": "violation",
+      "target_category": "PROHIBITED_MAGIC_REMEDY",
+      "top3_exemplars": [
+        {
+          "id": "VERN-079",
+          "label": "violation",
+          "category": "PROHIBITED_MAGIC_REMEDY"
+        },
+        {
+          "id": "VERN-078",
+          "label": "violation",
+          "category": "PROHIBITED_MAGIC_REMEDY"
+        },
+        {
+          "id": "VERN-072",
+          "label": "violation",
+          "category": "PROHIBITED_MAGIC_REMEDY"
+        }
+      ],
+      "raw_count": 0,
+      "raw_findings": [],
+      "kept_findings": [],
+      "dropped_findings": [],
+      "flagged": false,
+      "correct_category_matched": false,
+      "status": "clean"
+    },
+    {
+      "id": "ST-011",
+      "text": "G00aranteed 3x reterns on yur inve$tment — j0in AbhiWealth app now",
+      "expected": "violation",
+      "target_category": "PREDATORY_FINTECH_PROMISE",
+      "top3_exemplars": [
+        {
+          "id": "VERN-049",
+          "label": "violation",
+          "category": "PREDATORY_FINTECH_PROMISE"
+        },
+        {
+          "id": "VERN-050",
+          "label": "violation",
+          "category": "PREDATORY_FINTECH_PROMISE"
+        },
+        {
+          "id": "VERN-048",
+          "label": "violation",
+          "category": "PREDATORY_FINTECH_PROMISE"
+        }
+      ],
+      "raw_count": 0,
+      "raw_findings": [],
+      "kept_findings": [],
+      "dropped_findings": [],
+      "flagged": false,
+      "correct_category_matched": false,
+      "status": "clean"
+    },
+    {
+      "id": "ST-012",
+      "text": "Sharab nahi yaar, sirf pani hai — magar uss paani mein scene hai boss",
+      "expected": "violation",
+      "target_category": "SURROGATE_ALCOBEV",
+      "top3_exemplars": [
+        {
+          "id": "VERN-004",
+          "label": "violation",
+          "category": "SURROGATE_ALCOBEV"
+        },
+        {
+          "id": "VERN-018",
+          "label": "violation",
+          "category": "SURROGATE_TOBACCO"
+        },
+        {
+          "id": "VERN-021",
+          "label": "violation",
+          "category": "SURROGATE_TOBACCO"
+        }
+      ],
+      "raw_count": 0,
+      "raw_findings": [],
+      "kept_findings": [],
+      "dropped_findings": [],
+      "flagged": false,
+      "correct_category_matched": false,
+      "status": "clean"
+    },
+    {
+      "id": "ST-013",
+      "text": "Bettting pe jeet lo har baaar — expertts ka formula",
+      "expected": "violation",
+      "target_category": "SURROGATE_BETTING",
+      "top3_exemplars": [
+        {
+          "id": "VERN-051",
+          "label": "violation",
+          "category": "PREDATORY_FINTECH_PROMISE"
+        },
+        {
+          "id": "VERN-037",
+          "label": "violation",
+          "category": "SURROGATE_BETTING"
+        },
+        {
+          "id": "VERN-060",
+          "label": "violation",
+          "category": "FALSE_URGENCY_DARK_PATTERN"
+        }
+      ],
+      "raw_count": 0,
+      "raw_findings": [],
+      "kept_findings": [],
+      "dropped_findings": [],
+      "flagged": false,
+      "correct_category_matched": false,
+      "status": "clean"
+    },
+    {
+      "id": "ST-014",
+      "text": "Abhi download karo aur पैसे कमाओ — zero risk guaranteed returns",
+      "expected": "violation",
+      "target_category": "PREDATORY_FINTECH_PROMISE",
+      "top3_exemplars": [
+        {
+          "id": "VERN-051",
+          "label": "violation",
+          "category": "PREDATORY_FINTECH_PROMISE"
+        },
+        {
+          "id": "VERN-049",
+          "label": "violation",
+          "category": "PREDATORY_FINTECH_PROMISE"
+        },
+        {
+          "id": "VERN-050",
+          "label": "violation",
+          "category": "PREDATORY_FINTECH_PROMISE"
+        }
+      ],
+      "raw_count": 0,
+      "raw_findings": [],
+      "kept_findings": [],
+      "dropped_findings": [],
+      "flagged": false,
+      "correct_category_matched": false,
+      "status": "clean"
+    },
+    {
+      "id": "ST-015",
+      "text": "Sports खेलो, points जीतो और real cash निकालो — skill game hai gambling nahi",
+      "expected": "violation",
+      "target_category": "SURROGATE_BETTING",
+      "top3_exemplars": [
+        {
+          "id": "VERN-033",
+          "label": "violation",
+          "category": "SURROGATE_BETTING"
+        },
+        {
+          "id": "VERN-040",
+          "label": "safe",
+          "category": "SURROGATE_BETTING"
+        },
+        {
+          "id": "VERN-038",
+          "label": "violation",
+          "category": "SURROGATE_BETTING"
+        }
+      ],
+      "raw_count": 0,
+      "raw_findings": [],
+      "kept_findings": [],
+      "dropped_findings": [],
+      "flagged": false,
+      "correct_category_matched": false,
+      "status": "clean"
+    },
+    {
+      "id": "ST-016",
+      "text": "इस soda को पियो और feel karo woh legendary vibe",
+      "expected": "violation",
+      "target_category": "SURROGATE_ALCOBEV",
+      "top3_exemplars": [
+        {
+          "id": "VERN-003",
+          "label": "violation",
+          "category": "SURROGATE_ALCOBEV"
+        },
+        {
+          "id": "VERN-004",
+          "label": "violation",
+          "category": "SURROGATE_ALCOBEV"
+        },
+        {
+          "id": "VERN-001",
+          "label": "violation",
+          "category": "SURROGATE_ALCOBEV"
+        }
+      ],
+      "raw_count": 0,
+      "raw_findings": [],
+      "kept_findings": [],
+      "dropped_findings": [],
+      "flagged": false,
+      "correct_category_matched": false,
+      "status": "clean"
+    },
+    {
+      "id": "ST-017",
+      "text": "Yeh toh sirf ek cricket news app hai — daily match analysis aur expert tips for free",
+      "expected": "violation",
+      "target_category": "SURROGATE_BETTING",
+      "top3_exemplars": [
+        {
+          "id": "VERN-031",
+          "label": "violation",
+          "category": "SURROGATE_BETTING"
+        },
+        {
+          "id": "VERN-029",
+          "label": "violation",
+          "category": "SURROGATE_BETTING"
+        },
+        {
+          "id": "VERN-032",
+          "label": "violation",
+          "category": "SURROGATE_BETTING"
+        }
+      ],
+      "raw_count": 0,
+      "raw_findings": [],
+      "kept_findings": [],
+      "dropped_findings": [],
+      "flagged": false,
+      "correct_category_matched": false,
+      "status": "clean"
+    },
+    {
+      "id": "ST-018",
+      "text": "Invest in our scheme: last 5 years average return was 18% — market-linked, risks apply",
+      "expected": "violation",
+      "target_category": "PREDATORY_FINTECH_PROMISE",
+      "top3_exemplars": [
+        {
+          "id": "VERN-054",
+          "label": "safe",
+          "category": "PREDATORY_FINTECH_PROMISE"
+        },
+        {
+          "id": "VERN-052",
+          "label": "violation",
+          "category": "PREDATORY_FINTECH_PROMISE"
+        },
+        {
+          "id": "VERN-049",
+          "label": "violation",
+          "category": "PREDATORY_FINTECH_PROMISE"
+        }
+      ],
+      "raw_count": 0,
+      "raw_findings": [],
+      "kept_findings": [],
+      "dropped_findings": [],
+      "flagged": false,
+      "correct_category_matched": false,
+      "status": "clean"
+    },
+    {
+      "id": "ST-019",
+      "text": "Aaj se limited stock — yeh product sab le rahe hain magar hamara stock genuine hai",
+      "expected": "violation",
+      "target_category": "FALSE_URGENCY_DARK_PATTERN",
+      "top3_exemplars": [
+        {
+          "id": "VERN-057",
+          "label": "violation",
+          "category": "FALSE_URGENCY_DARK_PATTERN"
+        },
+        {
+          "id": "VERN-062",
+          "label": "violation",
+          "category": "FALSE_URGENCY_DARK_PATTERN"
+        },
+        {
+          "id": "VERN-059",
+          "label": "violation",
+          "category": "FALSE_URGENCY_DARK_PATTERN"
+        }
+      ],
+      "raw_count": 0,
+      "raw_findings": [],
+      "kept_findings": [],
+      "dropped_findings": [],
+      "flagged": false,
+      "correct_category_matched": false,
+      "status": "clean"
+    },
+    {
+      "id": "ST-020",
+      "text": "Yeh juice peene se aapka immunity thoda better ho sakti hai — results vary",
+      "expected": "violation",
+      "target_category": "PROHIBITED_MAGIC_REMEDY",
+      "top3_exemplars": [
+        {
+          "id": "VERN-013",
+          "label": "safe",
+          "category": "SURROGATE_ALCOBEV"
+        },
+        {
+          "id": "VERN-079",
+          "label": "violation",
+          "category": "PROHIBITED_MAGIC_REMEDY"
+        },
+        {
+          "id": "VERN-073",
+          "label": "violation",
+          "category": "PROHIBITED_MAGIC_REMEDY"
+        }
+      ],
+      "raw_count": 0,
+      "raw_findings": [],
+      "kept_findings": [],
+      "dropped_findings": [],
+      "flagged": false,
+      "correct_category_matched": false,
+      "status": "clean"
+    },
+    {
+      "id": "ST-021",
+      "text": "Royal Refresh Soda — India's favourite sparkling water since 1987, available at all supermarkets",
+      "expected": "safe",
+      "target_category": null,
+      "top3_exemplars": [
+        {
+          "id": "VERN-003",
+          "label": "violation",
+          "category": "SURROGATE_ALCOBEV"
+        },
+        {
+          "id": "VERN-001",
+          "label": "violation",
+          "category": "SURROGATE_ALCOBEV"
+        },
+        {
+          "id": "VERN-011",
+          "label": "safe",
+          "category": "SURROGATE_ALCOBEV"
+        }
+      ],
+      "raw_count": 0,
+      "raw_findings": [],
+      "kept_findings": [],
+      "dropped_findings": [],
+      "flagged": false,
+      "correct_category_matched": false,
+      "status": "clean"
+    },
+    {
+      "id": "ST-022",
+      "text": "ClearPath Home Loan — interest rate 8.9% p.a., IRDAI-registered, full KYC required, T&C apply",
+      "expected": "safe",
+      "target_category": null,
+      "top3_exemplars": [
+        {
+          "id": "VERN-053",
+          "label": "safe",
+          "category": "PREDATORY_FINTECH_PROMISE"
+        },
+        {
+          "id": "VERN-056",
+          "label": "safe",
+          "category": "PREDATORY_FINTECH_PROMISE"
+        },
+        {
+          "id": "VERN-055",
+          "label": "safe",
+          "category": "PREDATORY_FINTECH_PROMISE"
+        }
+      ],
+      "raw_count": 0,
+      "raw_findings": [],
+      "kept_findings": [],
+      "dropped_findings": [],
+      "flagged": false,
+      "correct_category_matched": false,
+      "status": "clean"
+    },
+    {
+      "id": "ST-023",
+      "text": "Flat 30% off on all electronics — sale ends 15 November, while stocks last",
+      "expected": "safe",
+      "target_category": null,
+      "top3_exemplars": [
+        {
+          "id": "VERN-067",
+          "label": "safe",
+          "category": "FALSE_URGENCY_DARK_PATTERN"
+        },
+        {
+          "id": "VERN-064",
+          "label": "violation",
+          "category": "FALSE_URGENCY_DARK_PATTERN"
+        },
+        {
+          "id": "VERN-057",
+          "label": "violation",
+          "category": "FALSE_URGENCY_DARK_PATTERN"
+        }
+      ],
+      "raw_count": 0,
+      "raw_findings": [],
+      "kept_findings": [],
+      "dropped_findings": [],
+      "flagged": false,
+      "correct_category_matched": false,
+      "status": "clean"
+    },
+    {
+      "id": "ST-024",
+      "text": "Doctor ki salah se shuru karo yeh vitamin supplement — results individual ke hisaab se alag ho sakte hain",
+      "expected": "safe",
+      "target_category": null,
+      "top3_exemplars": [
+        {
+          "id": "VERN-084",
+          "label": "safe",
+          "category": "PROHIBITED_MAGIC_REMEDY"
+        },
+        {
+          "id": "VERN-083",
+          "label": "safe",
+          "category": "PROHIBITED_MAGIC_REMEDY"
+        },
+        {
+          "id": "VERN-081",
+          "label": "safe",
+          "category": "PROHIBITED_MAGIC_REMEDY"
+        }
+      ],
+      "raw_count": 0,
+      "raw_findings": [],
+      "kept_findings": [],
+      "dropped_findings": [],
+      "flagged": false,
+      "correct_category_matched": false,
+      "status": "clean"
+    },
+    {
+      "id": "ST-025",
+      "text": "MySportsZone fantasy cricket — play for free, cash prizes subject to TDS deduction, 18+ only",
+      "expected": "safe",
+      "target_category": null,
+      "top3_exemplars": [
+        {
+          "id": "VERN-034",
+          "label": "violation",
+          "category": "SURROGATE_BETTING"
+        },
+        {
+          "id": "VERN-040",
+          "label": "safe",
+          "category": "SURROGATE_BETTING"
+        },
+        {
+          "id": "VERN-033",
+          "label": "violation",
+          "category": "SURROGATE_BETTING"
+        }
+      ],
+      "raw_count": 1,
+      "raw_findings": [
+        {
+          "span_text": "MySportsZone fantasy cricket — play for free, cash prizes",
+          "category": "SURROGATE_BETTING",
+          "reason": "Fantasy sports platforms offering cash prizes are classified as surrogate betting platforms under Indian advertising guidelines.",
+          "confidence": 0.95
+        }
+      ],
+      "kept_findings": [
+        {
+          "span_text": "MySportsZone fantasy cricket — play for free, cash prizes",
+          "category": "SURROGATE_BETTING",
+          "reason": "Fantasy sports platforms offering cash prizes are classified as surrogate betting platforms under Indian advertising guidelines.",
+          "confidence": 0.95,
+          "status": "review"
+        }
+      ],
+      "dropped_findings": [],
+      "flagged": true,
+      "correct_category_matched": false,
+      "status": "review"
+    },
+    {
+      "id": "ST-026",
+      "text": "सूरज ग्रुप का नया म्यूजिक CD — दमदार बीट्स, ताज़ा आवाज़, अभी ऑर्डर करें",
+      "expected": "safe",
+      "target_category": null,
+      "top3_exemplars": [
+        {
+          "id": "VERN-009",
+          "label": "violation",
+          "category": "SURROGATE_ALCOBEV"
+        },
+        {
+          "id": "VERN-006",
+          "label": "violation",
+          "category": "SURROGATE_ALCOBEV"
+        },
+        {
+          "id": "VERN-023",
+          "label": "violation",
+          "category": "SURROGATE_TOBACCO"
+        }
+      ],
+      "raw_count": 1,
+      "raw_findings": [
+        {
+          "span_text": "सूरज ग्रुप का नया म्यूजिक CD",
+          "category": "SURROGATE_ALCOBEV",
+          "reason": "The use of 'Music CD' as a product category for a group not primarily known for music is a common surrogate advertising tactic for liquor brands in India.",
+          "confidence": 0.85
+        }
+      ],
+      "kept_findings": [
+        {
+          "span_text": "सूरज ग्रुप का नया म्यूजिक CD",
+          "category": "SURROGATE_ALCOBEV",
+          "reason": "The use of 'Music CD' as a product category for a group not primarily known for music is a common surrogate advertising tactic for liquor brands in India.",
+          "confidence": 0.85,
+          "status": "review"
+        }
+      ],
+      "dropped_findings": [],
+      "flagged": true,
+      "correct_category_matched": false,
+      "status": "review"
+    },
+    {
+      "id": "ST-027",
+      "text": "Invest in diversified mutual funds — market risks apply, past performance is not a guarantee of future returns",
+      "expected": "safe",
+      "target_category": null,
+      "top3_exemplars": [
+        {
+          "id": "VERN-054",
+          "label": "safe",
+          "category": "PREDATORY_FINTECH_PROMISE"
+        },
+        {
+          "id": "VERN-048",
+          "label": "violation",
+          "category": "PREDATORY_FINTECH_PROMISE"
+        },
+        {
+          "id": "VERN-056",
+          "label": "safe",
+          "category": "PREDATORY_FINTECH_PROMISE"
+        }
+      ],
+      "raw_count": 0,
+      "raw_findings": [],
+      "kept_findings": [],
+      "dropped_findings": [],
+      "flagged": false,
+      "correct_category_matched": false,
+      "status": "clean"
+    },
+    {
+      "id": "ST-028",
+      "text": "VitaCare Chyawanprash — traditional Ayurvedic formulation, supports general wellness, consult your physician",
+      "expected": "safe",
+      "target_category": null,
+      "top3_exemplars": [
+        {
+          "id": "VERN-081",
+          "label": "safe",
+          "category": "PROHIBITED_MAGIC_REMEDY"
+        },
+        {
+          "id": "VERN-028",
+          "label": "safe",
+          "category": "SURROGATE_TOBACCO"
+        },
+        {
+          "id": "VERN-027",
+          "label": "safe",
+          "category": "SURROGATE_TOBACCO"
+        }
+      ],
+      "raw_count": 0,
+      "raw_findings": [],
+      "kept_findings": [],
+      "dropped_findings": [],
+      "flagged": false,
+      "correct_category_matched": false,
+      "status": "clean"
+    },
+    {
+      "id": "ST-029",
+      "text": "Greenleaf pan — elaichi aur saunf ka meetha swaad, refreshing after meals",
+      "expected": "safe",
+      "target_category": null,
+      "top3_exemplars": [
+        {
+          "id": "VERN-020",
+          "label": "violation",
+          "category": "SURROGATE_TOBACCO"
+        },
+        {
+          "id": "VERN-022",
+          "label": "violation",
+          "category": "SURROGATE_TOBACCO"
+        },
+        {
+          "id": "VERN-027",
+          "label": "safe",
+          "category": "SURROGATE_TOBACCO"
+        }
+      ],
+      "raw_count": 1,
+      "raw_findings": [
+        {
+          "span_text": "Greenleaf pan",
+          "category": "SURROGATE_TOBACCO",
+          "reason": "The use of 'pan' in the brand name is a common surrogate marketing tactic for tobacco/gutkha products, often used to bypass advertising bans.",
+          "confidence": 0.85
+        }
+      ],
+      "kept_findings": [
+        {
+          "span_text": "Greenleaf pan",
+          "category": "SURROGATE_TOBACCO",
+          "reason": "The use of 'pan' in the brand name is a common surrogate marketing tactic for tobacco/gutkha products, often used to bypass advertising bans.",
+          "confidence": 0.85,
+          "status": "review"
+        }
+      ],
+      "dropped_findings": [],
+      "flagged": true,
+      "correct_category_matched": false,
+      "status": "review"
+    },
+    {
+      "id": "ST-030",
+      "text": "আজই আমাদের অ্যাপ ডাউনলোড করুন এবং বিশেষ উপহার পান — সীমিত সময়ের অফার",
+      "expected": "safe",
+      "target_category": null,
+      "top3_exemplars": [
+        {
+          "id": "VERN-064",
+          "label": "violation",
+          "category": "FALSE_URGENCY_DARK_PATTERN"
+        },
+        {
+          "id": "VERN-031",
+          "label": "violation",
+          "category": "SURROGATE_BETTING"
+        },
+        {
+          "id": "VERN-057",
+          "label": "violation",
+          "category": "FALSE_URGENCY_DARK_PATTERN"
+        }
+      ],
+      "raw_count": 1,
+      "raw_findings": [
+        {
+          "span_text": "সীমিত সময়ের অফার",
+          "category": "FALSE_URGENCY_DARK_PATTERN",
+          "reason": "The phrase 'limited time offer' creates artificial scarcity to pressure the user into immediate action.",
+          "confidence": 0.85
+        }
+      ],
+      "kept_findings": [
+        {
+          "span_text": "সীমিত সময়ের অফার",
+          "category": "FALSE_URGENCY_DARK_PATTERN",
+          "reason": "The phrase 'limited time offer' creates artificial scarcity to pressure the user into immediate action.",
+          "confidence": 0.85,
+          "status": "review"
+        }
+      ],
+      "dropped_findings": [],
+      "flagged": true,
+      "correct_category_matched": false,
+      "status": "review"
+    }
+  ]
+}

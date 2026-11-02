@@ -1,0 +1,573 @@
+{
+  "executed_on": "2026-11-02T16:59:46.418Z",
+  "model": "gemini-3.1-flash-lite",
+  "total_calls": 34,
+  "runs": [
+    {
+      "id": "VERN-002",
+      "label": "violation",
+      "category": "SURROGATE_ALCOBEV",
+      "style": "indirect_no_brand",
+      "text": "Pair your crystal glasses with sparkling soda for an unforgettable high-spirited evening.",
+      "raw_count": 0,
+      "raw_findings": [],
+      "kept_findings": [],
+      "dropped_findings": [],
+      "flagged": false,
+      "correct_category_matched": false,
+      "status": "clean"
+    },
+    {
+      "id": "VERN-008",
+      "label": "violation",
+      "category": "SURROGATE_ALCOBEV",
+      "style": "non_latin_script",
+      "text": "কিংফিশার মিউজিক সিডির ছন্দে জমিয়ে তোলো উৎসবের প্রতিটি মুহূর্ত।",
+      "raw_count": 1,
+      "raw_findings": [
+        {
+          "span_text": "কিংফিশার মিউজিক সিডি",
+          "category": "SURROGATE_ALCOBEV",
+          "reason": "The brand 'Kingfisher' is a well-known liquor brand, and 'music CD' is a classic surrogate product used to advertise alcohol in India, which is prohibited under ASCI and Cable Television Networks Rules.",
+          "confidence": 1
+        }
+      ],
+      "kept_findings": [
+        {
+          "span_text": "কিংফিশার মিউজিক সিডি",
+          "category": "SURROGATE_ALCOBEV",
+          "reason": "The brand 'Kingfisher' is a well-known liquor brand, and 'music CD' is a classic surrogate product used to advertise alcohol in India, which is prohibited under ASCI and Cable Television Networks Rules.",
+          "confidence": 1,
+          "status": "review"
+        }
+      ],
+      "dropped_findings": [],
+      "flagged": true,
+      "correct_category_matched": true,
+      "status": "review"
+    },
+    {
+      "id": "VERN-010",
+      "label": "violation",
+      "category": "SURROGATE_ALCOBEV",
+      "style": "polite_disguised",
+      "text": "Celebrating timeless cultural melodies inspired by the royal heritage of Scottish highland distilleries.",
+      "raw_count": 1,
+      "raw_findings": [
+        {
+          "span_text": "Scottish highland distilleries",
+          "category": "SURROGATE_ALCOBEV",
+          "reason": "The reference to Scottish highland distilleries is a common surrogate marketing tactic used to promote liquor brands under the guise of heritage or lifestyle branding.",
+          "confidence": 0.95
+        }
+      ],
+      "kept_findings": [
+        {
+          "span_text": "Scottish highland distilleries",
+          "category": "SURROGATE_ALCOBEV",
+          "reason": "The reference to Scottish highland distilleries is a common surrogate marketing tactic used to promote liquor brands under the guise of heritage or lifestyle branding.",
+          "confidence": 0.95,
+          "status": "review"
+        }
+      ],
+      "dropped_findings": [],
+      "flagged": true,
+      "correct_category_matched": true,
+      "status": "review"
+    },
+    {
+      "id": "VERN-012",
+      "label": "safe",
+      "category": "SURROGATE_ALCOBEV",
+      "style": "safe_lookalike",
+      "text": "Classical sitar instrumental audio CD compilation published by the National Youth Cultural Academy.",
+      "raw_count": 0,
+      "raw_findings": [],
+      "kept_findings": [],
+      "dropped_findings": [],
+      "flagged": false,
+      "correct_category_matched": false,
+      "status": "clean"
+    },
+    {
+      "id": "VERN-014",
+      "label": "safe",
+      "category": "SURROGATE_ALCOBEV",
+      "style": "safe_lookalike",
+      "text": "Bangalore Jazz Ensemble live concert passes available at local box offices this Saturday.",
+      "raw_count": 0,
+      "raw_findings": [],
+      "kept_findings": [],
+      "dropped_findings": [],
+      "flagged": false,
+      "correct_category_matched": false,
+      "status": "clean"
+    },
+    {
+      "id": "VERN-016",
+      "label": "violation",
+      "category": "SURROGATE_TOBACCO",
+      "style": "indirect_no_brand",
+      "text": "Scented silver pearls with royal saffron aroma that leave an unmistakable red imprint on every heart.",
+      "raw_count": 1,
+      "raw_findings": [
+        {
+          "span_text": "Scented silver pearls with royal saffron aroma",
+          "category": "SURROGATE_TOBACCO",
+          "reason": "The description of 'scented silver pearls' with 'saffron' is a common surrogate marketing trope used to promote pan masala and gutkha brands, which are prohibited from direct advertising.",
+          "confidence": 0.95
+        }
+      ],
+      "kept_findings": [
+        {
+          "span_text": "Scented silver pearls with royal saffron aroma",
+          "category": "SURROGATE_TOBACCO",
+          "reason": "The description of 'scented silver pearls' with 'saffron' is a common surrogate marketing trope used to promote pan masala and gutkha brands, which are prohibited from direct advertising.",
+          "confidence": 0.95,
+          "status": "review"
+        }
+      ],
+      "dropped_findings": [],
+      "flagged": true,
+      "correct_category_matched": true,
+      "status": "review"
+    },
+    {
+      "id": "VERN-020",
+      "label": "violation",
+      "category": "SURROGATE_TOBACCO",
+      "style": "direct_branded",
+      "text": "Dilbagh premium pan flavour candy gives you refreshing confidence in every single bite.",
+      "raw_count": 0,
+      "raw_findings": [],
+      "kept_findings": [],
+      "dropped_findings": [],
+      "flagged": false,
+      "correct_category_matched": false,
+      "status": "clean"
+    },
+    {
+      "id": "VERN-022",
+      "label": "violation",
+      "category": "SURROGATE_TOBACCO",
+      "style": "non_latin_script",
+      "text": "पान बहार सुगंधी बडी इलायची खाओ जीवन में सुगंध बिखराओ।",
+      "raw_count": 0,
+      "raw_findings": [],
+      "kept_findings": [],
+      "dropped_findings": [],
+      "flagged": false,
+      "correct_category_matched": false,
+      "status": "clean"
+    },
+    {
+      "id": "VERN-024",
+      "label": "violation",
+      "category": "SURROGATE_TOBACCO",
+      "style": "polite_disguised",
+      "text": "Honouring age-old Banarasi hospitality through royal cardamom confectionery packaged in heritage gold pouches.",
+      "raw_count": 1,
+      "raw_findings": [
+        {
+          "span_text": "royal cardamom confectionery",
+          "category": "SURROGATE_TOBACCO",
+          "reason": "The use of 'cardamom confectionery' is a common surrogate marketing tactic used by tobacco/pan masala brands to bypass advertising bans on gutkha products.",
+          "confidence": 0.85
+        }
+      ],
+      "kept_findings": [
+        {
+          "span_text": "royal cardamom confectionery",
+          "category": "SURROGATE_TOBACCO",
+          "reason": "The use of 'cardamom confectionery' is a common surrogate marketing tactic used by tobacco/pan masala brands to bypass advertising bans on gutkha products.",
+          "confidence": 0.85,
+          "status": "review"
+        }
+      ],
+      "dropped_findings": [],
+      "flagged": true,
+      "correct_category_matched": true,
+      "status": "review"
+    },
+    {
+      "id": "VERN-026",
+      "label": "safe",
+      "category": "SURROGATE_TOBACCO",
+      "style": "safe_lookalike",
+      "text": "Sugar-free peppermint dental lozenges enriched with natural eucalyptus oil for daily fresh breath.",
+      "raw_count": 0,
+      "raw_findings": [],
+      "kept_findings": [],
+      "dropped_findings": [],
+      "flagged": false,
+      "correct_category_matched": false,
+      "status": "clean"
+    },
+    {
+      "id": "VERN-028",
+      "label": "safe",
+      "category": "SURROGATE_TOBACCO",
+      "style": "safe_lookalike",
+      "text": "Handmade dried betel leaf digestive candy flavoured with natural rose gulkand and fennel seeds.",
+      "raw_count": 0,
+      "raw_findings": [],
+      "kept_findings": [],
+      "dropped_findings": [],
+      "flagged": false,
+      "correct_category_matched": false,
+      "status": "clean"
+    },
+    {
+      "id": "VERN-030",
+      "label": "violation",
+      "category": "SURROGATE_BETTING",
+      "style": "indirect_no_brand",
+      "text": "Install our offshore sports analysis portal to unlock high-return predictive match staking today.",
+      "raw_count": 0,
+      "raw_findings": [],
+      "kept_findings": [],
+      "dropped_findings": [],
+      "flagged": false,
+      "correct_category_matched": false,
+      "status": "clean"
+    },
+    {
+      "id": "VERN-032",
+      "label": "violation",
+      "category": "SURROGATE_BETTING",
+      "style": "slangy_short",
+      "text": "Dafanews app pe live scorecard dekh aur session pe kacha cash banao!",
+      "raw_count": 0,
+      "raw_findings": [],
+      "kept_findings": [],
+      "dropped_findings": [],
+      "flagged": false,
+      "correct_category_matched": false,
+      "status": "clean"
+    },
+    {
+      "id": "VERN-036",
+      "label": "violation",
+      "category": "SURROGATE_BETTING",
+      "style": "non_latin_script",
+      "text": "லோட்டஸ் ஸ்போர்ட்ஸ் கிளப்பில் இணைந்து தினசரி போட்டிகளில் லட்சக்கணக்கில் பணம் வெல்லுங்கள்!",
+      "raw_count": 0,
+      "raw_findings": [],
+      "kept_findings": [],
+      "dropped_findings": [],
+      "flagged": false,
+      "correct_category_matched": false,
+      "status": "clean"
+    },
+    {
+      "id": "VERN-038",
+      "label": "violation",
+      "category": "SURROGATE_BETTING",
+      "style": "polite_disguised",
+      "text": "A premier digital entertainment club offering dynamic sports prediction competitions for discerning members.",
+      "raw_count": 0,
+      "raw_findings": [],
+      "kept_findings": [],
+      "dropped_findings": [],
+      "flagged": false,
+      "correct_category_matched": false,
+      "status": "clean"
+    },
+    {
+      "id": "VERN-040",
+      "label": "safe",
+      "category": "SURROGATE_BETTING",
+      "style": "safe_lookalike",
+      "text": "Non-commercial university fantasy cricket league with educational trophies and zero monetary entry fees.",
+      "raw_count": 0,
+      "raw_findings": [],
+      "kept_findings": [],
+      "dropped_findings": [],
+      "flagged": false,
+      "correct_category_matched": false,
+      "status": "clean"
+    },
+    {
+      "id": "VERN-042",
+      "label": "safe",
+      "category": "SURROGATE_BETTING",
+      "style": "safe_lookalike",
+      "text": "SportsDossier Weekly statistical retrospective analyzing test cricket bowling economy rates across two decades.",
+      "raw_count": 0,
+      "raw_findings": [],
+      "kept_findings": [],
+      "dropped_findings": [],
+      "flagged": false,
+      "correct_category_matched": false,
+      "status": "clean"
+    },
+    {
+      "id": "VERN-044",
+      "label": "violation",
+      "category": "PREDATORY_FINTECH_PROMISE",
+      "style": "indirect_no_brand",
+      "text": "Zero CIBIL score required for immediate unconditional cash disbursement straight to your mobile wallet.",
+      "raw_count": 0,
+      "raw_findings": [],
+      "kept_findings": [],
+      "dropped_findings": [],
+      "flagged": false,
+      "correct_category_matched": false,
+      "status": "clean"
+    },
+    {
+      "id": "VERN-046",
+      "label": "violation",
+      "category": "PREDATORY_FINTECH_PROMISE",
+      "style": "slangy_short",
+      "text": "No kagaz no magajmari 2 minute me khate me cash transfer lo!",
+      "raw_count": 0,
+      "raw_findings": [],
+      "kept_findings": [],
+      "dropped_findings": [],
+      "flagged": false,
+      "correct_category_matched": false,
+      "status": "clean"
+    },
+    {
+      "id": "VERN-050",
+      "label": "violation",
+      "category": "PREDATORY_FINTECH_PROMISE",
+      "style": "non_latin_script",
+      "text": "ஒரு லட்சம் முதலீடு செய்யுங்கள், அடுத்த முப்பது நாளில் இரண்டு மடங்காக பெறுங்கள்!",
+      "raw_count": 1,
+      "raw_findings": [
+        {
+          "span_text": "அடுத்த முப்பது நாளில் இரண்டு மடங்காக பெறுங்கள்",
+          "category": "PREDATORY_FINTECH_PROMISE",
+          "reason": "The text promises to double the investment in thirty days, which constitutes a guaranteed return claim typical of unregulated or fraudulent financial schemes.",
+          "confidence": 1
+        }
+      ],
+      "kept_findings": [
+        {
+          "span_text": "அடுத்த முப்பது நாளில் இரண்டு மடங்காக பெறுங்கள்",
+          "category": "PREDATORY_FINTECH_PROMISE",
+          "reason": "The text promises to double the investment in thirty days, which constitutes a guaranteed return claim typical of unregulated or fraudulent financial schemes.",
+          "confidence": 1,
+          "status": "review"
+        }
+      ],
+      "dropped_findings": [],
+      "flagged": true,
+      "correct_category_matched": true,
+      "status": "review"
+    },
+    {
+      "id": "VERN-052",
+      "label": "violation",
+      "category": "PREDATORY_FINTECH_PROMISE",
+      "style": "polite_disguised",
+      "text": "Our proprietary sovereign arbitrage program assures deterministic capital appreciation free from market fluctuations.",
+      "raw_count": 0,
+      "raw_findings": [],
+      "kept_findings": [],
+      "dropped_findings": [],
+      "flagged": false,
+      "correct_category_matched": false,
+      "status": "clean"
+    },
+    {
+      "id": "VERN-054",
+      "label": "safe",
+      "category": "PREDATORY_FINTECH_PROMISE",
+      "style": "safe_lookalike",
+      "text": "Mutual fund investments are subject to market risks; past performance does not assure future returns.",
+      "raw_count": 0,
+      "raw_findings": [],
+      "kept_findings": [],
+      "dropped_findings": [],
+      "flagged": false,
+      "correct_category_matched": false,
+      "status": "clean"
+    },
+    {
+      "id": "VERN-056",
+      "label": "safe",
+      "category": "PREDATORY_FINTECH_PROMISE",
+      "style": "safe_lookalike",
+      "text": "Fixed deposit interest rates up to 7.1 percent annually insured under DICGC guidelines up to 5 lakhs.",
+      "raw_count": 0,
+      "raw_findings": [],
+      "kept_findings": [],
+      "dropped_findings": [],
+      "flagged": false,
+      "correct_category_matched": false,
+      "status": "clean"
+    },
+    {
+      "id": "VERN-058",
+      "label": "violation",
+      "category": "FALSE_URGENCY_DARK_PATTERN",
+      "style": "indirect_no_brand",
+      "text": "The price doubles when this sixty-second countdown clock expires; complete purchase now or lose out!",
+      "raw_count": 0,
+      "raw_findings": [],
+      "kept_findings": [],
+      "dropped_findings": [],
+      "flagged": false,
+      "correct_category_matched": false,
+      "status": "clean"
+    },
+    {
+      "id": "VERN-066",
+      "label": "violation",
+      "category": "FALSE_URGENCY_DARK_PATTERN",
+      "style": "polite_disguised",
+      "text": "Regrettably, unmatched seasonal allowances of this magnitude cannot be honored once this session concludes.",
+      "raw_count": 0,
+      "raw_findings": [],
+      "kept_findings": [],
+      "dropped_findings": [],
+      "flagged": false,
+      "correct_category_matched": false,
+      "status": "clean"
+    },
+    {
+      "id": "VERN-068",
+      "label": "safe",
+      "category": "FALSE_URGENCY_DARK_PATTERN",
+      "style": "safe_lookalike",
+      "text": "Standard early bird registration window closes on Friday; regular delegate passes available thereafter.",
+      "raw_count": 0,
+      "raw_findings": [],
+      "kept_findings": [],
+      "dropped_findings": [],
+      "flagged": false,
+      "correct_category_matched": false,
+      "status": "clean"
+    },
+    {
+      "id": "VERN-070",
+      "label": "safe",
+      "category": "FALSE_URGENCY_DARK_PATTERN",
+      "style": "safe_lookalike",
+      "text": "Flight seat availability updates in real time based on airline computer reservation system inventory.",
+      "raw_count": 0,
+      "raw_findings": [],
+      "kept_findings": [],
+      "dropped_findings": [],
+      "flagged": false,
+      "correct_category_matched": false,
+      "status": "clean"
+    },
+    {
+      "id": "VERN-072",
+      "label": "violation",
+      "category": "PROHIBITED_MAGIC_REMEDY",
+      "style": "indirect_no_brand",
+      "text": "Completely cure chronic high blood sugar and eliminate all prescription medications forever with one drop.",
+      "raw_count": 0,
+      "raw_findings": [],
+      "kept_findings": [],
+      "dropped_findings": [],
+      "flagged": false,
+      "correct_category_matched": false,
+      "status": "clean"
+    },
+    {
+      "id": "VERN-074",
+      "label": "violation",
+      "category": "PROHIBITED_MAGIC_REMEDY",
+      "style": "slangy_short",
+      "text": "Sugar gayab 10 din me pakka ilaj dawa lo jhanjhat khatam!",
+      "raw_count": 0,
+      "raw_findings": [],
+      "kept_findings": [],
+      "dropped_findings": [],
+      "flagged": false,
+      "correct_category_matched": false,
+      "status": "clean"
+    },
+    {
+      "id": "VERN-076",
+      "label": "violation",
+      "category": "PROHIBITED_MAGIC_REMEDY",
+      "style": "direct_branded",
+      "text": "SlimTrim chamatkari powder se 7 din me 15 kilo motapa ghatao bina diet ya exercise!",
+      "raw_count": 1,
+      "raw_findings": [
+        {
+          "span_text": "SlimTrim chamatkari powder se 7 din me 15 kilo motapa ghatao bina diet ya exercise!",
+          "category": "PROHIBITED_MAGIC_REMEDY",
+          "reason": "The claim promises a miraculous weight loss result (15kg in 7 days) without diet or exercise, which constitutes a prohibited medical/health claim under Indian advertising standards.",
+          "confidence": 1
+        }
+      ],
+      "kept_findings": [
+        {
+          "span_text": "SlimTrim chamatkari powder se 7 din me 15 kilo motapa ghatao bina diet ya exercise!",
+          "category": "PROHIBITED_MAGIC_REMEDY",
+          "reason": "The claim promises a miraculous weight loss result (15kg in 7 days) without diet or exercise, which constitutes a prohibited medical/health claim under Indian advertising standards.",
+          "confidence": 1,
+          "status": "review"
+        }
+      ],
+      "dropped_findings": [],
+      "flagged": true,
+      "correct_category_matched": true,
+      "status": "review"
+    },
+    {
+      "id": "VERN-078",
+      "label": "violation",
+      "category": "PROHIBITED_MAGIC_REMEDY",
+      "style": "non_latin_script",
+      "text": "அதிசய மூலிகை எண்ணெய் ஏழு நாட்களில் வழுக்கையை போக்கி புதிய கூந்தலை வளர்க்கும்.",
+      "raw_count": 0,
+      "raw_findings": [],
+      "kept_findings": [],
+      "dropped_findings": [],
+      "flagged": false,
+      "correct_category_matched": false,
+      "status": "clean"
+    },
+    {
+      "id": "VERN-080",
+      "label": "violation",
+      "category": "PROHIBITED_MAGIC_REMEDY",
+      "style": "polite_disguised",
+      "text": "Experience effortless adipose dissolution and revolutionary follicular regeneration through clinically unverified bio-resonance therapy.",
+      "raw_count": 0,
+      "raw_findings": [],
+      "kept_findings": [],
+      "dropped_findings": [],
+      "flagged": false,
+      "correct_category_matched": false,
+      "status": "clean"
+    },
+    {
+      "id": "VERN-084",
+      "label": "safe",
+      "category": "PROHIBITED_MAGIC_REMEDY",
+      "style": "safe_lookalike",
+      "text": "Biotin and zinc multivitamin tablets support normal hair health; consult a dermatologist for severe alopecia.",
+      "raw_count": 0,
+      "raw_findings": [],
+      "kept_findings": [],
+      "dropped_findings": [],
+      "flagged": false,
+      "correct_category_matched": false,
+      "status": "clean"
+    },
+    {
+      "id": "VERN-082",
+      "label": "safe",
+      "category": "PROHIBITED_MAGIC_REMEDY",
+      "style": "safe_lookalike",
+      "text": "Regular physical exercise and balanced portion control remain essential components of a healthy weight maintenance program.",
+      "raw_count": 0,
+      "raw_findings": [],
+      "kept_findings": [],
+      "dropped_findings": [],
+      "flagged": false,
+      "correct_category_matched": false,
+      "status": "clean"
+    }
+  ]
+}

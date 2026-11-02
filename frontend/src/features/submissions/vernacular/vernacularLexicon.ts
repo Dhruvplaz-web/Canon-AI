@@ -1,12 +1,12 @@
 /**
  * Indian Statutory Vernacular & Surrogate Lexicon
  * Grounded in:
- * - CCPA Misleading Advertisements Guidelines 2022 (Guideline 9: Surrogate Advertising)
- * - ASCI Code Chapter III (Prohibition of Indirect / Surrogate Advertising)
- * - CCPA Dark Patterns Guidelines 2023 (Schedule 1: False Urgency)
- * - Drugs and Magic Remedies Act 1954 (Section 3: Prohibited Claims)
- * - RBI Digital Lending Guidelines 2022 (Section 3: Regulated Entity Transparency)
- * - SEBI Advertisement Code 2023 (Prohibition of Guaranteed High Yield Claims)
+ * - Guidelines for Prevention of Misleading Advertisements and Endorsements for Misleading Advertisements, 2022 (CCPA) (Guideline 9: Surrogate Advertising)
+ * - ASCI Code for Self-Regulation of Advertising Content in India (Chapter III: Surrogate Advertising)
+ * - Guidelines for Prevention and Regulation of Dark Patterns, 2023 (CCPA)
+ * - Drugs and Magic Remedies (Objectionable Advertisements) Act, 1954 (Section 3: Prohibited Claims)
+ * - Reserve Bank of India (Digital Lending) Directions, 2025 (RBI/2025-26/36, 8 May 2025)
+ * - SEBI (Prohibition of Fraudulent and Unfair Trade Practices relating to Securities Market) Regulations, 2003
  */
 
 export interface SurrogateGroup {
@@ -117,7 +117,7 @@ export const SURROGATE_KNOWLEDGE_BASE: SurrogateGroup[] = [
     category: "SURROGATE_BETTING",
     ruleCode: "MEITY-BETTING-01",
     ruleTitle: "Illegal Offshore Betting Surrogate Promotion",
-    statutoryCitation: "MeitY Advisory on Online Betting (2023) & CCPA 2022 Guideline 9",
+    statutoryCitation: "Promotion and Regulation of Online Gaming Act, 2025 (Act 32 of 2025)",
     penaltyInr: 1000000,
     restrictedBrands: [
       "1xbet",
@@ -152,7 +152,7 @@ export const SURROGATE_KNOWLEDGE_BASE: SurrogateGroup[] = [
     explanation:
       "Offshore illegal sports betting platform promoted via surrogate 'News Portal' or 'Sports Analysis' brand extensions in direct defiance of Ministry of Information and Broadcasting (MIB) and MeitY directives.",
     suggestedAction:
-      "Immediate campaign takedown required. Direct statutory violation under MeitY 2023 directives and Public Gambling Act.",
+      "Immediate campaign takedown required. Direct statutory violation under Promotion and Regulation of Online Gaming Act, 2025 (Act 32 of 2025).",
   },
 ];
 
@@ -178,7 +178,7 @@ export const VERNACULAR_PATTERN_RULES: VernacularPatternRule[] = [
     ruleCode: "RBI-VERN-01",
     ruleTitle: "Deceptive 'Bina Document' Unregulated Credit Promise",
     category: "PREDATORY_FINTECH_PROMISE",
-    statutoryCitation: "RBI Digital Lending Guidelines (2022) & CCPA 2022 Section 4",
+    statutoryCitation: "Reserve Bank of India (Digital Lending) Directions, 2025 (RBI/2025-26/36, 8 May 2025)",
     severity: "CRITICAL",
     penaltyInr: 1000000,
     regexPatterns: [
@@ -196,7 +196,7 @@ export const VERNACULAR_PATTERN_RULES: VernacularPatternRule[] = [
     ruleCode: "SEBI-VERN-02",
     ruleTitle: "Prohibited 'Paisa Double' / Guaranteed Return Promise",
     category: "PREDATORY_FINTECH_PROMISE",
-    statutoryCitation: "SEBI Advertisement Code (2023) & CCPA Misleading Ads Sec 4",
+    statutoryCitation: "SEBI (Prohibition of Fraudulent and Unfair Trade Practices relating to Securities Market) Regulations, 2003",
     severity: "CRITICAL",
     penaltyInr: 1000000,
     regexPatterns: [

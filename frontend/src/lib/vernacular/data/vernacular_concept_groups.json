@@ -1,0 +1,846 @@
+{
+  "version": "2.0",
+  "restricted_brands": {
+    "SURROGATE_ALCOBEV": [
+      "royal challenge",
+      "royal select",
+      "mcdowell",
+      "officers choice",
+      "imperial blue",
+      "blenders pride",
+      "royal stag",
+      "kingfisher",
+      "tuborg",
+      "carlsberg",
+      "haywards",
+      "bagpiper",
+      "corona",
+      "signature",
+      "johnnie walker",
+      "chivas",
+      "bacardi",
+      "100 pipers",
+      "teachers",
+      "magic moments",
+      "seagram"
+    ],
+    "SURROGATE_TOBACCO": [
+      "vimal",
+      "kamla pasand",
+      "rajnigandha",
+      "dilbagh",
+      "pan bahar",
+      "shikhar",
+      "manikchand",
+      "v1",
+      "rajshree",
+      "chaini khaini",
+      "zubaan kesari",
+      "miraj",
+      "gutkha",
+      "pan parag",
+      "hukum"
+    ],
+    "SURROGATE_BETTING": [
+      "1xbet",
+      "parimatch",
+      "fairplay",
+      "betway",
+      "dafabet",
+      "stake",
+      "wolf777",
+      "melbet",
+      "mostbet",
+      "winbuzz",
+      "mahadev",
+      "cricket bet 9"
+    ]
+  },
+  "cannot_override_groups": [
+    "GUARANTEE",
+    "CURE_CLAIM",
+    "MONEY_GAIN"
+  ],
+  "groups": [
+    {
+      "id": "MONEY_GAIN",
+      "description": "Vocabulary indicating financial gain, wealth creation, return on capital, or income doubling",
+      "scripts_included": [
+        "romanized",
+        "devanagari"
+      ],
+      "words": [
+        "paisa",
+        "paise",
+        "pesa",
+        "rokda",
+        "dhan",
+        "munafa",
+        "kamai",
+        "dugna",
+        "triple",
+        "crorepati",
+        "lakhpati",
+        "earning",
+        "पैसे",
+        "पैसा",
+        "रुपया",
+        "कमाई",
+        "मुनाफा",
+        "दोगुना"
+      ],
+      "match": "whole_word"
+    },
+    {
+      "id": "GUARANTEE",
+      "description": "Words conveying certainty, zero-risk, assured outcome, or absolute commitments",
+      "scripts_included": [
+        "romanized",
+        "devanagari"
+      ],
+      "words": [
+        "guarantee",
+        "guaranteed",
+        "pakka",
+        "shartiya",
+        "100%",
+        "zero risk",
+        "bina risk",
+        "nischit",
+        "vaada",
+        "पक्का",
+        "शर्तिया",
+        "गारंटी",
+        "निश्चित",
+        "दावा"
+      ],
+      "match": "whole_word"
+    },
+    {
+      "id": "NO_DOCUMENTS",
+      "description": "Phrases claiming credit disbursement without KYC, underwriting, or credit bureau checks",
+      "scripts_included": [
+        "romanized",
+        "devanagari"
+      ],
+      "words": [
+        "bina document",
+        "bina kagaz",
+        "no paper",
+        "no cibil",
+        "bina cibil",
+        "no salary slip",
+        "no verification",
+        "sirf aadhaar",
+        "sirf pan",
+        "sirf mobile",
+        "bina jhanjhat",
+        "bagair kagaz",
+        "no kyc",
+        "बिना दस्तावेज",
+        "बिना कागज",
+        "सिर्फ आधार",
+        "no kagaz",
+        "bina kisi document",
+        "bina kisi kagaz"
+      ],
+      "match": "whole_word"
+    },
+    {
+      "id": "URGENCY",
+      "description": "Manipulative high-pressure words creating artificial scarcity or countdown panic",
+      "scripts_included": [
+        "romanized",
+        "devanagari"
+      ],
+      "words": [
+        "jaldi karo",
+        "sirf 5 minute",
+        "sirf 2 minute",
+        "sirf 10 minute",
+        "bache hain",
+        "aakhri mauka",
+        "last chance",
+        "offer khatam",
+        "loot lo",
+        "der mat karo",
+        "mahaloot",
+        "hamesha ke liye",
+        "dhamaka deal",
+        "hurry up",
+        "जल्दी करो",
+        "आखिरी मौका",
+        "ऑफर खत्म",
+        "लूट लो",
+        "शेष"
+      ],
+      "match": "whole_word"
+    },
+    {
+      "id": "BETTING_PLAY",
+      "description": "Keywords denoting gambling, casino tables, sports match staking, and wagering",
+      "scripts_included": [
+        "romanized",
+        "devanagari"
+      ],
+      "words": [
+        "betting",
+        "satta",
+        "baji",
+        "casino",
+        "roulette",
+        "teen patti",
+        "poker",
+        "prediction league",
+        "jackpot",
+        "match odds",
+        "toss winner",
+        "stake",
+        "win cash",
+        "gaming club",
+        "सट्टा",
+        "बाजी",
+        "जैकपॉट",
+        "तीन पत्ती",
+        "जीतें कैश"
+      ],
+      "match": "whole_word"
+    },
+    {
+      "id": "ALCOHOL_HINT",
+      "description": "Sensory, ritual, or product cues strongly associated with alcoholic beverage consumption",
+      "scripts_included": [
+        "romanized",
+        "devanagari"
+      ],
+      "words": [
+        "whisky",
+        "whiskey",
+        "scotch",
+        "vodka",
+        "rum",
+        "beer",
+        "liquor",
+        "party shuru",
+        "high spirits",
+        "shaandar lamha",
+        "patiala peg",
+        "aged oak",
+        "nightlife",
+        "sharab",
+        "daru",
+        "दारू",
+        "शराब",
+        "पार्टी शुरू"
+      ],
+      "match": "whole_word"
+    },
+    {
+      "id": "TOBACCO_HINT",
+      "description": "Verbal cues, aromas, and packaging markers evoking smokeless tobacco and gutkha",
+      "scripts_included": [
+        "romanized",
+        "devanagari"
+      ],
+      "words": [
+        "gutkha",
+        "pan masala",
+        "zarda",
+        "khaini",
+        "tobacco",
+        "tambaku",
+        "zubaan kesari",
+        "kesar candy",
+        "silver pearls",
+        "chabaao",
+        "kattha",
+        "swad me shaan",
+        "supari",
+        "elaichi dana",
+        "meetha paan",
+        "गुटखा",
+        "तंबाकू",
+        "पान मसाला",
+        "जुबां केसरी",
+        "सुपारी",
+        "इलायची दाने"
+      ],
+      "match": "whole_word"
+    },
+    {
+      "id": "CURE_CLAIM",
+      "description": "Words asserting permanent eradication or miraculous clinical cures for chronic ailments",
+      "scripts_included": [
+        "romanized",
+        "devanagari"
+      ],
+      "words": [
+        "shartiya ilaj",
+        "shartiya ilaaj",
+        "jad se khatam",
+        "chamatkari dawa",
+        "cure",
+        "100% cure",
+        "sugar theek",
+        "diabetes khatam",
+        "cancer cure",
+        "motapa kam",
+        "bal ugaye",
+        "zero figure",
+        "pathri gayab",
+        "miracle herb",
+        "achook nuskha",
+        "शर्तिया इलाज",
+        "जड़ से खत्म",
+        "चमत्कारी दवा",
+        "अचूक नुस्खा",
+        "मोटापा कम"
+      ],
+      "match": "whole_word"
+    },
+    {
+      "id": "INNOCENT_PRODUCT",
+      "description": "Ordinary consumer products and brand extensions frequently deployed as surrogate covers",
+      "scripts_included": [
+        "romanized",
+        "devanagari"
+      ],
+      "words": [
+        "club soda",
+        "soda",
+        "packaged drinking water",
+        "mineral water",
+        "sparkling water",
+        "music cds",
+        "audio cassettes",
+        "crystal glassware",
+        "playing cards",
+        "silver elaichi",
+        "mouth freshener",
+        "cardamom seeds",
+        "sports news",
+        "news portal",
+        "prediction contest",
+        "cricket updates",
+        "क्लब सोडा",
+        "मिनरल वाटर",
+        "सिल्वर इलायची",
+        "स्पोर्ट्स न्यूज़"
+      ],
+      "match": "whole_word"
+    },
+    {
+      "id": "MONEY_GAIN_WEAK",
+      "description": "Weaker financial-gain words that, alone, are not enough to flag a violation; must be combined with a strong anchor group",
+      "match": "whole_word",
+      "scripts_included": [
+        "romanized"
+      ],
+      "words": [
+        "double",
+        "cash",
+        "returns",
+        "profit",
+        "yield"
+      ]
+    },
+    {
+      "id": "SPEED",
+      "description": "Words conveying extreme speed of loan or service delivery, often used to evade documentation warnings",
+      "match": "whole_word",
+      "scripts_included": [
+        "romanized",
+        "devanagari"
+      ],
+      "words": [
+        "turant",
+        "fatafat",
+        "jhatpat",
+        "chutki me",
+        "तुरंत",
+        "फटाफट",
+        "2 minute me",
+        "minute me",
+        "second me",
+        "tatkal",
+        "fauran",
+        "abhi abhi",
+        "instant",
+        "jhat se",
+        "lightning fast",
+        "palak jhapte",
+        "ek dum se",
+        "seedha khate me",
+        "jo mango turant",
+        "tatatat"
+      ]
+    },
+    {
+      "id": "LOAN_CREDIT",
+      "description": "Words relating to borrowing, credit facilities, personal loans, and credit disbursement",
+      "match": "whole_word",
+      "scripts_included": [
+        "romanized",
+        "devanagari"
+      ],
+      "words": [
+        "loan",
+        "karza",
+        "udhaar",
+        "emi",
+        "credit",
+        "finance",
+        "borrow",
+        "lakh",
+        "crore",
+        "karz",
+        "qarz",
+        "debt",
+        "lending",
+        "disburse",
+        "disbursement",
+        "ऋण",
+        "लोन",
+        "कर्ज",
+        "उधार",
+        "वित्त",
+        "ईएमआई",
+        "साख",
+        "क्रेडिट",
+        "कर्जा",
+        "रकम देना",
+        "राशि"
+      ]
+    },
+    {
+      "id": "INVESTMENT_SCHEME",
+      "description": "Words relating to investment schemes, funds, and capital placement promises",
+      "match": "whole_word",
+      "scripts_included": [
+        "romanized",
+        "devanagari"
+      ],
+      "words": [
+        "invest",
+        "investment",
+        "scheme",
+        "fund",
+        "nivesh",
+        "skim",
+        "portfolio",
+        "demat",
+        "equity",
+        "mutual fund",
+        "ulip",
+        "ncd",
+        "ipos",
+        "arbitrage",
+        "capital",
+        "principal",
+        "corpus",
+        "निवेश",
+        "योजना",
+        "फंड",
+        "स्कीम",
+        "पोर्टफोलियो",
+        "पूंजी",
+        "मूलधन",
+        "ब्याज",
+        "लाभांश"
+      ]
+    },
+    {
+      "id": "TIMER_PATTERNS",
+      "description": "Regex patterns matching artificial countdown and time-pressure phrases",
+      "match": "regex",
+      "scripts_included": [
+        "romanized",
+        "devanagari"
+      ],
+      "words": [
+        "sirf\\s+\\d+\\s*min(ute)?s?",
+        "bas\\s+\\d+\\s*min(ute)?s?",
+        "\\d+\\s*min(ute)?s?\\s+(bache|baki|shesh)",
+        "sirf\\s+\\d+\\s*sec(ond)?s?",
+        "\\d+\\s*ghante\\s+(bache|baki)",
+        "sirf\\s+\\d+\\s*ghanta",
+        "aakhri\\s+\\d+\\s*(min|ghante|second)",
+        "\\d+\\s*minute\\s+me\\s+(khatam|band|gayab)",
+        "countdown\\s+shuru",
+        "timer\\s+chal\\s+raha",
+        "\\d+:\\d{2}\\s*(bache|baki|left)",
+        "khatam\\s+hone\\s+wala\\s+hai",
+        "sirf\\s+kuch\\s+pal",
+        "abhi\\s+nahi\\s+toh\\s+kabhi\\s+nahi"
+      ]
+    }
+  ],
+  "combination_rules": [
+    {
+      "id": "CG-001",
+      "anchor_group": "INVESTMENT_SCHEME",
+      "requires_all_of": [
+        "GUARANTEE",
+        "MONEY_GAIN"
+      ],
+      "exclude_groups": [
+        "MONEY_GAIN_WEAK"
+      ],
+      "non_overlapping_spans": true,
+      "min_distinct_groups": null,
+      "within_words": 8,
+      "category": "PREDATORY_FINTECH_PROMISE",
+      "rule_code": "SEBI-VERN-02",
+      "severity": "CRITICAL",
+      "confidence": "high",
+      "statute_id": "STAT-005",
+      "note": "Flags guaranteed returns on investment schemes; MONEY_GAIN must be strong words only"
+    },
+    {
+      "id": "CG-002",
+      "anchor_group": "LOAN_CREDIT",
+      "requires_all_of": [
+        "NO_DOCUMENTS",
+        "MONEY_GAIN"
+      ],
+      "exclude_groups": [
+        "MONEY_GAIN_WEAK"
+      ],
+      "non_overlapping_spans": true,
+      "min_distinct_groups": null,
+      "within_words": 8,
+      "category": "PREDATORY_FINTECH_PROMISE",
+      "rule_code": "RBI-VERN-01",
+      "severity": "CRITICAL",
+      "confidence": "high",
+      "statute_id": "STAT-004",
+      "note": "Loan disbursement without documentation promises"
+    },
+    {
+      "id": "CG-003",
+      "anchor_group": null,
+      "requires_all_of": [
+        "ALCOHOL_HINT"
+      ],
+      "exclude_groups": [],
+      "non_overlapping_spans": true,
+      "min_distinct_groups": null,
+      "within_words": 10,
+      "category": "SURROGATE_ALCOBEV",
+      "rule_code": "ASCI-SURR-ALCO",
+      "severity": "CRITICAL",
+      "confidence": "high",
+      "statute_id": "STAT-001",
+      "restricted_brand_required": true,
+      "restricted_brands": [
+        "royal challenge",
+        "royal select",
+        "mcdowell",
+        "officers choice",
+        "imperial blue",
+        "blenders pride",
+        "royal stag",
+        "kingfisher",
+        "tuborg",
+        "carlsberg",
+        "haywards",
+        "bagpiper",
+        "corona",
+        "signature",
+        "johnnie walker",
+        "chivas",
+        "bacardi",
+        "100 pipers",
+        "teachers",
+        "magic moments",
+        "seagram"
+      ],
+      "without_brand_severity": "WARNING",
+      "without_brand_confidence": "medium",
+      "note": "Alcohol surrogate: ALCOHOL_HINT + restricted brand = CRITICAL; without brand = WARNING",
+      "legal_caveat": "CCPA 2022 cl.6 proviso: brand name alone is not surrogate advertising unless the ad is otherwise objectionable"
+    },
+    {
+      "id": "CG-004",
+      "anchor_group": null,
+      "requires_all_of": [
+        "TOBACCO_HINT"
+      ],
+      "exclude_groups": [],
+      "non_overlapping_spans": true,
+      "min_distinct_groups": null,
+      "within_words": 10,
+      "category": "SURROGATE_TOBACCO",
+      "rule_code": "COTPA-SURR-TOB",
+      "severity": "CRITICAL",
+      "confidence": "high",
+      "statute_id": "STAT-002",
+      "restricted_brand_required": true,
+      "restricted_brands": [
+        "vimal",
+        "kamla pasand",
+        "rajnigandha",
+        "dilbagh",
+        "pan bahar",
+        "shikhar",
+        "manikchand",
+        "v1",
+        "rajshree",
+        "chaini khaini",
+        "zubaan kesari",
+        "miraj",
+        "gutkha",
+        "pan parag",
+        "hukum"
+      ],
+      "without_brand_severity": "WARNING",
+      "without_brand_confidence": "medium",
+      "note": "Tobacco surrogate: TOBACCO_HINT + restricted brand = CRITICAL; without brand = WARNING",
+      "legal_caveat": "CCPA 2022 cl.6 proviso: brand name alone is not surrogate advertising unless the ad is otherwise objectionable"
+    },
+    {
+      "id": "CG-005",
+      "anchor_group": null,
+      "requires_all_of": [
+        "BETTING_PLAY"
+      ],
+      "exclude_groups": [],
+      "non_overlapping_spans": true,
+      "min_distinct_groups": null,
+      "within_words": 10,
+      "category": "SURROGATE_BETTING",
+      "rule_code": "MEITY-BETTING-01",
+      "severity": "CRITICAL",
+      "confidence": "high",
+      "statute_id": "STAT-003",
+      "restricted_brand_required": true,
+      "restricted_brands": [
+        "1xbet",
+        "parimatch",
+        "fairplay",
+        "betway",
+        "dafabet",
+        "stake",
+        "wolf777",
+        "melbet",
+        "mostbet",
+        "winbuzz",
+        "mahadev",
+        "cricket bet 9"
+      ],
+      "without_brand_severity": "WARNING",
+      "without_brand_confidence": "medium",
+      "note": "Betting surrogate: BETTING_PLAY + restricted brand = CRITICAL; without brand = WARNING"
+    },
+    {
+      "id": "CG-006",
+      "anchor_group": "BETTING_PLAY",
+      "requires_all_of": [
+        "BETTING_PLAY",
+        "MONEY_GAIN"
+      ],
+      "exclude_groups": [
+        "MONEY_GAIN_WEAK"
+      ],
+      "non_overlapping_spans": true,
+      "min_distinct_groups": null,
+      "within_words": 8,
+      "category": "SURROGATE_BETTING",
+      "rule_code": "MEITY-BETTING-01",
+      "severity": "CRITICAL",
+      "confidence": "high",
+      "statute_id": "STAT-003",
+      "note": "Betting + strong money-gain (not MONEY_GAIN_WEAK alone)"
+    },
+    {
+      "id": "CG-007",
+      "anchor_group": "URGENCY",
+      "requires_all_of": [
+        "URGENCY",
+        "MONEY_GAIN"
+      ],
+      "exclude_groups": [],
+      "non_overlapping_spans": true,
+      "min_distinct_groups": null,
+      "within_words": 8,
+      "category": "FALSE_URGENCY_DARK_PATTERN",
+      "rule_code": "CCPA-DARK-URGENCY",
+      "severity": "WARNING",
+      "confidence": "medium",
+      "statute_id": "STAT-006"
+    },
+    {
+      "id": "CG-009",
+      "anchor_group": "CURE_CLAIM",
+      "requires_all_of": [
+        "CURE_CLAIM",
+        "GUARANTEE"
+      ],
+      "exclude_groups": [],
+      "non_overlapping_spans": true,
+      "min_distinct_groups": null,
+      "within_words": 8,
+      "category": "PROHIBITED_MAGIC_REMEDY",
+      "rule_code": "DMRA-MAGIC-01",
+      "severity": "CRITICAL",
+      "confidence": "high",
+      "statute_id": "STAT-007"
+    },
+    {
+      "id": "CG-011",
+      "anchor_group": "LOAN_CREDIT",
+      "requires_all_of": [
+        "NO_DOCUMENTS",
+        "GUARANTEE"
+      ],
+      "exclude_groups": [],
+      "non_overlapping_spans": true,
+      "min_distinct_groups": null,
+      "within_words": 8,
+      "category": "PREDATORY_FINTECH_PROMISE",
+      "rule_code": "RBI-VERN-01",
+      "severity": "CRITICAL",
+      "confidence": "high",
+      "statute_id": "STAT-004"
+    },
+    {
+      "id": "CG-012",
+      "anchor_group": null,
+      "requires_all_of": [
+        "ALCOHOL_HINT",
+        "URGENCY"
+      ],
+      "exclude_groups": [],
+      "non_overlapping_spans": true,
+      "min_distinct_groups": null,
+      "within_words": 8,
+      "category": "SURROGATE_ALCOBEV",
+      "rule_code": "ASCI-SURR-ALCO",
+      "severity": "WARNING",
+      "confidence": "medium",
+      "statute_id": "STAT-001",
+      "note": "Possible surrogate: alcohol cue + urgency; downgraded since alcohol brands absent"
+    },
+    {
+      "id": "CG-014",
+      "anchor_group": "BETTING_PLAY",
+      "requires_all_of": [
+        "BETTING_PLAY",
+        "GUARANTEE"
+      ],
+      "exclude_groups": [],
+      "non_overlapping_spans": true,
+      "min_distinct_groups": null,
+      "within_words": 8,
+      "category": "SURROGATE_BETTING",
+      "rule_code": "MEITY-BETTING-01",
+      "severity": "CRITICAL",
+      "confidence": "high",
+      "statute_id": "STAT-003",
+      "note": "Guaranteed betting wins; MONEY_GAIN not required but if present must be strong"
+    },
+    {
+      "id": "CG-015",
+      "anchor_group": "CURE_CLAIM",
+      "requires_all_of": [
+        "CURE_CLAIM",
+        "URGENCY"
+      ],
+      "exclude_groups": [],
+      "non_overlapping_spans": true,
+      "min_distinct_groups": null,
+      "within_words": 8,
+      "category": "PROHIBITED_MAGIC_REMEDY",
+      "rule_code": "DMRA-MAGIC-01",
+      "severity": "CRITICAL",
+      "confidence": "medium",
+      "statute_id": "STAT-007"
+    },
+    {
+      "id": "CG-016",
+      "anchor_group": "URGENCY",
+      "requires_all_of": [
+        "URGENCY"
+      ],
+      "exclude_groups": [],
+      "non_overlapping_spans": true,
+      "min_distinct_groups": 2,
+      "timer_pattern_override": true,
+      "within_words": 15,
+      "category": "FALSE_URGENCY_DARK_PATTERN",
+      "rule_code": "CCPA-DARK-URGENCY",
+      "severity": "WARNING",
+      "confidence": "medium",
+      "statute_id": "STAT-006",
+      "note": "URGENCY alone triggers if: 2+ distinct URGENCY hits in sentence, OR any TIMER_PATTERNS match. INNOCENT_PRODUCT is never the sole trigger."
+    }
+  ],
+  "safe_blockers": [
+    {
+      "phrase": "RBI registered NBFC",
+      "note": "Identifies a non-banking financial institution registered under RBI oversight",
+      "effect": "downgrade_to_review"
+    },
+    {
+      "phrase": "subject to credit assessment",
+      "note": "Indicates statutory creditworthiness evaluation by a regulated underwriter",
+      "effect": "downgrade_to_review"
+    },
+    {
+      "phrase": "KYC required",
+      "note": "Explicitly mandates Know Your Customer documentation and identity verification",
+      "effect": "downgrade_to_review"
+    },
+    {
+      "phrase": "T&Cs apply",
+      "note": "Standard commercial qualifier signaling formal contractual terms and conditions",
+      "effect": "downgrade_to_review"
+    },
+    {
+      "phrase": "terms & conditions apply",
+      "note": "Comprehensive formal terms declaration ensuring transparent customer disclosure",
+      "effect": "downgrade_to_review"
+    },
+    {
+      "phrase": "consult a doctor",
+      "note": "Affirms medical professional oversight, precluding self-medication magic remedy claims",
+      "effect": "downgrade_to_review"
+    },
+    {
+      "phrase": "consult a physician",
+      "note": "Formal medical consultation directive indicating professional healthcare guidance",
+      "effect": "downgrade_to_review"
+    },
+    {
+      "phrase": "subject to market risks",
+      "note": "Mandatory statutory disclaimer for mutual funds and securities investments under SEBI",
+      "effect": "downgrade_to_review"
+    },
+    {
+      "phrase": "valid from",
+      "note": "Establishes verifiable commercial campaign start dates, countering false countdown claims",
+      "effect": "downgrade_to_review"
+    },
+    {
+      "phrase": "नियम और शर्तें लागू",
+      "note": "Hindi phrase: 'Terms and conditions apply' — statutory disclosure in Devanagari script",
+      "effect": "downgrade_to_review"
+    }
+  ],
+  "regression_cases": {
+    "must_not_fire": [
+      "Double room at a fixed price",
+      "100% genuine products, easy returns",
+      "Cash on delivery with guaranteed delivery",
+      "Himalayan Spring pure natural mineral water bottled at source",
+      "Chilled soda this summer",
+      "Mutual fund investments are subject to market risks; past performance does not assure future returns"
+    ],
+    "must_fire": [
+      "Paisa double formula bro 10 din me crorepati pakka guarantee",
+      "No kagaz no magajmari 2 minute me khate me loan lo",
+      "Sirf 5 minute bache hain jaldi karo"
+    ],
+    "note": "Will be executed by the classifier tests in Step 3."
+  }
+}

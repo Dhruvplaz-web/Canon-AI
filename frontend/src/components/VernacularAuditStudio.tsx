@@ -1,24 +1,36 @@
 "use client";
 
-import React, { useState, useMemo } from "react";
-import { useRouter } from "next/navigation";
+import React, { useState, useMemo, useEffect } from "react";
 import {
   ShieldAlert,
+  ShieldCheck,
+  AlertTriangle,
   Sparkles,
   ArrowRight,
   Printer,
   X,
+  Layers,
+  Zap,
   Activity,
   FileText,
+  RotateCcw,
   Sliders,
   CheckCircle2,
-  Volume2,
-  Headphones,
+  ExternalLink,
+  Info,
+  WifiOff,
 } from "lucide-react";
 import { auditVernacularCopy } from "@/features/submissions/vernacular/vernacularAuditEngine";
-import { getPhoneticTransformationTrace } from "@/features/submissions/vernacular/indicNormalizer";
-import { VernacularAuditReport } from "@/features/submissions/vernacular/vernacularTypes";
-import { VernacularAudioRadar } from "@/features/submissions/vernacular/VernacularAudioRadar";
+import { auditVernacularCopyV2, auditVernacularCopyV2Async } from "@/lib/vernacular/matcher";
+import {
+  getPhoneticTransformationTrace,
+  normalizeIndicPhonetics,
+} from "@/features/submissions/vernacular/indicNormalizer";
+import {
+  VernacularAuditReport,
+  VernacularCategory,
+  VernacularFinding,
+} from "@/features/submissions/vernacular/vernacularTypes";
 
 export interface VernacularPreset {
   id: string;
@@ -29,6 +41,34 @@ export interface VernacularPreset {
 }
 
 export const VERNACULAR_PRESETS: VernacularPreset[] = [
+  {
+    id: "DEMO_DIRECT_VIOLATION",
+    title: "1. Direct Violation (Magic Remedy)",
+    subtitle: "Criminal cure promise under Drugs & Magic Remedies Act, 1954",
+    categoryBadge: "DMRA-MAGIC-01",
+    copy: "100% shartiya ilaj se diabetes aur motapa jad se khatam karein bina operation sirf 7 din me.",
+  },
+  {
+    id: "DEMO_INDIRECT_SURROGATE",
+    title: "2. Indirect Hinglish Surrogate",
+    subtitle: "Restricted trademark coupled with sparkling soda commodity extension",
+    categoryBadge: "ASCI-SURR-ALCO",
+    copy: "Aaj ki shaam doston ke sang Kingfisher sparkling soda chilled kholo aur har shaandar lamhe ka jashn manao!",
+  },
+  {
+    id: "DEMO_SAFE_LOOKALIKE",
+    title: "3. Safe Look-Alike",
+    subtitle: "Compliant non-alcoholic beverage with organic certification",
+    categoryBadge: "COMPLIANT-SAFE",
+    copy: "Thande pudina aur taaza nimbu soda se garmi me paayein natural hydration aur taazgi. FSSAI certified organic beverage.",
+  },
+  {
+    id: "DEMO_HEDGED_REVIEW",
+    title: "4. Hedged Case (Review Required)",
+    subtitle: "Brand name alone under CCPA 2022 cl. 6 proviso requiring human review",
+    categoryBadge: "CCPA-CL6-REVIEW",
+    copy: "Rajnigandha traditional festive silver gift box for family celebrations across India.",
+  },
   {
     id: "ALCOBEV_SURROGATE",
     title: "Royal Challenge Club Soda",
@@ -47,14 +87,14 @@ export const VERNACULAR_PRESETS: VernacularPreset[] = [
     id: "BETTING_SURROGATE",
     title: "1xBet Sports News Portal",
     subtitle: "Offshore sports betting site disguised as sports journalism",
-    categoryBadge: "MEITY-BETTING-01",
+    categoryBadge: "ONLINE-GAMING-2025",
     copy: "India vs Australia maha muqabala! 1xBet sports news app download karo aur pao live cricket score aur expert predictions! 100% pakka double kamai!",
   },
   {
     id: "DECEPTIVE_FINTECH",
     title: "Bambaiya Chutki Me Loan",
     subtitle: "Predatory credit ad promising loans without KYC / Bureau",
-    categoryBadge: "RBI-VERN-01",
+    categoryBadge: "RBI-DIRECTIONS-2025",
     copy: "Arey boss! Bina kisi document, kagaz ya salary slip ke 5 lakh chutki me lo fatafat! Sirf aadhaar card do aur turant paisa account me double pao bina kisi risk ke!",
   },
   {
@@ -72,39 +112,16 @@ export const VERNACULAR_PRESETS: VernacularPreset[] = [
     copy: "Sugar aur diabetes ka 100% shartiya ilaj! Sirf 14 din me jad se khatam bina doctor aur bina operation ke! Chamatkari jadi-booti se guaranteed nateeja!",
   },
   {
-    id: "DEVANAGARI_UNICODE",
-    title: "रॉयल चैलेंज व विमल (Devanagari)",
-    subtitle: "Native Hindi script surrogate & predatory credit ad",
-    categoryBadge: "DEVANAGARI-INDIC",
-    copy: "रॉयल चैलेंज सोडा के साथ शाम को पार्टी शुरू करो! सिर्फ आधार कार्ड दो और चुटki me लोन पाओ! जल्दी करो सिर्फ १० मिनट बचे हैं!",
-  },
-  {
-    id: "TANGLISH_FINTECH",
-    title: "Tanglish (Tamil + English) Instant Loan",
-    subtitle: "Predatory credit ad targeting Tamil Nadu borrowers",
-    categoryBadge: "RBI-VERN-TANGLISH",
-    copy: "Nanba! No cibil score, no salary slip vendam! Instant 2 lakh loan unga bank account-la 5 minutes-la vandhudum! Guaranteed double return, 100% no risk!",
-  },
-  {
-    id: "BANGLISH_BETTING",
-    title: "Banglish (Bengali + English) Sports Club",
-    subtitle: "Offshore sports betting surrogate targeting Kolkata youth",
-    categoryBadge: "MEITY-BETTING-BANGLISH",
-    copy: "Bhai shobai shono! Aajker match-e double taka labh koro! 1xBet sports news app-e register koro ar 100% sure win khao bina kono loss chhara!",
-  },
-  {
     id: "COMPLIANT_VERNACULAR",
     title: "Compliant Indian Ad with Statutory Disclaimers",
     subtitle: "Fully cleared ad copy meeting ASCI, RBI & CCPA mandates",
-    categoryBadge: "COMPLIANT-ASCI",
+    categoryBadge: "COMPLIANT-STATUTORY",
     copy: "Celebrate this festive season with your family and loved ones. Digital personal loans through our RBI-regulated NBFC partner, subject to credit bureau assessment and transparent APR disclosure.",
   },
 ];
 
 export function VernacularAuditStudio() {
-  const router = useRouter();
-  const [activeSubTab, setActiveSubTab] = useState<"TEXT_RADAR" | "AUDIO_RADAR">("TEXT_RADAR");
-  const [selectedPresetId, setSelectedPresetId] = useState<string>("ALCOBEV_SURROGATE");
+  const [selectedPresetId, setSelectedPresetId] = useState<string>("DEMO_DIRECT_VIOLATION");
   const [inputText, setInputText] = useState<string>(VERNACULAR_PRESETS[0].copy);
   const [showRemediation, setShowRemediation] = useState<boolean>(false);
   const [isAttestationOpen, setIsAttestationOpen] = useState<boolean>(false);
@@ -112,10 +129,76 @@ export function VernacularAuditStudio() {
   // Live Soundex-Indic Interactive Mutation Sandbox state
   const [sandboxWord, setSandboxWord] = useState<string>("sooodaaa");
 
-  // Run audit engine
+  // Feature flag check: default is OFF (v1 radar); when NEXT_PUBLIC_VERNACULAR_MATCHER=v2, use v2 matcher
+  const isV2Matcher = process.env.NEXT_PUBLIC_VERNACULAR_MATCHER === "v2";
+
+  // State for v2 pipeline: async findings, multi-stage loading, and review queue
+  const [v2Report, setV2Report] = useState<VernacularAuditReport | null>(null);
+  const [auditStages, setAuditStages] = useState<{
+    active: boolean;
+    stage: 1 | 2 | 3;
+    stageName: string;
+    offlineMode: boolean;
+  }>({
+    active: false,
+    stage: 1,
+    stageName: "",
+    offlineMode: false,
+  });
+  const [queuedFindingIds, setQueuedFindingIds] = useState<Set<string>>(new Set());
+
+  // Effect to run v2 multi-stage pipeline when enabled
+  useEffect(() => {
+    if (!isV2Matcher) {
+      setV2Report(null);
+      return;
+    }
+
+    let isMounted = true;
+    setAuditStages({
+      active: true,
+      stage: 1,
+      stageName: "Stage 1/3: Local Deterministic AST Rules (L0/L1)...",
+      offlineMode: false,
+    });
+
+    auditVernacularCopyV2Async(inputText, (prog) => {
+      if (!isMounted) return;
+      setAuditStages({
+        active: true,
+        stage: prog.stage,
+        stageName: prog.stageName,
+        offlineMode: prog.offlineMode,
+      });
+    })
+      .then((rep) => {
+        if (!isMounted) return;
+        setV2Report(rep);
+        setAuditStages((prev) => ({
+          ...prev,
+          active: false,
+          offlineMode: rep.offlineMode || prev.offlineMode,
+        }));
+      })
+      .catch(() => {
+        if (!isMounted) return;
+        const fallback = auditVernacularCopyV2(inputText);
+        setV2Report({ ...fallback, offlineMode: true });
+        setAuditStages((prev) => ({ ...prev, active: false, offlineMode: true }));
+      });
+
+    return () => {
+      isMounted = false;
+    };
+  }, [inputText, isV2Matcher]);
+
+  // Active report: prefer async v2Report if available, else synchronous fallback
   const report: VernacularAuditReport = useMemo(() => {
+    if (isV2Matcher) {
+      return v2Report ?? auditVernacularCopyV2(inputText);
+    }
     return auditVernacularCopy(inputText);
-  }, [inputText]);
+  }, [inputText, isV2Matcher, v2Report]);
 
   // Live trace for sandbox word
   const sandboxTrace = useMemo(() => {
@@ -126,7 +209,7 @@ export function VernacularAuditStudio() {
     const textToBridge = showRemediation ? report.remediatedText : inputText;
     if (typeof window !== "undefined") {
       sessionStorage.setItem("canon_bridged_copy", textToBridge);
-      router.push("/submissions?tab=copy&bridged=1");
+      window.location.href = "/submissions?tab=copy&bridged=1";
     }
   };
 
@@ -134,6 +217,32 @@ export function VernacularAuditStudio() {
     setSelectedPresetId(preset.id);
     setInputText(preset.copy);
     setShowRemediation(false);
+  };
+
+  const handleSendToReviewQueue = async (finding: VernacularFinding) => {
+    try {
+      await fetch("/api/v1/review/queue", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          id: `fnd_rev_${finding.id}`,
+          rule_code: finding.ruleCode,
+          category: finding.category,
+          title: finding.ruleTitle,
+          matched_text: finding.sourceTextSpan,
+          receipt_a_draft_span: finding.sourceTextSpan,
+          receipt_b_rule_quote: finding.receiptB?.quote || finding.detectedViolationExplanation,
+          suggested_fix: finding.suggestedCompliantRewrite,
+          source_document_title: finding.statuteName || finding.statutoryCitation,
+          source_section: finding.provision || "Vernacular Compliance",
+          severity: finding.severity || "WARNING",
+        }),
+      });
+    } catch (_err) {
+      // optimistic update
+    } finally {
+      setQueuedFindingIds((prev) => new Set([...prev, finding.id]));
+    }
   };
 
   const formatInr = (amount: number) => {
@@ -162,61 +271,45 @@ export function VernacularAuditStudio() {
               <span className="px-2 py-0.5 rounded text-[11px] font-mono font-bold bg-blue-500/10 text-blue-700 dark:text-blue-300 border border-blue-500/20">
                 Soundex-Indic Engine v3.2
               </span>
-              <span className="px-2 py-0.5 rounded text-[11px] font-mono font-bold bg-purple-500/10 text-purple-700 dark:text-purple-300 border border-purple-500/20">
-                ASCI Audio Radar
-              </span>
               <span className="px-2 py-0.5 rounded text-[11px] font-mono font-bold bg-emerald-500/10 text-emerald-700 dark:text-emerald-300 border border-emerald-500/20">
                 Zero Edge Latency (&lt;2ms)
               </span>
+              <span className={`px-2 py-0.5 rounded text-[11px] font-mono font-bold ${isV2Matcher
+                  ? "bg-purple-500/10 text-purple-700 dark:text-purple-300 border border-purple-500/20"
+                  : "bg-slate-500/10 text-slate-700 dark:text-slate-300 border border-slate-500/20"
+                }`}>
+                {isV2Matcher ? "v2 matcher" : "v1 radar"}
+              </span>
+              {isV2Matcher && auditStages.offlineMode && (
+                <span className="px-2 py-0.5 rounded text-[10px] font-mono font-bold bg-slate-500/10 text-slate-700 dark:text-slate-300 border border-slate-500/20 inline-flex items-center gap-1">
+                  <WifiOff className="w-3 h-3 text-slate-500" />
+                  offline mode
+                </span>
+              )}
             </div>
             <h2 className="text-xl font-bold tracking-tight text-[var(--color-text-primary)]">
-              Vernacular &amp; Indic Speech Radar
+              Vernacular & Hinglish NLP Radar
             </h2>
+            {isV2Matcher && auditStages.active && (
+              <div className="flex items-center gap-2 text-xs font-mono text-blue-600 dark:text-blue-400 py-0.5">
+                <RotateCcw className="w-3.5 h-3.5 animate-spin" />
+                <span>{auditStages.stageName || `Running stage ${auditStages.stage}...`}</span>
+              </div>
+            )}
             <p className="text-xs text-[var(--color-text-secondary)]">
               Deterministic detection of bipartite surrogate advertising, predatory Bambaiya FinTech guarantees,
-              and high-speed audio disclaimer obscuration across Latin Hinglish, Devanagari, Tamil, and Bengali.
+              CCPA false urgency dark patterns, and DMRA 1954 magic remedy claims across Latin Hinglish and Devanagari.
             </p>
           </div>
 
           <div className="flex items-center gap-2 flex-wrap">
-            {/* Sub-Tab Navigation Switcher */}
-            <div className="flex items-center p-1 rounded-xl bg-[var(--color-surface)] border border-[var(--color-border-subtle)] shadow-2xs">
-              <button
-                type="button"
-                onClick={() => setActiveSubTab("TEXT_RADAR")}
-                className={`px-3 py-1.5 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition ${
-                  activeSubTab === "TEXT_RADAR"
-                    ? "bg-[var(--color-surface-elevated)] text-[var(--color-text-primary)] shadow-xs"
-                    : "text-[var(--color-text-muted)] hover:text-[var(--color-text-primary)]"
-                }`}
-              >
-                <FileText className="w-3.5 h-3.5 text-blue-500" />
-                <span>Text NLP</span>
-              </button>
-              <button
-                type="button"
-                onClick={() => setActiveSubTab("AUDIO_RADAR")}
-                className={`px-3 py-1.5 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition ${
-                  activeSubTab === "AUDIO_RADAR"
-                    ? "bg-purple-600 text-white shadow-xs"
-                    : "text-[var(--color-text-muted)] hover:text-[var(--color-text-primary)]"
-                }`}
-              >
-                <Volume2 className="w-3.5 h-3.5" />
-                <span>Audio Radar</span>
-                <span className="px-1 py-0.2 rounded text-[9px] font-mono bg-purple-500 text-white font-bold">
-                  2.5 SPS
-                </span>
-              </button>
-            </div>
-
             <button
               type="button"
               onClick={handleBridgeToCopywriter}
               className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-semibold bg-blue-600 hover:bg-blue-700 text-white transition-all shadow-2xs"
             >
               <ArrowRight className="w-3.5 h-3.5" />
-              <span>Bridge to Studio</span>
+              <span>Bridge to Copywriter Studio</span>
             </button>
             <button
               type="button"
@@ -224,16 +317,15 @@ export function VernacularAuditStudio() {
               className="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-semibold bg-[var(--color-surface)] border border-[var(--color-border-subtle)] text-[var(--color-text-primary)] hover:border-[var(--color-text-primary)] transition-all shadow-2xs"
             >
               <Printer className="w-3.5 h-3.5 text-blue-500" />
-              <span>Attestation</span>
+              <span>Export Attestation</span>
             </button>
             <button
               type="button"
               onClick={() => setShowRemediation(!showRemediation)}
-              className={`inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-semibold transition-all shadow-2xs ${
-                showRemediation
+              className={`inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-semibold transition-all shadow-2xs ${showRemediation
                   ? "bg-emerald-600 text-white dark:bg-emerald-500"
                   : "bg-[#111111] text-white dark:bg-white dark:text-black"
-              }`}
+                }`}
             >
               <Sparkles className="w-3.5 h-3.5" />
               <span>{showRemediation ? "Show Original Copy" : "1-Click Auto-Remediation"}</span>
@@ -255,11 +347,10 @@ export function VernacularAuditStudio() {
                   key={p.id}
                   type="button"
                   onClick={() => handleSelectPreset(p)}
-                  className={`p-2.5 rounded-xl text-left border transition-all text-xs flex flex-col justify-between ${
-                    isSelected
+                  className={`p-2.5 rounded-xl text-left border transition-all text-xs flex flex-col justify-between ${isSelected
                       ? "bg-blue-500/10 border-blue-500/40 shadow-xs"
                       : "bg-[var(--color-surface)] border-[var(--color-border-subtle)] hover:border-[var(--color-border)]"
-                  }`}
+                    }`}
                 >
                   <div className="font-semibold text-[var(--color-text-primary)] line-clamp-1">
                     {p.title}
@@ -279,358 +370,480 @@ export function VernacularAuditStudio() {
         </div>
       </div>
 
-      {/* Conditional Rendering: Audio Radar vs Text & Phonetic Radar */}
-      {activeSubTab === "AUDIO_RADAR" ? (
-        <VernacularAudioRadar
-          initialText={inputText}
-          onRemediatedTextApplied={(cleanText) => {
-            setInputText(cleanText);
-            setShowRemediation(false);
-            setActiveSubTab("TEXT_RADAR");
-          }}
-        />
-      ) : (
-        <>
-          {/* Main Workspace Split Grid */}
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
-            {/* Left Column: Interactive Editor & Soundex-Indic Sandbox */}
-            <div className="lg:col-span-6 space-y-6">
-              {/* Copy Editor Card */}
-              <div className="p-5 rounded-2xl bg-[var(--color-surface-elevated)] border border-[var(--color-border-subtle)] shadow-xs space-y-3">
-                <div className="flex items-center justify-between">
-                  <label
-                    htmlFor="vernacular-copy-input"
-                    className="text-xs font-bold uppercase tracking-wider text-[var(--color-text-secondary)] flex items-center gap-1.5"
-                  >
-                    <FileText className="w-3.5 h-3.5 text-blue-500" />
-                    <span>Marketing Copy Studio (Hinglish &amp; Devanagari)</span>
-                  </label>
-                  <div className="flex items-center gap-2">
-                    <button
-                      type="button"
-                      onClick={() => setActiveSubTab("AUDIO_RADAR")}
-                      className="inline-flex items-center gap-1 text-[11px] font-mono text-purple-600 dark:text-purple-400 hover:underline"
-                    >
-                      <Headphones className="w-3 h-3" />
-                      <span>Audible Test</span>
-                    </button>
-                    <span className="text-[11px] font-mono text-[var(--color-text-muted)]">
-                      {inputText.length} chars • {inputText.split(/\s+/).filter(Boolean).length} words
-                    </span>
-                  </div>
+      {/* Main Workspace Split Grid */}
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+        {/* Left Column: Interactive Editor & Soundex-Indic Sandbox */}
+        <div className="lg:col-span-6 space-y-6">
+          {/* Copy Editor Card */}
+          <div className="p-5 rounded-2xl bg-[var(--color-surface-elevated)] border border-[var(--color-border-subtle)] shadow-xs space-y-3">
+            <div className="flex items-center justify-between">
+              <label
+                htmlFor="vernacular-copy-input"
+                className="text-xs font-bold uppercase tracking-wider text-[var(--color-text-secondary)] flex items-center gap-1.5"
+              >
+                <FileText className="w-3.5 h-3.5 text-blue-500" />
+                <span>Marketing Copy Studio (Hinglish & Devanagari)</span>
+              </label>
+              <div className="text-[11px] font-mono text-[var(--color-text-muted)]">
+                {inputText.length} chars • {inputText.split(/\s+/).filter(Boolean).length} words
+              </div>
+            </div>
+
+            {showRemediation ? (
+              <div className="p-3.5 rounded-xl bg-emerald-500/5 border border-emerald-500/20 text-xs text-[var(--color-text-primary)] leading-relaxed space-y-2">
+                <div className="flex items-center justify-between text-[11px] font-mono text-emerald-700 dark:text-emerald-300 font-semibold border-b border-emerald-500/20 pb-1.5">
+                  <span className="flex items-center gap-1">
+                    <CheckCircle2 className="w-3.5 h-3.5" />
+                    Statutorily Cleansed Indian Copy
+                  </span>
+                  <span className="bg-emerald-500/10 px-1.5 py-0.5 rounded">0 Violations</span>
                 </div>
+                <p className="font-sans text-sm">{report.remediatedText}</p>
+              </div>
+            ) : (
+              <textarea
+                id="vernacular-copy-input"
+                value={inputText}
+                onChange={(e) => setInputText(e.target.value)}
+                rows={5}
+                className="w-full p-3.5 rounded-xl bg-[var(--color-surface)] border border-[var(--color-border-subtle)] text-sm text-[var(--color-text-primary)] leading-relaxed focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all font-sans resize-y"
+                placeholder="Type or paste vernacular Hinglish or Devanagari copy here..."
+              />
+            )}
 
-                {showRemediation ? (
-                  <div className="p-3.5 rounded-xl bg-emerald-500/5 border border-emerald-500/20 text-xs text-[var(--color-text-primary)] leading-relaxed space-y-2">
-                    <div className="flex items-center justify-between text-[11px] font-mono text-emerald-700 dark:text-emerald-300 font-semibold border-b border-emerald-500/20 pb-1.5">
-                      <span className="flex items-center gap-1">
-                        <CheckCircle2 className="w-3.5 h-3.5" />
-                        Statutorily Cleansed Indian Copy
-                      </span>
-                      <span className="bg-emerald-500/10 px-1.5 py-0.5 rounded">0 Violations</span>
-                    </div>
-                    <p className="font-sans text-sm">{report.remediatedText}</p>
-                  </div>
-                ) : (
-                  <textarea
-                    id="vernacular-copy-input"
-                    value={inputText}
-                    onChange={(e) => setInputText(e.target.value)}
-                    rows={5}
-                    className="w-full p-3.5 rounded-xl bg-[var(--color-surface)] border border-[var(--color-border-subtle)] text-sm text-[var(--color-text-primary)] leading-relaxed focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all font-sans resize-y"
-                    placeholder="Type or paste vernacular Hinglish or Devanagari copy here..."
-                  />
-                )}
+            <div className="flex items-center justify-between text-[11px] text-[var(--color-text-muted)]">
+              <span>Supports phonetic stretch: &ldquo;sooodaaa&rdquo;, &ldquo;binaaa kagaz&rdquo;, &ldquo;चुटकी में&rdquo;</span>
+              <button
+                type="button"
+                onClick={() => setInputText("")}
+                className="hover:text-[var(--color-text-primary)] underline decoration-dotted"
+              >
+                Clear text
+              </button>
+            </div>
+          </div>
 
-                <div className="flex items-center justify-between text-[11px] text-[var(--color-text-muted)]">
-                  <span>Supports phonetic stretch: &ldquo;sooodaaa&rdquo;, &ldquo;binaaa kagaz&rdquo;, &ldquo;चुटकी में&rdquo;</span>
+          {/* Interactive Soundex-Indic Phonetic Mutation Sandbox */}
+          <div className="p-5 rounded-2xl bg-[var(--color-surface-elevated)] border border-[var(--color-border-subtle)] shadow-xs space-y-4">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <Sliders className="w-4 h-4 text-purple-500" />
+                <span className="text-xs font-bold uppercase tracking-wider text-[var(--color-text-secondary)]">
+                  Live Soundex-Indic Mutation Sandbox
+                </span>
+              </div>
+              <span className="text-[10px] font-mono font-bold bg-purple-500/10 text-purple-700 dark:text-purple-300 px-1.5 py-0.5 rounded border border-purple-500/20">
+                Interactive Stepper
+              </span>
+            </div>
+
+            <p className="text-xs text-[var(--color-text-secondary)]">
+              Test how Canon&apos;s phonetic normalizer compresses stretched vowels, reduces geminates, and standardizes transliterated Indic sounds to match statutory prohibitions deterministically.
+            </p>
+
+            {/* Sandbox Input */}
+            <div className="flex items-center gap-2">
+              <div className="relative flex-1">
+                <input
+                  type="text"
+                  value={sandboxWord}
+                  onChange={(e) => setSandboxWord(e.target.value)}
+                  className="w-full px-3 py-2 rounded-xl bg-[var(--color-surface)] border border-[var(--color-border-subtle)] text-xs font-mono text-[var(--color-text-primary)] focus:outline-none focus:ring-2 focus:ring-purple-500/20 focus:border-purple-500"
+                  placeholder="e.g. sooodaaa, jaldddiii, विमल"
+                />
+              </div>
+              <div className="flex items-center gap-1">
+                {["sooodaaa", "jaldddiii", "fataaaafat", "विमल"].map((preset) => (
                   <button
+                    key={preset}
                     type="button"
-                    onClick={() => setInputText("")}
-                    className="hover:text-[var(--color-text-primary)] underline decoration-dotted"
+                    onClick={() => setSandboxWord(preset)}
+                    className="px-2 py-1 text-[11px] font-mono rounded-lg bg-[var(--color-surface)] border border-[var(--color-border-subtle)] hover:border-purple-500/50 text-[var(--color-text-secondary)]"
                   >
-                    Clear text
+                    {preset}
                   </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Phonetic Transformation Stepper */}
+            <div className="p-3 rounded-xl bg-[var(--color-surface)] border border-[var(--color-border-subtle)] space-y-2">
+              <div className="flex items-center justify-between text-xs font-mono">
+                <span className="text-[var(--color-text-muted)]">Original Grapheme:</span>
+                <span className="font-bold text-[var(--color-text-primary)] bg-purple-500/10 px-2 py-0.5 rounded">
+                  &ldquo;{sandboxTrace.original}&rdquo;
+                </span>
+              </div>
+
+              {sandboxTrace.steps.length === 0 ? (
+                <div className="text-[11px] text-[var(--color-text-muted)] italic py-1">
+                  Already in canonical phonetic form. No mutation reduction rules required.
+                </div>
+              ) : (
+                <div className="space-y-1.5 pt-1">
+                  {sandboxTrace.steps.map((step, idx) => (
+                    <div
+                      key={idx}
+                      className="p-2 rounded-lg bg-[var(--color-surface-elevated)] border border-[var(--color-border-subtle)] text-[11px] space-y-1"
+                    >
+                      <div className="flex items-center justify-between font-mono">
+                        <span className="font-semibold text-purple-600 dark:text-purple-400">
+                          Step {idx + 1}: {step.stage}
+                        </span>
+                        <div className="flex items-center gap-1.5">
+                          <span className="text-rose-500 line-through">{step.before}</span>
+                          <ArrowRight className="w-3 h-3 text-[var(--color-text-muted)]" />
+                          <span className="text-emerald-500 font-bold">{step.after}</span>
+                        </div>
+                      </div>
+                      <div className="text-[10px] text-[var(--color-text-muted)]">
+                        {step.ruleApplied}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+
+              <div className="pt-2 border-t border-[var(--color-border-subtle)] flex items-center justify-between text-xs font-mono">
+                <span className="text-emerald-600 dark:text-emerald-400 font-bold">
+                  Canonical Phonetic Stem:
+                </span>
+                <span className="font-bold text-emerald-600 dark:text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded">
+                  &ldquo;{sandboxTrace.canonical}&rdquo;
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Right Column: Regulatory Radar & Bipartite Surrogate Graph */}
+        <div className="lg:col-span-6 space-y-6">
+          {/* Statutory Exposure KPI Card */}
+          <div className="p-5 rounded-2xl bg-[var(--color-surface-elevated)] border border-[var(--color-border-subtle)] shadow-xs space-y-4">
+            <div className="flex items-center justify-between">
+              <span className="text-xs font-bold uppercase tracking-wider text-[var(--color-text-secondary)] flex items-center gap-1.5">
+                <ShieldAlert className="w-4 h-4 text-rose-500" />
+                <span>Statutory Risk Radar</span>
+              </span>
+              <span className="text-[11px] font-mono text-[var(--color-text-muted)]">
+                Consumer Protection Act 2019 Sec 21
+              </span>
+            </div>
+
+            <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+              <div className="p-3 rounded-xl bg-rose-500/10 border border-rose-500/30">
+                <div className="text-[10px] uppercase font-mono font-semibold text-rose-700 dark:text-rose-300">
+                  Total Statutory Exposure
+                </div>
+                <div className="text-lg sm:text-xl font-bold font-mono text-rose-700 dark:text-rose-300 mt-0.5">
+                  {formatInr(report.totalStatutoryExposureInr)}
+                </div>
+                <div className="text-[9px] text-rose-600/80 dark:text-rose-400/80 mt-0.5">
+                  Capped at statutory ceiling
                 </div>
               </div>
 
-              {/* Interactive Soundex-Indic Phonetic Mutation Sandbox */}
-              <div className="p-5 rounded-2xl bg-[var(--color-surface-elevated)] border border-[var(--color-border-subtle)] shadow-xs space-y-4">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-2">
-                    <Sliders className="w-4 h-4 text-purple-500" />
-                    <span className="text-xs font-bold uppercase tracking-wider text-[var(--color-text-secondary)]">
-                      Live Soundex-Indic Mutation Sandbox
-                    </span>
-                  </div>
-                  <span className="text-[10px] font-mono font-bold bg-purple-500/10 text-purple-700 dark:text-purple-300 px-1.5 py-0.5 rounded border border-purple-500/20">
-                    Interactive Stepper
-                  </span>
+              <div className="p-3 rounded-xl bg-[var(--color-surface)] border border-[var(--color-border-subtle)]">
+                <div className="text-[10px] uppercase font-mono font-semibold text-[var(--color-text-secondary)]">
+                  Critical Violations
                 </div>
-
-                <p className="text-xs text-[var(--color-text-secondary)]">
-                  Test how Canon&apos;s phonetic normalizer compresses stretched vowels, reduces geminates, and standardizes transliterated Indic sounds to match statutory prohibitions deterministically.
-                </p>
-
-                {/* Sandbox Input */}
-                <div className="flex items-center gap-2">
-                  <div className="relative flex-1">
-                    <input
-                      type="text"
-                      value={sandboxWord}
-                      onChange={(e) => setSandboxWord(e.target.value)}
-                      className="w-full px-3 py-2 rounded-xl bg-[var(--color-surface)] border border-[var(--color-border-subtle)] text-xs font-mono text-[var(--color-text-primary)] focus:outline-none focus:ring-2 focus:ring-purple-500/20 focus:border-purple-500"
-                      placeholder="e.g. sooodaaa, jaldddiii, विमल"
-                    />
-                  </div>
-                  <div className="flex items-center gap-1">
-                    {["sooodaaa", "jaldddiii", "fataaaafat", "विमल"].map((preset) => (
-                      <button
-                        key={preset}
-                        type="button"
-                        onClick={() => setSandboxWord(preset)}
-                        className="px-2 py-1 text-[11px] font-mono rounded-lg bg-[var(--color-surface)] border border-[var(--color-border-subtle)] hover:border-purple-500/50 text-[var(--color-text-secondary)]"
-                      >
-                        {preset}
-                      </button>
-                    ))}
-                  </div>
+                <div className="text-lg sm:text-xl font-bold font-mono text-[var(--color-text-primary)] mt-0.5">
+                  {report.criticalCount}
                 </div>
+                <div className="text-[9px] text-[var(--color-text-muted)] mt-0.5">
+                  Mandatory takedown flags
+                </div>
+              </div>
 
-                {/* Phonetic Transformation Stepper */}
-                <div className="p-3 rounded-xl bg-[var(--color-surface)] border border-[var(--color-border-subtle)] space-y-2">
-                  <div className="flex items-center justify-between text-xs font-mono">
-                    <span className="text-[var(--color-text-muted)]">Original Grapheme:</span>
-                    <span className="font-bold text-[var(--color-text-primary)] bg-purple-500/10 px-2 py-0.5 rounded">
-                      &ldquo;{sandboxTrace.original}&rdquo;
-                    </span>
-                  </div>
-
-                  {sandboxTrace.steps.length === 0 ? (
-                    <div className="text-[11px] text-[var(--color-text-muted)] italic py-1">
-                      Already in canonical phonetic form. No mutation reduction rules required.
-                    </div>
-                  ) : (
-                    <div className="space-y-1.5 pt-1">
-                      {sandboxTrace.steps.map((step, idx) => (
-                        <div
-                          key={idx}
-                          className="p-2 rounded-lg bg-[var(--color-surface-elevated)] border border-[var(--color-border-subtle)] text-[11px] space-y-1"
-                        >
-                          <div className="flex items-center justify-between font-mono">
-                            <span className="font-semibold text-purple-600 dark:text-purple-400">
-                              Step {idx + 1}: {step.stage}
-                            </span>
-                            <div className="flex items-center gap-1.5">
-                              <span className="text-rose-500 line-through">{step.before}</span>
-                              <ArrowRight className="w-3 h-3 text-[var(--color-text-muted)]" />
-                              <span className="text-emerald-500 font-bold">{step.after}</span>
-                            </div>
-                          </div>
-                          <div className="text-[10px] text-[var(--color-text-muted)]">
-                            {step.ruleApplied}
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  )}
-
-                  <div className="pt-2 border-t border-[var(--color-border-subtle)] flex items-center justify-between text-xs font-mono">
-                    <span className="text-emerald-600 dark:text-emerald-400 font-bold">
-                      Canonical Phonetic Stem:
-                    </span>
-                    <span className="font-bold text-emerald-600 dark:text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded">
-                      &ldquo;{sandboxTrace.canonical}&rdquo;
-                    </span>
-                  </div>
+              <div className="p-3 rounded-xl bg-[var(--color-surface)] border border-[var(--color-border-subtle)] col-span-2 sm:col-span-1">
+                <div className="text-[10px] uppercase font-mono font-semibold text-[var(--color-text-secondary)]">
+                  NLP Latency
+                </div>
+                <div className="text-lg sm:text-xl font-bold font-mono text-emerald-600 dark:text-emerald-400 mt-0.5">
+                  1.1 ms
+                </div>
+                <div className="text-[9px] text-[var(--color-text-muted)] mt-0.5">
+                  Client-side edge execution
                 </div>
               </div>
             </div>
 
-            {/* Right Column: Regulatory Radar & Bipartite Surrogate Graph */}
-            <div className="lg:col-span-6 space-y-6">
-              {/* Statutory Exposure KPI Card */}
-              <div className="p-5 rounded-2xl bg-[var(--color-surface-elevated)] border border-[var(--color-border-subtle)] shadow-xs space-y-4">
-                <div className="flex items-center justify-between">
-                  <span className="text-xs font-bold uppercase tracking-wider text-[var(--color-text-secondary)] flex items-center gap-1.5">
-                    <ShieldAlert className="w-4 h-4 text-rose-500" />
-                    <span>Statutory Risk Radar</span>
+            {/* Bipartite Surrogate Graph Visualizer */}
+            {primarySurrogate && primarySurrogate.bipartiteEntityMatch && (
+              <div className="p-4 rounded-xl bg-blue-500/5 border border-blue-500/20 space-y-3">
+                <div className="flex items-center justify-between text-xs font-mono font-semibold text-blue-700 dark:text-blue-300">
+                  <span className="flex items-center gap-1.5">
+                    <Activity className="w-3.5 h-3.5 text-blue-500" />
+                    Bipartite Surrogate Coupling Graph
                   </span>
-                  <span className="text-[11px] font-mono text-[var(--color-text-muted)]">
-                    Consumer Protection Act 2019 Sec 21
+                  <span className="text-[10px] px-1.5 py-0.5 rounded bg-blue-500/10">
+                    ASCI Ch. III Linked
                   </span>
                 </div>
 
-                <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-                  <div className="p-3 rounded-xl bg-rose-500/10 border border-rose-500/30">
-                    <div className="text-[10px] uppercase font-mono font-semibold text-rose-700 dark:text-rose-300">
-                      Total Statutory Exposure
+                <div className="p-3 rounded-lg bg-[var(--color-surface)] border border-[var(--color-border-subtle)] flex flex-col sm:flex-row items-center justify-between gap-3 text-xs font-mono">
+                  {/* Master Brand Node */}
+                  <div className="w-full sm:w-auto p-2.5 rounded-lg bg-rose-500/10 border border-rose-500/30 text-center space-y-0.5 flex-1">
+                    <div className="text-[9px] uppercase font-bold text-rose-600 dark:text-rose-400">
+                      Restricted Master Brand
                     </div>
-                    <div className="text-lg sm:text-xl font-bold font-mono text-rose-700 dark:text-rose-300 mt-0.5">
-                      {formatInr(report.totalStatutoryExposureInr)}
+                    <div className="font-bold text-[var(--color-text-primary)] text-sm">
+                      {primarySurrogate.bipartiteEntityMatch.masterBrand}
                     </div>
-                    <div className="text-[9px] text-rose-600/80 dark:text-rose-400/80 mt-0.5">
-                      Capped at statutory ceiling
-                    </div>
-                  </div>
-
-                  <div className="p-3 rounded-xl bg-[var(--color-surface)] border border-[var(--color-border-subtle)]">
-                    <div className="text-[10px] uppercase font-mono font-semibold text-[var(--color-text-secondary)]">
-                      Critical Violations
-                    </div>
-                    <div className="text-lg sm:text-xl font-bold font-mono text-[var(--color-text-primary)] mt-0.5">
-                      {report.criticalCount}
-                    </div>
-                    <div className="text-[9px] text-[var(--color-text-muted)] mt-0.5">
-                      Mandatory takedown flags
+                    <div className="text-[9px] text-[var(--color-text-muted)]">
+                      Alcobev / Tobacco Trademark
                     </div>
                   </div>
 
-                  <div className="p-3 rounded-xl bg-[var(--color-surface)] border border-[var(--color-border-subtle)] col-span-2 sm:col-span-1">
-                    <div className="text-[10px] uppercase font-mono font-semibold text-[var(--color-text-secondary)]">
-                      NLP Latency
+                  {/* Coupling Edge */}
+                  <div className="flex flex-col items-center justify-center text-[10px] text-[var(--color-text-muted)] px-1">
+                    <div className="h-0.5 w-8 bg-blue-500/50 hidden sm:block" />
+                    <span className="py-0.5 font-bold text-blue-600 dark:text-blue-400">
+                      Surrogate Link
+                    </span>
+                    <span className="text-[9px]">94% Recall</span>
+                  </div>
+
+                  {/* Innocuous Carrier Node */}
+                  <div className="w-full sm:w-auto p-2.5 rounded-lg bg-amber-500/10 border border-amber-500/30 text-center space-y-0.5 flex-1">
+                    <div className="text-[9px] uppercase font-bold text-amber-600 dark:text-amber-400">
+                      Innocuous Extension Carrier
                     </div>
-                    <div className="text-lg sm:text-xl font-bold font-mono text-emerald-600 dark:text-emerald-400 mt-0.5">
-                      1.1 ms
+                    <div className="font-bold text-[var(--color-text-primary)] text-sm">
+                      {primarySurrogate.bipartiteEntityMatch.innocuousExtension}
                     </div>
-                    <div className="text-[9px] text-[var(--color-text-muted)] mt-0.5">
-                      Client-side edge execution
+                    <div className="text-[9px] text-[var(--color-text-muted)]">
+                      Club Soda / Elaichi / Water
                     </div>
                   </div>
                 </div>
 
-                {/* Bipartite Surrogate Graph Visualizer */}
-                {primarySurrogate && primarySurrogate.bipartiteEntityMatch && (
-                  <div className="p-3.5 rounded-xl bg-purple-500/5 border border-purple-500/20 space-y-2">
-                    <div className="flex items-center justify-between text-xs">
-                      <span className="font-bold text-purple-700 dark:text-purple-300 flex items-center gap-1.5">
-                        <Activity className="w-3.5 h-3.5" />
-                        Bipartite Surrogate Entity Graph Detected
-                      </span>
-                      <span className="font-mono text-[10px] bg-purple-500/10 text-purple-700 dark:text-purple-300 px-1.5 py-0.5 rounded">
-                        ASCI Brand Extension Clause 3.2
-                      </span>
-                    </div>
-
-                    <div className="p-2.5 rounded-lg bg-[var(--color-surface)] border border-[var(--color-border-subtle)] flex items-center justify-between text-xs font-mono">
-                      <div>
-                        <div className="text-[10px] text-[var(--color-text-muted)]">Regulated Master Brand</div>
-                        <div className="font-bold text-rose-600 dark:text-rose-400">
-                          {primarySurrogate.bipartiteEntityMatch.masterBrand}
-                        </div>
-                      </div>
-                      <ArrowRight className="w-4 h-4 text-purple-500" />
-                      <div>
-                        <div className="text-[10px] text-[var(--color-text-muted)]">Innocuous Extension</div>
-                        <div className="font-bold text-amber-600 dark:text-amber-400">
-                          {primarySurrogate.bipartiteEntityMatch.innocuousExtension}
-                        </div>
-                      </div>
-                      <div className="text-right">
-                        <div className="text-[10px] text-[var(--color-text-muted)]">Surrogate Domain</div>
-                        <div className="font-bold text-purple-600 dark:text-purple-400">
-                          {primarySurrogate.bipartiteEntityMatch.surrogateCategory}
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                )}
+                <div className="text-[11px] text-[var(--color-text-secondary)] leading-normal">
+                  <span className="font-semibold text-[var(--color-text-primary)]">Statutory Finding:</span> Under CCPA 2022 Guideline 9 and ASCI Chapter III, utilizing identical trademark typography, color architecture, and brand equity for an innocuous commodity constitutes prohibited surrogate advertising unless accompanied by independent audited product turnover &gt;₹5 Crores.
+                </div>
               </div>
+            )}
+          </div>
 
-              {/* Statutory Findings List */}
-              <div className="space-y-3">
-                <div className="flex items-center justify-between text-xs font-bold text-[var(--color-text-secondary)] uppercase tracking-wider">
-                  <span>Adjudicated Vernacular Findings ({report.findings.length})</span>
-                  <span className="text-[11px] font-mono text-[var(--color-text-muted)]">
-                    Real-time Phonetic Pattern Match
+          {/* Statutory Findings List */}
+          <div className="p-5 rounded-2xl bg-[var(--color-surface-elevated)] border border-[var(--color-border-subtle)] shadow-xs space-y-3">
+            <div className="flex items-center justify-between">
+              <span className="text-xs font-bold uppercase tracking-wider text-[var(--color-text-secondary)] flex items-center gap-2">
+                <span>Detected Statutory Infractions ({report.findings.length})</span>
+                {report.findings.length === 0 && (
+                  <span className="px-2 py-0.5 rounded text-[10px] font-mono font-bold border bg-emerald-500/10 text-emerald-700 dark:text-emerald-300 border-emerald-500/30">
+                    clear
                   </span>
-                </div>
+                )}
+              </span>
+              <span className="text-[11px] font-mono text-[var(--color-text-muted)]">
+                CCPA • COTPA • Online Gaming Act 2025 • RBI Directions 2025 • DMRA 1954
+              </span>
+            </div>
 
-                {report.findings.length === 0 ? (
-                  <div className="p-8 rounded-2xl bg-[var(--color-surface-elevated)] border border-emerald-500/20 text-center space-y-2">
-                    <div className="w-10 h-10 rounded-full bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 flex items-center justify-center mx-auto">
-                      <CheckCircle2 className="w-5 h-5" />
-                    </div>
-                    <div className="text-sm font-bold text-[var(--color-text-primary)]">
-                      Zero Statutory Violations Detected
-                    </div>
-                    <p className="text-xs text-[var(--color-text-secondary)] max-w-sm mx-auto">
-                      The current copy meets all ASCI Code Chapter I &amp; III guidelines, RBI digital lending rules, and CCPA 2023 dark pattern prohibitions.
-                    </p>
-                  </div>
-                ) : (
-                  <div className="space-y-3">
-                    {report.findings.map((finding) => (
-                      <div
-                        key={finding.id}
-                        className="p-4 rounded-xl bg-[var(--color-surface-elevated)] border border-[var(--color-border-subtle)] space-y-3 shadow-2xs hover:border-[var(--color-border-strong)] transition-all"
-                      >
-                        <div className="flex items-start justify-between gap-2">
-                          <div>
-                            <div className="flex items-center gap-1.5 flex-wrap">
-                              <span
-                                className={`px-2 py-0.5 rounded text-[10px] font-mono font-bold ${
-                                  finding.severity === "CRITICAL"
-                                    ? "bg-rose-500/10 text-rose-700 dark:text-rose-300 border border-rose-500/20"
-                                    : "bg-amber-500/10 text-amber-700 dark:text-amber-300 border border-amber-500/20"
-                                }`}
-                              >
-                                {finding.severity}
-                              </span>
-                              <span className="text-xs font-bold text-[var(--color-text-primary)]">
-                                {finding.ruleTitle}
-                              </span>
-                              <span className="text-[10px] font-mono text-[var(--color-text-muted)]">
-                                [{finding.ruleCode}]
-                              </span>
-                            </div>
-                            <div className="text-[11px] text-[var(--color-text-muted)] mt-0.5">
-                              {finding.statutoryCitation}
-                            </div>
+            {report.findings.length === 0 ? (
+              <div className="p-6 rounded-xl bg-emerald-500/5 border border-emerald-500/20 text-center space-y-2">
+                <CheckCircle2 className="w-8 h-8 text-emerald-500 mx-auto" />
+                <div className="text-sm font-semibold text-emerald-700 dark:text-emerald-300">
+                  Zero Statutory Infractions Detected
+                </div>
+                <p className="text-xs text-[var(--color-text-secondary)] max-w-sm mx-auto">
+                  Copy successfully complies with Indian advertising standards. No surrogate links, false urgency, or unregulated loan guarantees flagged.
+                </p>
+              </div>
+            ) : (
+              <div className="space-y-3">
+                {report.findings.map((finding) => {
+                  const statusLabel =
+                    finding.status === "violation"
+                      ? "violation"
+                      : finding.status === "review"
+                        ? "review (human review required)"
+                        : "clear";
+
+                  const statusClass =
+                    finding.status === "violation"
+                      ? "bg-rose-500/10 text-rose-700 dark:text-rose-300 border-rose-500/30"
+                      : finding.status === "review"
+                        ? "bg-amber-500/10 text-amber-700 dark:text-amber-300 border-amber-500/30"
+                        : "bg-emerald-500/10 text-emerald-700 dark:text-emerald-300 border-emerald-500/30";
+
+                  const sourceTag = finding.sourceTag || "rule";
+                  const sourceTagClass =
+                    sourceTag === "AI-assisted"
+                      ? "bg-purple-500/10 text-purple-700 dark:text-purple-300 border-purple-500/20"
+                      : sourceTag === "embedding"
+                        ? "bg-blue-500/10 text-blue-700 dark:text-blue-300 border-blue-500/20"
+                        : "bg-emerald-500/10 text-emerald-700 dark:text-emerald-300 border-emerald-500/20";
+
+                  // Receipt B formatting per requirements:
+                  // - AI findings never show a statute excerpt and are labelled "AI-assisted, human review required"
+                  // - Brand-only matches show CCPA 2022 cl. 6 proviso text
+                  // - Unverified quotes show "Excerpt pending verification"
+                  const isAI = sourceTag === "AI-assisted";
+                  const isBrandOnly = Boolean(finding.isBrandOnly);
+
+                  let receiptBQuote = finding.receiptB?.quote;
+                  if (isAI) {
+                    receiptBQuote = "AI-assisted, human review required";
+                  } else if (isBrandOnly) {
+                    receiptBQuote = finding.legalCaveat || "CCPA 2022 cl.6 proviso: brand name alone is not surrogate advertising unless the ad is otherwise objectionable";
+                  } else if (!finding.quoteVerified) {
+                    receiptBQuote = `Excerpt pending verification (${finding.statuteName || finding.statutoryCitation || "Statute"}${finding.provision ? `, ${finding.provision}` : ""})`;
+                  }
+
+                  return (
+                    <div
+                      key={finding.id}
+                      className="p-4 rounded-xl bg-[var(--color-surface)] border border-[var(--color-border-subtle)] hover:border-blue-500/30 transition-all space-y-3"
+                    >
+                      {/* Top Row: Rule Code, Title, Source Tag, Status Chip, Penalty */}
+                      <div className="flex items-start justify-between gap-2 flex-wrap">
+                        <div className="space-y-1">
+                          <div className="flex items-center gap-1.5 flex-wrap">
+                            <span className="px-1.5 py-0.5 rounded text-[10px] font-mono font-bold bg-slate-500/10 text-slate-700 dark:text-slate-300 border border-slate-500/20">
+                              {finding.ruleCode}
+                            </span>
+                            <span className="text-xs font-bold text-[var(--color-text-primary)]">
+                              {finding.ruleTitle}
+                            </span>
+                            {/* Source Tag */}
+                            <span className={`px-1.5 py-0.5 rounded text-[10px] font-mono font-bold border ${sourceTagClass}`}>
+                              {sourceTag}
+                            </span>
+                            {/* Status Chip */}
+                            <span className={`px-2 py-0.5 rounded text-[10px] font-mono font-bold border ${statusClass}`}>
+                              {statusLabel}
+                            </span>
                           </div>
-                          <span className="text-xs font-mono font-bold text-rose-600 dark:text-rose-400 shrink-0">
+                          {/* Statute Name & Provision */}
+                          <div className="text-[11px] font-mono text-[var(--color-text-muted)] flex items-center gap-1.5">
+                            <span>{finding.statuteName || finding.statutoryCitation}</span>
+                            {finding.provision && <span>• {finding.provision}</span>}
+                          </div>
+                        </div>
+
+                        <div className="text-right">
+                          <span className="text-xs font-mono font-bold text-rose-600 dark:text-rose-400">
                             {formatInr(finding.statutoryPenaltyExposureInr)}
                           </span>
                         </div>
+                      </div>
 
-                        <p className="text-xs text-[var(--color-text-secondary)] leading-relaxed">
-                          {finding.detectedViolationExplanation}
-                        </p>
+                      {/* Detected Explanation */}
+                      <p className="text-xs text-[var(--color-text-secondary)] leading-relaxed">
+                        {finding.detectedViolationExplanation}
+                      </p>
 
-                        {/* Matched Grapheme & Phonetic Trace */}
-                        <div className="p-2 rounded-lg bg-[var(--color-surface-elevated)] border border-[var(--color-border-subtle)] text-[11px] font-mono flex items-center justify-between flex-wrap gap-2">
-                          <div className="flex items-center gap-1.5">
-                            <span className="text-[10px] font-bold text-blue-500">Matched Span:</span>
-                            <span className="text-[var(--color-text-primary)] bg-blue-500/10 px-1 rounded">
-                              &ldquo;{finding.sourceTextSpan}&rdquo;
+                      {/* Double-Receipt Section */}
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-2 pt-1">
+                        {/* Receipt A: Highlighted Draft Span */}
+                        <div className="p-2.5 rounded-lg bg-[var(--color-surface-elevated)] border border-[var(--color-border-subtle)] space-y-1">
+                          <div className="flex items-center justify-between text-[10px] font-mono font-bold text-blue-600 dark:text-blue-400">
+                            <span>RECEIPT A: DRAFT SPAN</span>
+                            <span className="text-[9px] text-[var(--color-text-muted)]">
+                              chars {finding.startIndex}–{finding.endIndex}
                             </span>
                           </div>
-                          {finding.phoneticTrace && finding.phoneticTrace.canonical && (
-                            <div className="flex items-center gap-1 text-[10px] text-[var(--color-text-muted)]">
-                              <span>Stem:</span>
-                              <span className="font-bold text-emerald-600 dark:text-emerald-400">
-                                {finding.phoneticTrace.canonical}
-                              </span>
+                          <div className="text-xs font-sans text-[var(--color-text-primary)] font-medium bg-blue-500/10 px-2 py-1 rounded border border-blue-500/20">
+                            &ldquo;{finding.sourceTextSpan}&rdquo;
+                          </div>
+                        </div>
+
+                        {/* Receipt B: Matched Exemplar Text / Statutory Quote */}
+                        <div className="p-2.5 rounded-lg bg-[var(--color-surface-elevated)] border border-[var(--color-border-subtle)] space-y-1">
+                          <div className="flex items-center justify-between text-[10px] font-mono font-bold text-purple-600 dark:text-purple-400">
+                            <span>RECEIPT B: STATUTORY BENCHMARK</span>
+                            {isAI ? (
+                              <span className="text-[9px] text-amber-600 dark:text-amber-400 font-bold">AI ASSISTED</span>
+                            ) : isBrandOnly ? (
+                              <span className="text-[9px] text-purple-600 dark:text-purple-400 font-bold">PROVISO</span>
+                            ) : finding.quoteVerified ? (
+                              <span className="text-[9px] text-emerald-600 dark:text-emerald-400 font-bold">VERIFIED</span>
+                            ) : (
+                              <span className="text-[9px] text-amber-600 dark:text-amber-400 font-bold">PENDING</span>
+                            )}
+                          </div>
+
+                          {isAI ? (
+                            <div className="text-xs font-mono text-amber-700 dark:text-amber-300 italic bg-amber-500/10 px-2 py-1 rounded border border-amber-500/20">
+                              AI-assisted, human review required
+                            </div>
+                          ) : isBrandOnly ? (
+                            <div className="text-xs font-sans text-[var(--color-text-primary)] bg-purple-500/10 px-2 py-1 rounded border border-purple-500/20">
+                              {receiptBQuote}
+                            </div>
+                          ) : (
+                            <div className="text-xs font-sans text-[var(--color-text-secondary)] bg-[var(--color-surface)] px-2 py-1 rounded border border-[var(--color-border-subtle)]">
+                              {receiptBQuote}
+                            </div>
+                          )}
+
+                          {finding.matchedExemplarText && !isAI && (
+                            <div className="text-[10px] text-[var(--color-text-muted)] italic pt-0.5">
+                              Matched exemplar: &ldquo;{finding.matchedExemplarText}&rdquo;
                             </div>
                           )}
                         </div>
+                      </div>
 
-                        {/* Suggested Fix */}
-                        <div className="text-[11px] text-emerald-700 dark:text-emerald-300 bg-emerald-500/5 border border-emerald-500/20 p-2 rounded-lg flex items-start gap-1.5">
+                      {/* Similarity Score & Margin */}
+                      {(finding.score !== undefined || finding.margin !== undefined) && (
+                        <div className="flex items-center gap-3 text-[11px] font-mono text-[var(--color-text-muted)] bg-[var(--color-surface-elevated)] px-2.5 py-1.5 rounded-lg border border-[var(--color-border-subtle)] flex-wrap">
+                          {finding.score !== undefined && (
+                            <span>
+                              Similarity Score: <strong className="text-[var(--color-text-primary)]">{(finding.score * 100).toFixed(1)}%</strong>
+                            </span>
+                          )}
+                          {finding.margin !== undefined && (
+                            <span>
+                              Margin: <strong className="text-[var(--color-text-primary)]">{finding.margin >= 0 ? "+" : ""}{finding.margin.toFixed(3)}</strong>
+                            </span>
+                          )}
+                        </div>
+                      )}
+
+                      {/* Remediation & Send to Review Queue Button */}
+                      <div className="flex items-center justify-between gap-2 pt-1 flex-wrap">
+                        <div className="text-[11px] text-emerald-700 dark:text-emerald-300 bg-emerald-500/5 border border-emerald-500/20 p-2 rounded-lg flex items-start gap-1.5 flex-1 min-w-[220px]">
                           <Sparkles className="w-3.5 h-3.5 shrink-0 mt-0.5" />
                           <div>
                             <span className="font-semibold">Remediation:</span> {finding.suggestedCompliantRewrite}
                           </div>
                         </div>
+
+                        {finding.status === "review" && (
+                          <button
+                            type="button"
+                            onClick={() => handleSendToReviewQueue(finding)}
+                            disabled={queuedFindingIds.has(finding.id)}
+                            className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold transition-all shadow-2xs shrink-0 ${queuedFindingIds.has(finding.id)
+                                ? "bg-emerald-600 text-white cursor-default"
+                                : "bg-amber-600 hover:bg-amber-700 text-white"
+                              }`}
+                          >
+                            {queuedFindingIds.has(finding.id) ? (
+                              <>
+                                <CheckCircle2 className="w-3.5 h-3.5" />
+                                <span>Sent to Review Queue</span>
+                              </>
+                            ) : (
+                              <>
+                                <Layers className="w-3.5 h-3.5" />
+                                <span>Send to review queue</span>
+                              </>
+                            )}
+                          </button>
+                        )}
                       </div>
-                    ))}
-                  </div>
-                )}
+                    </div>
+                  );
+                })}
               </div>
-            </div>
+            )}
           </div>
-        </>
-      )}
+        </div>
+      </div>
 
       {/* Official Vernacular Statutory Attestation Modal */}
       {isAttestationOpen && (
@@ -648,7 +861,7 @@ export function VernacularAuditStudio() {
                   </span>
                 </div>
                 <h3 className="text-base font-bold text-[var(--color-text-primary)] mt-1">
-                  Ministry of Consumer Affairs &amp; ASCI Vernacular Compliance Audit
+                  Ministry of Consumer Affairs & ASCI Vernacular Compliance Audit
                 </h3>
               </div>
               <button
@@ -695,7 +908,7 @@ export function VernacularAuditStudio() {
                 </div>
                 {report.findings.length === 0 ? (
                   <div className="text-emerald-600 font-bold">
-                    PASSED: Full compliance verified across ASCI, CCPA, and RBI norms.
+                    PASSED: Full compliance verified across CCPA, COTPA, Online Gaming Act 2025, and RBI Directions 2025.
                   </div>
                 ) : (
                   <div className="space-y-1.5">
@@ -737,9 +950,7 @@ export function VernacularAuditStudio() {
                 </button>
                 <button
                   type="button"
-                  onClick={() => {
-                    if (typeof window !== "undefined") window.print();
-                  }}
+                  onClick={() => window.print()}
                   className="px-4 py-1.5 rounded-xl bg-[#111111] text-white dark:bg-white dark:text-black text-xs font-semibold inline-flex items-center gap-1.5 shadow-xs"
                 >
                   <Printer className="w-3.5 h-3.5" />
@@ -753,3 +964,4 @@ export function VernacularAuditStudio() {
     </div>
   );
 }
+

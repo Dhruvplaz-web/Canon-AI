@@ -28,7 +28,7 @@ export const INITIAL_FIREWALL_CAMPAIGNS: FirewallCampaign[] = [
     detectedInfraction: {
       ruleCode: "RBI-VERN-01",
       ruleTitle: "Deceptive 'Bina Document' Unregulated Credit Promise",
-      statutoryAct: "RBI Digital Lending Guidelines (2022) & CCPA 2022 Section 4",
+      statutoryAct: "Reserve Bank of India (Digital Lending) Directions, 2025 (RBI/2025-26/36, 8 May 2025)",
       penaltyExposureInr: 1000000,
       explanation:
         "Unsubstantiated promise of unconditional loans without statutory KYC, underwriting, or credit bureau checks.",
@@ -94,7 +94,7 @@ export const INITIAL_FIREWALL_CAMPAIGNS: FirewallCampaign[] = [
     detectedInfraction: {
       ruleCode: "MEITY-BETTING-01",
       ruleTitle: "Illegal Offshore Betting Surrogate Promotion",
-      statutoryAct: "MeitY Advisory on Online Betting (2023) & Public Gambling Act",
+      statutoryAct: "Promotion and Regulation of Online Gaming Act, 2025 (Act 32 of 2025)",
       penaltyExposureInr: 1000000,
       explanation:
         "Offshore illegal sports betting platform promoted via surrogate 'News' brand extension in direct violation of Ministry of Information & Broadcasting (MIB) orders.",

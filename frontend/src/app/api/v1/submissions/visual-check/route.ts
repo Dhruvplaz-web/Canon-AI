@@ -19,7 +19,7 @@ export async function GET(request: NextRequest) {
       "ASCI Guidelines for Disclaimers (2023) - Clause 1.4",
       "Consumer Protection Act 2019 (CCPA) - Section 4(2) Misleading Advertisements",
       "ISO/IEC 40500:2012 / WCAG 2.1 AA - Criterion 1.4.3",
-      "RBI Digital Lending Guidelines (2022) - Section 3.1",
+      "Reserve Bank of India (Digital Lending) Directions, 2025 (RBI/2025-26/36, 8 May 2025)",
     ],
   });
 }

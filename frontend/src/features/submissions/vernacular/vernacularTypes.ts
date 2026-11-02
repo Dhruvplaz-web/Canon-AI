@@ -14,7 +14,7 @@ export interface VernacularFinding {
   startIndex: number;
   endIndex: number;
   category: VernacularCategory;
-  severity: "CRITICAL" | "HIGH";
+  severity: "CRITICAL" | "HIGH" | "WARNING" | "INFO";
   statutoryCitation: string;
   ruleTitle: string;
   ruleCode: string; // e.g. "ASCI-SURR-01", "CCPA-URG-01", "RBI-LEND-02"
@@ -31,6 +31,27 @@ export interface VernacularFinding {
     innocuousExtension: string;
     surrogateCategory: string;
   };
+  status?: "violation" | "review" | "clear" | "uncertain";
+  sourceTag?: "rule" | "embedding" | "AI-assisted";
+  receiptA?: {
+    text: string;
+    start: number;
+    end: number;
+  };
+  receiptB?: {
+    quote: string;
+    verified: boolean;
+    source?: string;
+    matchedExemplarText?: string;
+  };
+  statuteName?: string;
+  provision?: string;
+  quoteVerified?: boolean;
+  score?: number;
+  margin?: number;
+  isBrandOnly?: boolean;
+  legalCaveat?: string;
+  matchedExemplarText?: string;
 }
 
 export interface VernacularAuditReport {
@@ -42,4 +63,6 @@ export interface VernacularAuditReport {
   detectedCategories: VernacularCategory[];
   remediatedText: string;
   findings: VernacularFinding[];
+  status?: "violation" | "review" | "clear";
+  offlineMode?: boolean;
 }

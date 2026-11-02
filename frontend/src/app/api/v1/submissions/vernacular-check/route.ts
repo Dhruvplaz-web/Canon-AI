@@ -16,7 +16,7 @@ export async function POST(req: NextRequest) {
         "Consumer Protection Act 2019 (CCPA) - Guideline 9 (Surrogate Ads)",
         "CCPA Dark Patterns Guidelines (2023) - Schedule 1 (False Urgency)",
         "Drugs and Magic Remedies (Objectionable Ads) Act 1954 - Section 3",
-        "RBI Digital Lending Guidelines (2022) - Section 3",
+        "Reserve Bank of India (Digital Lending) Directions, 2025 (RBI/2025-26/36, 8 May 2025)",
       ],
     });
   } catch (err: unknown) {
