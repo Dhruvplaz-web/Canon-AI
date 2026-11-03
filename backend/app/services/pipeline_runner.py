@@ -31,10 +31,13 @@ def run_check_pipeline(
     db: Session,
     submission_id: uuid.UUID,
     version_number: int | None = None,
+    as_of: datetime | str | None = None,
+    dry_run: bool = False,
 ) -> CheckRun:
     """
     Executes the multi-stage brand compliance verification pipeline
     synchronously against a specific submission version.
+    Supports temporal simulation via as_of and non-destructive dry_run.
     """
     submission = db.query(Submission).filter(Submission.id == submission_id).first()
     if not submission:
@@ -146,7 +149,7 @@ def run_check_pipeline(
         findings_to_persist.append(finding)
 
     # Stage 3: Approved Claims Ledger & Expired Claim Validator
-    claim_findings = scan_claims(raw_text, policy.approved_claims)
+    claim_findings = scan_claims(raw_text, policy.approved_claims, as_of=as_of)
     for cf in claim_findings:
         finding = Finding(
             workspace_id=submission.workspace_id,
@@ -238,17 +241,28 @@ def run_check_pipeline(
     check_run.status = "COMPLETED"
     check_run.completed_at = datetime.now(UTC)
 
-    # Update submission status
-    if len(deduped_findings) == 0:
-        submission.status = "APPROVED"
-    else:
-        submission.status = "PENDING_REVIEW"
+    if not dry_run:
+        # Update submission status
+        if len(deduped_findings) == 0:
+            submission.status = "APPROVED"
+        else:
+            submission.status = "PENDING_REVIEW"
 
-    db.commit()
-    db.refresh(check_run)
-    logger.info(
-        "Completed check pipeline for submission %s: %d findings recorded.",
-        submission_id,
-        len(deduped_findings),
-    )
+        db.commit()
+        db.refresh(check_run)
+        logger.info(
+            "Completed check pipeline for submission %s: %d findings recorded.",
+            submission_id,
+            len(deduped_findings),
+        )
+    else:
+        # Simulation / dry-run: rollback persistence to avoid altering canonical state
+        db.rollback()
+        check_run.findings = deduped_findings
+        logger.info(
+            "Completed simulation check pipeline for submission %s as_of=%s (dry run): %d findings emitted.",
+            submission_id,
+            as_of,
+            len(deduped_findings),
+        )
     return check_run

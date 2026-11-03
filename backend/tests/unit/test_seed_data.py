@@ -35,7 +35,7 @@ def test_seed_data_execution_and_counts():
         summary = seed(session)
 
         assert summary["rules_count"] == 12
-        assert summary["claims_count"] == 2
+        assert summary["claims_count"] == 3
         assert summary["users_count"] == 4
         assert summary["reason_codes_count"] == 13
 
@@ -80,7 +80,7 @@ def test_seed_data_execution_and_counts():
         claims = (
             session.query(ApprovedClaim).filter(ApprovedClaim.policy_version_id == policy.id).all()
         )
-        assert len(claims) == 2
+        assert len(claims) == 3
         claim_map = {c.claim_code: c for c in claims}
         assert "CLAIM-001" in claim_map
         assert claim_map["CLAIM-001"].valid_until.year == 2025  # Stale claim invariant
@@ -163,6 +163,6 @@ def test_seed_data_idempotency():
 
         # Assert no duplicate claims
         claims_count = session.query(ApprovedClaim).count()
-        assert claims_count == 2
+        assert claims_count == 3
     finally:
         session.close()

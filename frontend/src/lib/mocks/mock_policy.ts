@@ -124,5 +124,14 @@ export const MOCK_POLICY_V1: Policy = {
       valid_until: "2026-12-31",
       status: "ACTIVE",
     },
+    {
+      id: "clm_03",
+      claim_code: "CLAIM-003",
+      claim_text: "zero maintenance fees on digital treasury accounts",
+      substantiation: "Treasury Fee Schedule 2026-2028 Exhibit B",
+      valid_from: "2026-01-01",
+      valid_until: "2028-03-01",
+      status: "ACTIVE",
+    },
   ],
 };
