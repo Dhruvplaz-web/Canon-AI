@@ -3,8 +3,12 @@ import assert from 'node:assert';
 import fs from 'node:fs';
 import path from 'node:path';
 
-const BASE = 'D:/Codex 48';
-const FRONTEND_SRC = `${BASE}/Canon-AI-master/Canon-AI-master/frontend/src`;
+import { fileURLToPath } from 'url';
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+const REPO_ROOT = path.resolve(__dirname, '../..');
+const BASE = REPO_ROOT;
+const FRONTEND_SRC = path.join(REPO_ROOT, 'frontend/src');
 
 describe('Vernacular Matcher v2 UI & Presets Verification', () => {
   it('1. All 4 demo presets are defined with correct texts and not present in datasets', () => {
@@ -111,7 +115,7 @@ describe('Vernacular Matcher v2 UI & Presets Verification', () => {
     }
 
     // 2. Scan built client static assets if .next exists
-    const staticDir = `${BASE}/Canon-AI-master/Canon-AI-master/frontend/.next/static`;
+    const staticDir = path.join(REPO_ROOT, 'frontend/.next/static');
     if (fs.existsSync(staticDir)) {
       function scanStatic(dir) {
         const entries = fs.readdirSync(dir, { withFileTypes: true });

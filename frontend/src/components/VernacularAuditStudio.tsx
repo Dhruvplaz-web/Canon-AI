@@ -1,36 +1,32 @@
 "use client";
 
 import React, { useState, useMemo, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import {
   ShieldAlert,
-  ShieldCheck,
-  AlertTriangle,
   Sparkles,
   ArrowRight,
   Printer,
   X,
   Layers,
-  Zap,
   Activity,
   FileText,
   RotateCcw,
   Sliders,
   CheckCircle2,
-  ExternalLink,
-  Info,
   WifiOff,
+  Volume2,
 } from "lucide-react";
 import { auditVernacularCopy } from "@/features/submissions/vernacular/vernacularAuditEngine";
 import { auditVernacularCopyV2, auditVernacularCopyV2Async } from "@/lib/vernacular/matcher";
 import {
   getPhoneticTransformationTrace,
-  normalizeIndicPhonetics,
 } from "@/features/submissions/vernacular/indicNormalizer";
 import {
   VernacularAuditReport,
-  VernacularCategory,
   VernacularFinding,
 } from "@/features/submissions/vernacular/vernacularTypes";
+import { VernacularAudioRadar } from "@/features/submissions/vernacular/VernacularAudioRadar";
 
 export interface VernacularPreset {
   id: string;
@@ -121,6 +117,8 @@ export const VERNACULAR_PRESETS: VernacularPreset[] = [
 ];
 
 export function VernacularAuditStudio() {
+  const router = useRouter();
+  const [activeSubTab, setActiveSubTab] = useState<"TEXT_RADAR" | "AUDIO_RADAR">("TEXT_RADAR");
   const [selectedPresetId, setSelectedPresetId] = useState<string>("DEMO_DIRECT_VIOLATION");
   const [inputText, setInputText] = useState<string>(VERNACULAR_PRESETS[0].copy);
   const [showRemediation, setShowRemediation] = useState<boolean>(false);
@@ -150,7 +148,6 @@ export function VernacularAuditStudio() {
   // Effect to run v2 multi-stage pipeline when enabled
   useEffect(() => {
     if (!isV2Matcher) {
-      setV2Report(null);
       return;
     }
 
@@ -209,7 +206,7 @@ export function VernacularAuditStudio() {
     const textToBridge = showRemediation ? report.remediatedText : inputText;
     if (typeof window !== "undefined") {
       sessionStorage.setItem("canon_bridged_copy", textToBridge);
-      window.location.href = "/submissions?tab=copy&bridged=1";
+      router.push("/submissions?tab=copy&bridged=1");
     }
   };
 
@@ -238,7 +235,7 @@ export function VernacularAuditStudio() {
           severity: finding.severity || "WARNING",
         }),
       });
-    } catch (_err) {
+    } catch {
       // optimistic update
     } finally {
       setQueuedFindingIds((prev) => new Set([...prev, finding.id]));
@@ -260,8 +257,58 @@ export function VernacularAuditStudio() {
 
   return (
     <div className="space-y-6">
-      {/* Header Banner */}
-      <div className="p-5 rounded-2xl bg-[var(--color-surface-elevated)] border border-[var(--color-border-subtle)] shadow-xs">
+      {/* Sub-Tab Switcher: Vernacular NLP v2 vs ASCI Audio Radar */}
+      <div className="flex items-center justify-between gap-4 flex-wrap pb-2 border-b border-[var(--color-border-subtle)]">
+        <div className="flex items-center p-1 rounded-xl bg-[var(--color-surface)] border border-[var(--color-border-subtle)] shadow-2xs">
+          <button
+            type="button"
+            onClick={() => setActiveSubTab("TEXT_RADAR")}
+            className={`px-3.5 py-1.5 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition ${
+              activeSubTab === "TEXT_RADAR"
+                ? "bg-[var(--color-surface-elevated)] text-[var(--color-text-primary)] shadow-xs"
+                : "text-[var(--color-text-muted)] hover:text-[var(--color-text-primary)]"
+            }`}
+          >
+            <FileText className="w-3.5 h-3.5" />
+            <span>Vernacular &amp; Hinglish NLP v2</span>
+          </button>
+          <button
+            type="button"
+            onClick={() => setActiveSubTab("AUDIO_RADAR")}
+            className={`px-3.5 py-1.5 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition ${
+              activeSubTab === "AUDIO_RADAR"
+                ? "bg-purple-600 text-white shadow-xs"
+                : "text-[var(--color-text-muted)] hover:text-[var(--color-text-primary)]"
+            }`}
+          >
+            <Volume2 className="w-3.5 h-3.5" />
+            <span>Audio Radar (2.5 SPS)</span>
+            <span className="px-1.5 py-0.2 rounded text-[9px] uppercase font-mono font-bold bg-white/20 text-white">
+              Weapon 1
+            </span>
+          </button>
+        </div>
+
+        <div className="flex items-center gap-2">
+          <span className="px-2 py-0.5 rounded text-[11px] font-mono font-bold bg-purple-500/10 text-purple-700 dark:text-purple-300 border border-purple-500/20">
+            Multi-Modal Statutory Engine Active
+          </span>
+        </div>
+      </div>
+
+      {activeSubTab === "AUDIO_RADAR" ? (
+        <VernacularAudioRadar
+          initialText={inputText}
+          onRemediatedTextApplied={(cleanText) => {
+            setInputText(cleanText);
+            setShowRemediation(false);
+            setActiveSubTab("TEXT_RADAR");
+          }}
+        />
+      ) : (
+        <>
+          {/* Header Banner */}
+          <div className="p-5 rounded-2xl bg-[var(--color-surface-elevated)] border border-[var(--color-border-subtle)] shadow-xs">
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div className="space-y-1">
             <div className="flex items-center gap-2 flex-wrap">
@@ -844,6 +891,9 @@ export function VernacularAuditStudio() {
           </div>
         </div>
       </div>
+
+        </>
+      )}
 
       {/* Official Vernacular Statutory Attestation Modal */}
       {isAttestationOpen && (

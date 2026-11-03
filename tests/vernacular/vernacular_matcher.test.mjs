@@ -19,7 +19,10 @@ import fs from "fs";
 // We can't import TS directly. Instead we test the underlying JS logic via
 // the same normalizeText + TF-IDF functions used in the eval script.
 
-const REPO_ROOT = path.resolve("D:\\Codex 48\\Canon-AI-master\\Canon-AI-master");
+import { fileURLToPath } from "url";
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+const REPO_ROOT = path.resolve(__dirname, "../..");
 
 // ─── Shared helpers (copied from eval script) ─────────────────────────────────
 

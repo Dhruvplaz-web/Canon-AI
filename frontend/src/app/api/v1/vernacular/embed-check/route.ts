@@ -23,9 +23,9 @@ function checkRateLimit(ip: string): boolean {
 }
 
 // Operational thresholds selected on tune split (see docs/VERNACULAR_THRESHOLDS.md)
-export const T_HIGH = 0.75;
-export const M_HIGH = 0.02;
-export const T_LOW = 0.58;
+const T_HIGH = 0.75;
+const M_HIGH = 0.02;
+const T_LOW = 0.58;
 
 interface StoredEmbedding {
   id: string;
